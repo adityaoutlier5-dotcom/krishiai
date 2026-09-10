@@ -1,6 +1,6 @@
 ﻿"use client"
 
-import { createContext, useContext, useEffect, useState } from "react"
+import { createContext, useContext, useLayoutEffect, useEffect, useState } from "react"
 import en from "./locales/en.json"
 import hi from "./locales/hi.json"
 
@@ -34,8 +34,26 @@ export const LANG_FLAGS: Record<Lang, string> = {
   hi_en: "🇮🇳",
 }
 
+// These are the only locales exposed until a locale has complete application
+// coverage. This prevents a user from selecting a partially translated UI.
+export const SELECTABLE_LANGS: Lang[] = ["hi", "en"]
+
 // We keep en and hi statically
 export const T: Record<string, any> = { en, hi }
+
+function applyOverrides(base: any, overrides: Record<string, string>) {
+  const next = structuredClone(base)
+  for (const [key, value] of Object.entries(overrides)) {
+    const parts = key.split(".")
+    let target = next
+    for (const part of parts.slice(0, -1)) {
+      if (target?.[part] === undefined || target?.[part] === null) target[part] = {}
+      target = target[part]
+    }
+    if (target && parts.length) target[parts[parts.length - 1]] = value
+  }
+  return next
+}
 
 const NAMESPACE_TITLES: Record<string, Record<string, string>> = {
   dashboard: {
@@ -148,7 +166,7 @@ export function LanguageProvider({ children }: { children: React.ReactNode }) {
   const [lang, setLangState] = useState<Lang>("hi")
   const [translations, setTranslations] = useState<any>(hi)
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     // Local storage key migration layer
     let saved = localStorage.getItem("kisaanbuddy_lang") as Lang | null
     if (!saved) {
@@ -159,12 +177,11 @@ export function LanguageProvider({ children }: { children: React.ReactNode }) {
       }
     }
 
-    if (saved) {
+    if (saved && SELECTABLE_LANGS.includes(saved)) {
       setLangState(saved)
     } else {
       const browserLang = navigator.language.split("-")[0] as Lang
-      const supportedLangs: Lang[] = ["en", "hi", "kn", "ta", "te", "ml", "mr", "bn", "pa", "gu"]
-      if (supportedLangs.includes(browserLang)) {
+      if (SELECTABLE_LANGS.includes(browserLang)) {
         setLangState(browserLang)
       } else {
         setLangState("hi") // Default to Hindi as per V2 specifications
@@ -173,22 +190,25 @@ export function LanguageProvider({ children }: { children: React.ReactNode }) {
   }, [])
 
   useEffect(() => {
-    if (lang === "en") {
-      setTranslations(en)
-      return
+    let cancelled = false
+    const load = async () => {
+      let base: any = hi
+      try {
+        if (lang === "en") base = en
+        else if (lang !== "hi") base = (await import(`./locales/${lang}.json`)).default
+      } catch {
+        base = hi
+      }
+      try {
+        const response = await fetch(`/api/content/${lang}`, { cache: "no-store" })
+        const overrides = response.ok ? await response.json() : {}
+        if (!cancelled) setTranslations(applyOverrides(base, overrides))
+      } catch {
+        if (!cancelled) setTranslations(base)
+      }
     }
-    if (lang === "hi") {
-      setTranslations(hi)
-      return
-    }
-    import(`./locales/${lang}.json`)
-      .then((module) => {
-        setTranslations(module.default)
-      })
-      .catch((err) => {
-        console.error("Failed to load locale", lang, err)
-        setTranslations(hi) // Fall back to Hindi
-      })
+    void load()
+    return () => { cancelled = true }
   }, [lang])
 
   useEffect(() => {
@@ -196,8 +216,10 @@ export function LanguageProvider({ children }: { children: React.ReactNode }) {
   }, [lang])
 
   const setLang = (l: Lang) => {
+    if (!SELECTABLE_LANGS.includes(l)) return
     setLangState(l)
     localStorage.setItem("kisaanbuddy_lang", l)
+    document.cookie = `kisaanbuddy_lang=${l}; Path=/; Max-Age=31536000; SameSite=Lax`
     localStorage.removeItem("KisaanBuddy_lang") // Clean up old reference
   }
 

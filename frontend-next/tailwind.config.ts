@@ -67,6 +67,7 @@ const config = {
         sm: "calc(var(--radius) - 4px)",
       },
       boxShadow: {
+        'xs': '0 1px 2px 0 rgba(0, 0, 0, 0.05)',
         'glow-primary': '0 0 20px 2px rgba(34, 197, 94, 0.15)',
         'glow-secondary': '0 0 20px 2px rgba(20, 184, 166, 0.15)',
         'glow-accent': '0 0 25px 5px rgba(245, 158, 11, 0.1)',

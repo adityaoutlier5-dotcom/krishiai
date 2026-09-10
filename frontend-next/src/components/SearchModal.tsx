@@ -3,16 +3,15 @@
 import React, { useState, useEffect, useMemo, useRef } from 'react'
 import { useRouter } from 'next/navigation'
 import { useLanguage } from '@/lib/language'
-import { BLOG_POSTS } from '@/lib/blog-data'
 import ALL_SCHEMES_DATA from '@/lib/schemes-data.json'
-import { Search, X, BookOpen, Landmark, Cpu, HelpCircle, ArrowRight } from 'lucide-react'
+import { Search, X, Landmark, Cpu, HelpCircle, ArrowRight } from 'lucide-react'
 
 interface SearchResultItem {
   id: string
   title: string
   desc: string
   link: string
-  category: 'tool' | 'scheme' | 'blog' | 'faq'
+  category: 'tool' | 'scheme' | 'faq'
   answer?: string // For FAQs
 }
 
@@ -119,23 +118,7 @@ export default function SearchModal({ isOpen, onClose }: SearchModalProps) {
       }
     })
 
-    // 3. Index Blogs
-    BLOG_POSTS.forEach(post => {
-      const title = post.title[activeLang].toLowerCase()
-      const desc = post.description[activeLang].toLowerCase()
-      const tags = post.tags[activeLang].join(' ').toLowerCase()
-      if (title.includes(q) || desc.includes(q) || tags.includes(q)) {
-        tempResults.push({
-          id: `blog-${post.slug}`,
-          title: post.title[activeLang],
-          desc: post.description[activeLang],
-          link: `/blog/${post.slug}`,
-          category: 'blog'
-        })
-      }
-    })
-
-    // 4. Index FAQs
+    // 3. Index FAQs
     const activeFaqs = FAQ_INDEX[activeLang] || FAQ_INDEX.hi
     activeFaqs.forEach((faq, index) => {
       const question = faq.q.toLowerCase()
@@ -163,26 +146,26 @@ export default function SearchModal({ isOpen, onClose }: SearchModalProps) {
   if (!isOpen) return null
 
   return (
-    <div className="fixed inset-0 z-[100] flex items-start justify-center pt-24 px-4 bg-slate-950/70 backdrop-blur-sm animate-fade-in">
+    <div className="fixed inset-0 z-[100] flex items-start justify-center pt-24 px-4 bg-background/80 dark:bg-black/80 backdrop-blur-sm animate-fade-in">
       {/* Click backdrop to close */}
       <div className="absolute inset-0" onClick={onClose} />
 
       {/* Modal Container */}
-      <div className="relative w-full max-w-2xl bg-slate-900 border border-white/[0.08] rounded-2xl shadow-2xl overflow-hidden backdrop-blur-md flex flex-col max-h-[500px]">
+      <div className="relative w-full max-w-2xl bg-card border border-border rounded-2xl shadow-2xl overflow-hidden backdrop-blur-md flex flex-col max-h-[500px]">
         {/* Input Header */}
-        <div className="flex items-center border-b border-white/[0.06] px-4 py-3 shrink-0">
-          <Search className="h-5 w-5 text-emerald-400 shrink-0" />
+        <div className="flex items-center border-b border-border px-4 py-3 shrink-0">
+          <Search className="h-5 w-5 text-emerald-600 dark:text-emerald-400 shrink-0" />
           <input
             ref={inputRef}
             type="text"
             value={query}
             onChange={(e) => setQuery(e.target.value)}
-            placeholder={activeLang === 'en' ? "Search blogs, schemes, FAQs, and tools..." : "ब्लॉग, योजनाएं, प्रश्न और उपकरण खोजें..."}
-            className="flex-1 bg-transparent border-0 outline-none text-white text-sm px-3 placeholder-muted-foreground"
+            placeholder={activeLang === 'en' ? "Search tools, schemes, and help..." : "उपकरण, योजनाएं और सहायता खोजें..."}
+            className="flex-1 bg-transparent border-0 outline-none text-foreground text-sm px-3 placeholder:text-muted-foreground"
           />
           <button 
             onClick={onClose} 
-            className="p-1 rounded-full hover:bg-white/[0.08] text-muted-foreground hover:text-white transition-colors cursor-pointer"
+            className="p-1 rounded-full hover:bg-muted text-muted-foreground hover:text-foreground transition-colors cursor-pointer"
           >
             <X className="h-4.5 w-4.5" />
           </button>
@@ -205,21 +188,20 @@ export default function SearchModal({ isOpen, onClose }: SearchModalProps) {
                 <button
                   key={item.id}
                   onClick={() => handleSelect(item.link)}
-                  className="w-full text-left p-3.5 rounded-xl border border-white/[0.03] hover:border-emerald-500/20 bg-white/[0.01] hover:bg-emerald-500/[0.02] flex items-start gap-3.5 transition-all group cursor-pointer"
+                  className="w-full text-left p-3.5 rounded-xl border border-border hover:border-emerald-500/40 bg-card hover:bg-muted/50 flex items-start gap-3.5 transition-all group cursor-pointer"
                 >
-                  <span className="p-2 rounded-lg bg-slate-950/40 border border-white/[0.05] shrink-0 text-emerald-400 group-hover:scale-105 transition-transform">
+                  <span className="p-2 rounded-lg bg-emerald-500/10 border border-emerald-500/20 shrink-0 text-emerald-600 dark:text-emerald-400 group-hover:scale-105 transition-transform">
                     {item.category === 'tool' && <Cpu className="h-4 w-4" />}
                     {item.category === 'scheme' && <Landmark className="h-4 w-4" />}
-                    {item.category === 'blog' && <BookOpen className="h-4 w-4" />}
                     {item.category === 'faq' && <HelpCircle className="h-4 w-4" />}
                   </span>
 
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center justify-between gap-2">
-                      <h4 className="text-xs font-black text-white group-hover:text-emerald-400 transition-colors truncate">
+                      <h4 className="text-xs font-bold text-foreground group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition-colors truncate">
                         {item.title}
                       </h4>
-                      <span className="text-[8px] font-black uppercase tracking-wider px-2 py-0.5 rounded bg-white/[0.04] text-muted-foreground border border-white/[0.05]">
+                      <span className="text-[8px] font-bold uppercase tracking-wider px-2 py-0.5 rounded bg-muted text-muted-foreground border border-border">
                         {item.category}
                       </span>
                     </div>
@@ -227,13 +209,13 @@ export default function SearchModal({ isOpen, onClose }: SearchModalProps) {
                       {item.desc}
                     </p>
                     {item.answer && (
-                      <p className="text-[10px] text-emerald-400/80 bg-emerald-500/[0.02] border border-emerald-500/5 p-2 rounded-lg mt-2 leading-relaxed font-semibold">
+                      <p className="text-[10px] text-emerald-700 dark:text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 p-2 rounded-lg mt-2 leading-relaxed font-semibold">
                         {item.answer}
                       </p>
                     )}
                   </div>
                   
-                  <ArrowRight className="h-4 w-4 text-muted-foreground group-hover:text-emerald-400 group-hover:translate-x-0.5 transition-all shrink-0 self-center" />
+                  <ArrowRight className="h-4 w-4 text-muted-foreground group-hover:text-emerald-600 dark:group-hover:text-emerald-400 group-hover:translate-x-0.5 transition-all shrink-0 self-center" />
                 </button>
               ))}
             </div>

@@ -220,7 +220,7 @@ export default function ImpactClient() {
       {/* Back navigation button */}
       <div className="flex items-center justify-between">
         <Link href="/">
-          <Button variant="ghost" size="sm" className="gap-2 text-xs text-muted-foreground hover:text-white transition-colors">
+          <Button variant="ghost" size="sm" className="gap-2 text-xs text-muted-foreground hover:text-foreground transition-colors">
             <ArrowLeft className="h-4 w-4" />
             {t("back")}
           </Button>
@@ -228,18 +228,18 @@ export default function ImpactClient() {
       </div>
 
       {/* Hero Header Banner */}
-      <div className="text-center bg-gradient-to-br from-[#061218] via-[#0b222d] to-[#040c10] border border-sky-500/10 p-8 md:p-12 rounded-3xl relative overflow-hidden shadow-2xl">
+      <div className="text-center bg-gradient-to-br from-sky-500/10 via-card to-emerald-500/10 border border-border p-8 md:p-12 rounded-3xl relative overflow-hidden shadow-sm">
         <div className="absolute top-0 right-0 -m-8 opacity-5">
           <Sprout className="h-64 w-64 text-sky-500" />
         </div>
         <div className="absolute -top-10 -left-10 w-40 h-40 rounded-full bg-sky-500/10 blur-[80px] pointer-events-none" />
         
-        <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-sky-500/10 border border-sky-500/20 text-xs font-bold text-sky-400 mb-4 tracking-wide uppercase">
-          <Sparkles className="h-3 w-3 animate-pulse text-sky-400" />
+        <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-sky-500/10 border border-sky-500/20 text-xs font-bold text-sky-600 dark:text-sky-400 mb-4 tracking-wide uppercase">
+          <Sparkles className="h-3 w-3 animate-pulse text-sky-500" />
           {t("badge")}
         </span>
         
-        <h1 className="text-3xl md:text-5xl font-black font-display tracking-tight text-white leading-tight">
+        <h1 className="text-3xl md:text-5xl font-black font-display tracking-tight text-foreground leading-tight">
           {t("title")}
         </h1>
         <p className="mt-4 text-xs md:text-sm text-muted-foreground max-w-2xl mx-auto leading-relaxed">
@@ -248,13 +248,13 @@ export default function ImpactClient() {
       </div>
 
       {/* Tab Switchers */}
-      <div className="grid grid-cols-2 gap-2 bg-[#040814]/40 border border-white/5 p-1 rounded-2xl max-w-md mx-auto w-full">
+      <div className="grid grid-cols-2 gap-2 bg-muted/50 border border-border p-1 rounded-2xl max-w-md mx-auto w-full">
         <button
           onClick={() => setActiveTab("social")}
           className={`py-3 px-4 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-2 ${
             activeTab === "social"
-              ? "bg-sky-500/15 border border-sky-500/30 text-sky-400 shadow-lg"
-              : "text-muted-foreground hover:text-white"
+              ? "bg-card border border-border text-primary shadow-sm"
+              : "text-muted-foreground hover:text-foreground"
           }`}
         >
           <Users className="h-4 w-4" />
@@ -264,8 +264,8 @@ export default function ImpactClient() {
           onClick={() => setActiveTab("investor")}
           className={`py-3 px-4 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-2 ${
             activeTab === "investor"
-              ? "bg-sky-500/15 border border-sky-500/30 text-sky-400 shadow-lg"
-              : "text-muted-foreground hover:text-white"
+              ? "bg-card border border-border text-primary shadow-sm"
+              : "text-muted-foreground hover:text-foreground"
           }`}
         >
           <LineChart className="h-4 w-4" />
@@ -288,17 +288,17 @@ export default function ImpactClient() {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               
               {/* Active Farmers Metric */}
-              <GlassCard className="relative overflow-hidden bg-gradient-to-br from-emerald-500/5 to-transparent border-emerald-500/10">
+              <GlassCard className="relative overflow-hidden bg-card border border-border shadow-xs">
                 <CardHeader>
                   <CardTitle className="text-xs text-muted-foreground font-bold flex items-center gap-2 uppercase tracking-wider">
-                    <Users className="h-4 w-4 text-emerald-400" />
+                    <Users className="h-4 w-4 text-emerald-600 dark:text-emerald-400" />
                     {t("farmers_title")}
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-3">
-                  <div className="text-3xl md:text-5xl font-black text-white tracking-tight flex items-baseline gap-2">
+                  <div className="text-3xl md:text-5xl font-black text-foreground tracking-tight flex items-baseline gap-2">
                     {animatedStats.farmers.toLocaleString()}+
-                    <span className="text-xs font-extrabold text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 px-2 py-0.5 rounded-md">
+                    <span className="text-xs font-extrabold text-emerald-600 dark:text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 px-2 py-0.5 rounded-md">
                       +14% MoM
                     </span>
                   </div>
@@ -309,15 +309,15 @@ export default function ImpactClient() {
               </GlassCard>
 
               {/* Crop Predictions Metric */}
-              <GlassCard className="relative overflow-hidden bg-gradient-to-br from-sky-500/5 to-transparent border-sky-500/10">
+              <GlassCard className="relative overflow-hidden bg-card border border-border shadow-xs">
                 <CardHeader>
                   <CardTitle className="text-xs text-muted-foreground font-bold flex items-center gap-2 uppercase tracking-wider">
-                    <Sprout className="h-4 w-4 text-sky-400" />
+                    <Sprout className="h-4 w-4 text-sky-600 dark:text-sky-400" />
                     {t("predictions_title")}
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-3">
-                  <div className="text-3xl md:text-5xl font-black text-white tracking-tight">
+                  <div className="text-3xl md:text-5xl font-black text-foreground tracking-tight">
                     {animatedStats.predictions.toLocaleString()}+
                   </div>
                   <p className="text-xs text-muted-foreground leading-relaxed">
@@ -327,15 +327,15 @@ export default function ImpactClient() {
               </GlassCard>
 
               {/* Scans Metric */}
-              <GlassCard className="relative overflow-hidden bg-gradient-to-br from-amber-500/5 to-transparent border-amber-500/10">
+              <GlassCard className="relative overflow-hidden bg-card border border-border shadow-xs">
                 <CardHeader>
                   <CardTitle className="text-xs text-muted-foreground font-bold flex items-center gap-2 uppercase tracking-wider">
-                    <Activity className="h-4 w-4 text-amber-400" />
+                    <Activity className="h-4 w-4 text-amber-600 dark:text-amber-400" />
                     {t("scans_title")}
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-3">
-                  <div className="text-3xl md:text-5xl font-black text-white tracking-tight">
+                  <div className="text-3xl md:text-5xl font-black text-foreground tracking-tight">
                     {animatedStats.scans.toLocaleString()}+
                   </div>
                   <p className="text-xs text-muted-foreground leading-relaxed">
@@ -345,17 +345,17 @@ export default function ImpactClient() {
               </GlassCard>
 
               {/* Savings Metric */}
-              <GlassCard className="relative overflow-hidden bg-gradient-to-br from-indigo-500/5 to-transparent border-indigo-500/10">
+              <GlassCard className="relative overflow-hidden bg-card border border-border shadow-xs">
                 <CardHeader>
                   <CardTitle className="text-xs text-muted-foreground font-bold flex items-center gap-2 uppercase tracking-wider">
-                    <ShieldCheck className="h-4 w-4 text-indigo-400" />
+                    <ShieldCheck className="h-4 w-4 text-indigo-600 dark:text-indigo-400" />
                     {t("savings_title")}
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-3">
-                  <div className="text-3xl md:text-5xl font-black text-white tracking-tight flex items-baseline gap-2">
+                  <div className="text-3xl md:text-5xl font-black text-foreground tracking-tight flex items-baseline gap-2">
                     {animatedStats.savings}%
-                    <span className="text-xs font-bold text-sky-400 bg-sky-500/10 px-2 py-0.5 rounded-md">
+                    <span className="text-xs font-bold text-sky-600 dark:text-sky-400 bg-sky-500/10 px-2 py-0.5 rounded-md">
                       Avg. Savings
                     </span>
                   </div>
@@ -434,11 +434,11 @@ export default function ImpactClient() {
       </AnimatePresence>
 
       {/* ============ Technology Roadmap (Global Section) ============ */}
-      <div className="mt-6 border-t border-white/[0.08] pt-10 space-y-8 select-none">
+      <div className="mt-6 border-t border-border pt-10 space-y-8 select-none">
         
         <div className="text-center space-y-2">
-          <h2 className="text-2xl md:text-3xl font-display font-extrabold text-white flex items-center justify-center gap-2">
-            <BookOpen className="h-6.5 w-6.5 text-sky-400" />
+          <h2 className="text-2xl md:text-3xl font-display font-extrabold text-foreground flex items-center justify-center gap-2">
+            <BookOpen className="h-6.5 w-6.5 text-sky-500" />
             {t("roadmap_title")}
           </h2>
           <p className="text-muted-foreground text-xs md:text-sm leading-relaxed max-w-xl mx-auto">
@@ -447,16 +447,16 @@ export default function ImpactClient() {
         </div>
 
         {/* Roadmap Timeline */}
-        <div className="relative border-l border-white/[0.08] ml-4 md:ml-8 pl-6 md:pl-10 space-y-8 py-2">
+        <div className="relative border-l border-border ml-4 md:ml-8 pl-6 md:pl-10 space-y-8 py-2">
           
           {/* Phase 1 */}
           <div className="relative">
             {/* Timeline Circle */}
-            <div className="absolute -left-[31px] md:-left-[47px] top-1.5 h-4 w-4 rounded-full border border-sky-400 bg-sky-400 shadow-[0_0_8px_rgba(56,189,248,0.5)]" />
+            <div className="absolute -left-[31px] md:-left-[47px] top-1.5 h-4 w-4 rounded-full border border-sky-500 bg-sky-500 shadow-[0_0_8px_rgba(56,189,248,0.5)]" />
             <div className="space-y-1">
               <div className="flex flex-wrap items-center gap-2">
-                <h3 className="text-sm md:text-base font-extrabold text-white">{t("phase1_title")}</h3>
-                <span className="text-[9px] font-black tracking-widest bg-sky-500/10 border border-sky-500/20 text-sky-400 px-1.5 py-0.5 rounded uppercase">
+                <h3 className="text-sm md:text-base font-extrabold text-foreground">{t("phase1_title")}</h3>
+                <span className="text-[9px] font-black tracking-widest bg-sky-500/10 border border-sky-500/20 text-sky-600 dark:text-sky-400 px-1.5 py-0.5 rounded uppercase">
                   {t("phase1_status")}
                 </span>
               </div>
@@ -469,11 +469,11 @@ export default function ImpactClient() {
           {/* Phase 2 */}
           <div className="relative">
             {/* Timeline Circle */}
-            <div className="absolute -left-[31px] md:-left-[47px] top-1.5 h-4 w-4 rounded-full border border-amber-400 bg-[#0c182a] animate-pulse" />
+            <div className="absolute -left-[31px] md:-left-[47px] top-1.5 h-4 w-4 rounded-full border border-amber-500 bg-card animate-pulse" />
             <div className="space-y-1">
               <div className="flex flex-wrap items-center gap-2">
-                <h3 className="text-sm md:text-base font-extrabold text-white">{t("phase2_title")}</h3>
-                <span className="text-[9px] font-black tracking-widest bg-amber-500/10 border border-amber-500/20 text-amber-400 px-1.5 py-0.5 rounded uppercase">
+                <h3 className="text-sm md:text-base font-extrabold text-foreground">{t("phase2_title")}</h3>
+                <span className="text-[9px] font-black tracking-widest bg-amber-500/10 border border-amber-500/20 text-amber-600 dark:text-amber-400 px-1.5 py-0.5 rounded uppercase">
                   {t("phase2_status")}
                 </span>
               </div>
@@ -486,11 +486,11 @@ export default function ImpactClient() {
           {/* Phase 3 */}
           <div className="relative">
             {/* Timeline Circle */}
-            <div className="absolute -left-[31px] md:-left-[47px] top-1.5 h-4 w-4 rounded-full border border-white/20 bg-[#0c182a]" />
+            <div className="absolute -left-[31px] md:-left-[47px] top-1.5 h-4 w-4 rounded-full border border-border bg-card" />
             <div className="space-y-1">
               <div className="flex flex-wrap items-center gap-2">
-                <h3 className="text-sm md:text-base font-extrabold text-white/70">{t("phase3_title")}</h3>
-                <span className="text-[9px] font-black tracking-widest bg-white/5 border border-white/10 text-muted-foreground px-1.5 py-0.5 rounded uppercase">
+                <h3 className="text-sm md:text-base font-extrabold text-foreground/80">{t("phase3_title")}</h3>
+                <span className="text-[9px] font-black tracking-widest bg-muted border border-border text-muted-foreground px-1.5 py-0.5 rounded uppercase">
                   {t("phase3_status")}
                 </span>
               </div>
@@ -503,11 +503,11 @@ export default function ImpactClient() {
           {/* Phase 4 */}
           <div className="relative">
             {/* Timeline Circle */}
-            <div className="absolute -left-[31px] md:-left-[47px] top-1.5 h-4 w-4 rounded-full border border-white/20 bg-[#0c182a]" />
+            <div className="absolute -left-[31px] md:-left-[47px] top-1.5 h-4 w-4 rounded-full border border-border bg-card" />
             <div className="space-y-1">
               <div className="flex flex-wrap items-center gap-2">
-                <h3 className="text-sm md:text-base font-extrabold text-white/70">{t("phase4_title")}</h3>
-                <span className="text-[9px] font-black tracking-widest bg-white/5 border border-white/10 text-muted-foreground px-1.5 py-0.5 rounded uppercase">
+                <h3 className="text-sm md:text-base font-extrabold text-foreground/80">{t("phase4_title")}</h3>
+                <span className="text-[9px] font-black tracking-widest bg-muted border border-border text-muted-foreground px-1.5 py-0.5 rounded uppercase">
                   {t("phase4_status")}
                 </span>
               </div>

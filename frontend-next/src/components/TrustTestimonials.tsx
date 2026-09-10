@@ -46,7 +46,7 @@ const TESTIMONIALS: Testimonial[] = [
     location: { en: "Nashik, Maharashtra", hi: "नासिक, महाराष्ट्र" },
     crop: { en: "Grapes & Vegetables", hi: "अंगूर और सब्जियां" },
     text: {
-      en: "The eNAM guide on the blog helped me understand online quality testing. I registered my produce on eNAM and sold my harvest to a buyer in Delhi directly, getting 15% more than local mandi price.",
+      en: "The mandi tracker made it easier to compare prices before deciding where to sell my harvest.",
       hi: "ब्लॉग पर ई-नाम (eNAM) गाइड ने मुझे ऑनलाइन गुणवत्ता परीक्षण को समझने में मदद की। मैंने अपनी उपज को पंजीकृत किया और दिल्ली के एक खरीदार को सीधे बेचा, जिससे स्थानीय मंडी से 15% अधिक मिला।"
     }
   }

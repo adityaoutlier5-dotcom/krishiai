@@ -104,12 +104,12 @@ export function AskFarmAI({ params }: Props) {
   }
 
   return (
-    <GlassCard className="overflow-hidden border border-white/[0.08] backdrop-blur-md shadow-xl bg-slate-950/20 rounded-3xl">
-      <CardHeader className="border-b border-white/[0.06] bg-slate-950/40 px-6 py-4">
-        <CardTitle className="text-lg font-bold font-display text-white flex items-center gap-2">
-          <MessageSquareText className="h-5 w-5 text-emerald-400" />
+    <GlassCard className="overflow-hidden border border-border backdrop-blur-md shadow-xs bg-card rounded-3xl">
+      <CardHeader className="border-b border-border bg-muted/40 px-6 py-4">
+        <CardTitle className="text-lg font-bold font-display text-foreground flex items-center gap-2">
+          <MessageSquareText className="h-5 w-5 text-emerald-600 dark:text-emerald-400" />
           <span>{t("ask_farm_ai.ask_your_farm_ai")}</span>
-          <span className="ml-auto text-[9px] uppercase tracking-widest text-muted-foreground font-black px-2.5 py-0.5 rounded bg-white/[0.04] border border-white/[0.05]">
+          <span className="ml-auto text-[9px] uppercase tracking-widest text-muted-foreground font-black px-2.5 py-0.5 rounded bg-muted border border-border">
             Crop Suitability AI
           </span>
         </CardTitle>
@@ -121,7 +121,7 @@ export function AskFarmAI({ params }: Props) {
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             placeholder={t("ask_farm_ai.ask_about_your_farm")}
-            className="flex-1 h-12 bg-slate-950/40 border-white/[0.08] focus:border-emerald-500/40 focus:ring-emerald-500/10 rounded-xl px-4 text-sm"
+            className="flex-1 h-12 bg-background border-border focus:border-primary focus:ring-primary/20 rounded-xl px-4 text-sm text-foreground"
             disabled={loading}
           />
           <Button
@@ -151,7 +151,7 @@ export function AskFarmAI({ params }: Props) {
                 key={ex}
                 type="button"
                 onClick={() => setQuery(ex)}
-                className="rounded-full border border-white/[0.06] bg-white/[0.02] hover:bg-white/[0.06] px-3.5 py-1.5 text-xs text-muted-foreground hover:text-white hover:border-emerald-500/20 transition-all font-medium"
+                className="rounded-full border border-border bg-muted/40 hover:bg-muted px-3.5 py-1.5 text-xs text-muted-foreground hover:text-foreground hover:border-primary/40 transition-all font-medium"
               >
                 {ex}
               </button>
@@ -187,7 +187,7 @@ function ResultCard({ result }: { result: CropCheckResponse }) {
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: -8 }}
       transition={{ duration: 0.4, ease: "easeOut" }}
-      className="space-y-6 pt-2 border-t border-white/[0.04]"
+      className="space-y-6 pt-2 border-t border-border"
     >
       {/* Verdict header */}
       <div className={`rounded-2xl border p-5 ${tone.headerCls} flex items-start gap-4 shadow-sm backdrop-blur-sm relative overflow-hidden`}>
@@ -196,7 +196,7 @@ function ResultCard({ result }: { result: CropCheckResponse }) {
         </div>
         <div className="flex-1 min-w-0">
           <div className="flex flex-wrap items-center gap-2">
-            <h3 className="text-lg font-extrabold text-white capitalize font-display">
+            <h3 className="text-lg font-extrabold text-foreground capitalize font-display">
               {result.crop || "Best Crops Recommendation"}
             </h3>
             <span className={`rounded-full px-2.5 py-0.5 text-[10px] font-black uppercase tracking-tight ${tone.badgeCls}`}>
@@ -212,7 +212,7 @@ function ResultCard({ result }: { result: CropCheckResponse }) {
         {/* Reasons */}
         {result.reason?.length > 0 && (
           <Section
-            icon={<CheckCircle2 className="h-4.5 w-4.5 text-emerald-400" />}
+            icon={<CheckCircle2 className="h-4.5 w-4.5 text-emerald-600 dark:text-emerald-400" />}
             title={t("ask_farm_ai.analysis_verdict_basis")}
             items={result.reason}
           />
@@ -221,7 +221,7 @@ function ResultCard({ result }: { result: CropCheckResponse }) {
         {/* Suggestions */}
         {result.suggestions?.length > 0 && (
           <Section
-            icon={<Lightbulb className="h-4.5 w-4.5 text-amber-400" />}
+            icon={<Lightbulb className="h-4.5 w-4.5 text-amber-600 dark:text-amber-400" />}
             title={t("ask_farm_ai.agronomist_suggestions")}
             items={result.suggestions}
           />
@@ -231,15 +231,15 @@ function ResultCard({ result }: { result: CropCheckResponse }) {
       {/* Alternatives */}
       {result.alternatives?.length > 0 && (
         <div className="pt-2">
-          <div className="mb-3 flex items-center gap-2 text-xs uppercase tracking-wider font-extrabold text-muted-foreground/80">
-            <Repeat className="h-4 w-4 text-teal-400" />
+          <div className="mb-3 flex items-center gap-2 text-xs uppercase tracking-wider font-extrabold text-muted-foreground">
+            <Repeat className="h-4 w-4 text-teal-600 dark:text-teal-400" />
             <span>{t("ask_farm_ai.alternative_crop_matches")}</span>
           </div>
           <div className="flex flex-wrap gap-2.5">
             {result.alternatives.map((alt) => (
               <span
                 key={alt}
-                className="rounded-xl border border-white/[0.08] bg-white/[0.02] hover:bg-white/[0.04] px-3.5 py-2 text-xs font-bold capitalize text-white hover:border-teal-500/20 transition-all cursor-default"
+                className="rounded-xl border border-border bg-card hover:bg-muted/50 px-3.5 py-2 text-xs font-bold capitalize text-foreground hover:border-primary/40 transition-all cursor-default"
               >
                 {alt}
               </span>
@@ -261,15 +261,15 @@ function Section({
   items: string[]
 }) {
   return (
-    <div className="p-4 rounded-2xl bg-white/[0.02] border border-white/[0.04] space-y-3">
-      <div className="flex items-center gap-2 text-xs uppercase tracking-wider font-black text-white/90">
+    <div className="p-4 rounded-2xl bg-card border border-border space-y-3">
+      <div className="flex items-center gap-2 text-xs uppercase tracking-wider font-black text-foreground">
         {icon}
         <span>{title}</span>
       </div>
-      <ul className="space-y-2 text-xs text-muted-foreground/90 font-medium">
+      <ul className="space-y-2 text-xs text-muted-foreground font-medium">
         {items.map((it, i) => (
           <li key={i} className="flex gap-2.5 items-start leading-relaxed">
-            <ChevronRight className="h-3.5 w-3.5 mt-0.5 shrink-0 text-emerald-400/80" />
+            <ChevronRight className="h-3.5 w-3.5 mt-0.5 shrink-0 text-emerald-600 dark:text-emerald-400" />
             <span>{it}</span>
           </li>
         ))}
@@ -293,7 +293,7 @@ function ConfidenceBar({
         <span className="font-semibold text-muted-foreground text-[10px] uppercase tracking-wider">{t("ask_farm_ai.suitability_score")}</span>
         <span className={`font-extrabold ${tone.confTextCls}`}>{pct}%</span>
       </div>
-      <div className="h-2 w-full overflow-hidden rounded-full bg-slate-900 border border-white/[0.04]">
+      <div className="h-2 w-full overflow-hidden rounded-full bg-muted border border-border">
         <motion.div
           initial={{ width: 0 }}
           animate={{ width: `${pct}%` }}

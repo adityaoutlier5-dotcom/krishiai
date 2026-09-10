@@ -1,6 +1,7 @@
 import time
 import httpx
 import hashlib
+import hmac
 import logging
 from datetime import datetime, timedelta
 from typing import Optional, List
@@ -21,14 +22,15 @@ from user_agents import parse as parse_ua
 from sms_provider import get_sms_provider
 
 from db.session import get_db
-from db.models import User, UserOTP, UserSession, UserSecurityState, SystemJob
+from db.models import User, UserOTP, UserSession, UserSecurityState, OtpRegistrationGrant, SystemJob
 from services.auth_service import (
     hash_password,
     verify_password,
     create_access_token,
     decode_access_token,
 )
-from core.config import settings
+from core.config import settings, is_configured_admin
+from services.audit import record_activity
 
 log = logging.getLogger("krishiai.auth")
 
@@ -44,6 +46,20 @@ def _rate_limit(spec: str):
             return fn
         return limiter.limit(spec)(fn)
     return wrap
+
+
+def validate_request_origin(request: Request) -> None:
+    """Reject cross-site cookie mutations while allowing non-browser clients."""
+    origin = request.headers.get("origin")
+    if not origin:
+        return
+    if origin in settings.ALLOWED_ORIGINS:
+        return
+    if settings.ALLOWED_ORIGIN_REGEX:
+        import re
+        if re.fullmatch(settings.ALLOWED_ORIGIN_REGEX, origin):
+            return
+    raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Untrusted request origin.")
 
 router = APIRouter()
 
@@ -65,7 +81,7 @@ class VerifyOtpRequest(BaseModel):
 class UserRegister(BaseModel):
     name: Optional[str] = Field(None, max_length=100)
     email: EmailStr
-    password: str = Field(..., min_length=4)
+    password: str = Field(..., min_length=8, max_length=128)
     phone_number: Optional[str] = Field(None, max_length=50)
 
 class UserLogin(BaseModel):
@@ -80,7 +96,7 @@ class ForgotPasswordRequest(BaseModel):
 
 class ResetPasswordRequest(BaseModel):
     token: str
-    new_password: str = Field(..., min_length=4)
+    new_password: str = Field(..., min_length=8, max_length=128)
 
 class UserResponse(BaseModel):
     id: int
@@ -97,14 +113,12 @@ class UserResponse(BaseModel):
 
 class LoginResponse(BaseModel):
     ok: bool = True
-    token: str
     user: UserResponse
 
 class VerifyOtpResponse(BaseModel):
     registered: bool
     registration_token: Optional[str] = None
     user: Optional[UserResponse] = None
-    token: Optional[str] = None
 
 def parse_device_metadata(user_agent_str: Optional[str]):
     if not user_agent_str:
@@ -161,7 +175,7 @@ def run_expired_sessions_cleanup(db: Session):
 
 
 def login_user_with_session(response: Response, request: Request, db: Session, user: User) -> str:
-    """Creates a database session and returns a signed access token. Sets both HTTP-only cookies."""
+    """Creates a database session and sets short-lived access/refresh cookies."""
     user.last_login_at = datetime.utcnow()
     db.commit()
 
@@ -223,6 +237,7 @@ def login_user_with_session(response: Response, request: Request, db: Session, u
         secure=secure_cookie,
         samesite=samesite_val,
         max_age=15 * 60,  # 15 minutes
+        path="/",
     )
     response.set_cookie(
         key=REFRESH_COOKIE_NAME,
@@ -231,6 +246,7 @@ def login_user_with_session(response: Response, request: Request, db: Session, u
         secure=secure_cookie,
         samesite=samesite_val,
         max_age=settings.SESSION_DAYS * 24 * 60 * 60,  # 30 days
+        path="/",
     )
 
     return access_token
@@ -317,6 +333,22 @@ async def get_current_user(
             db.rollback()
 
     return user
+
+
+def require_admin(current_user: User = Depends(get_current_user)) -> User:
+    """Server-side authorization dependency for every owner-only endpoint."""
+    if (current_user.role or "").casefold() != "admin":
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Administrator access is required.",
+        )
+
+    # The initial owner account can be designated only through server-side
+    # configuration. Once promoted, the database role remains the authority.
+    if is_configured_admin(user.email) and (user.role or "").casefold() != "admin":
+        user.role = "Admin"
+        db.commit()
+    return current_user
 
 
 # ===========================================================================
@@ -414,8 +446,9 @@ def send_otp(request: Request, data: SendOtpRequest, db: Session = Depends(get_d
     if settings.ENABLE_SECURITY_LOCKS and sec_state.locked_until and now < sec_state.locked_until:
         lock_left = int((sec_state.locked_until - now).total_seconds())
         raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail=f"Account is temporarily locked. Try again in {lock_left} seconds."
+            status_code=status.HTTP_429_TOO_MANY_REQUESTS,
+            detail=f"Too many requests. Try again in {lock_left} seconds.",
+            headers={"Retry-After": str(max(lock_left, 1))},
         )
 
     # Rate window check (3 requests per 10 minutes)
@@ -428,11 +461,12 @@ def send_otp(request: Request, data: SendOtpRequest, db: Session = Depends(get_d
         sec_state.request_count = 0
         db.commit()
         raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Too many OTP requests. Account locked for 15 minutes."
+            status_code=status.HTTP_429_TOO_MANY_REQUESTS,
+            detail="Too many verification-code requests. Please try again later.",
+            headers={"Retry-After": str(15 * 60)},
         )
 
-    # Cost optimization: Check if unexpired OTP exists and resend timer (30 seconds) is active
+    # Enforce resend cooldown before replacing an existing code.
     existing_otp = db.query(UserOTP).filter(
         UserOTP.phone_number == clean_phone,
         UserOTP.expires_at > now,
@@ -444,16 +478,19 @@ def send_otp(request: Request, data: SendOtpRequest, db: Session = Depends(get_d
         if elapsed < settings.OTP_RESEND_SECONDS:
             resend_left = int(settings.OTP_RESEND_SECONDS - elapsed)
             raise HTTPException(
-                status_code=status.HTTP_400_BAD_REQUEST,
-                detail=f"An OTP was already sent. Resend available in {resend_left} seconds."
+                status_code=status.HTTP_429_TOO_MANY_REQUESTS,
+                detail=f"An OTP was already sent. Resend available in {resend_left} seconds.",
+                headers={"Retry-After": str(max(resend_left, 1))},
             )
 
-    # Generate new OTP
+    # Generate the authoritative six-digit code on the server.  It is never
+    # included in an API response and only its digest is persisted.
     otp_code = "".join(secrets.choice("0123456789") for _ in range(6))
     hashed_otp = hashlib.sha256(otp_code.encode()).hexdigest()
     expires_at = now + timedelta(minutes=settings.OTP_EXPIRY_MINUTES)
 
     db.query(UserOTP).filter(UserOTP.phone_number == clean_phone).delete()
+    db.query(OtpRegistrationGrant).filter(OtpRegistrationGrant.phone_number == clean_phone).delete()
 
     new_otp = UserOTP(
         phone_number=clean_phone,
@@ -464,10 +501,9 @@ def send_otp(request: Request, data: SendOtpRequest, db: Session = Depends(get_d
     )
     db.add(new_otp)
 
-    # Update security state
+    # Update the request state in the same transaction as the pending OTP.
     sec_state.request_count += 1
     sec_state.last_request_at = now
-    db.commit()
 
     # Send OTP using SMS provider abstraction
     try:
@@ -475,9 +511,14 @@ def send_otp(request: Request, data: SendOtpRequest, db: Session = Depends(get_d
         sent_success = provider.send_otp(clean_phone, otp_code)
         if not sent_success:
             raise Exception("Provider returned False during SMS dispatch")
+        record_activity(db, "auth.otp_requested", details={}, request=request)
+        db.commit()
     except HTTPException:
+        db.rollback()
         raise
     except Exception as e:
+        # Do not leave a usable OTP or a cooldown behind when delivery failed.
+        db.rollback()
         log.error("SMS dispatch failure: %s", str(e), exc_info=True)
         err_msg = str(e).lower()
         if any(kw in err_msg for kw in ["invalid", "unreachable", "exist", "reject", "number", "phone"]):
@@ -491,10 +532,11 @@ def send_otp(request: Request, data: SendOtpRequest, db: Session = Depends(get_d
                 detail="OTP service is temporarily unavailable. Please try again after a few minutes."
             )
 
-    response_data = {"ok": True, "message": "OTP generated and sent successfully."}
-    if settings.DEBUG or settings.OTP_PROVIDER == "console":
-        response_data["otp"] = otp_code
-    return response_data
+    return {
+        "ok": True,
+        "message": "Verification code sent successfully.",
+        "resend_after": settings.OTP_RESEND_SECONDS,
+    }
 
 
 @router.post("/verify-otp", response_model=VerifyOtpResponse)
@@ -528,6 +570,20 @@ def verify_otp(
                 detail="Name cannot be empty.",
             )
 
+        # A signed token alone is insufficient: it must also match the one-time
+        # server record created immediately after a successful OTP verification.
+        grant = db.query(OtpRegistrationGrant).filter(
+            OtpRegistrationGrant.phone_number == phone_number,
+            OtpRegistrationGrant.used_at.is_(None),
+            OtpRegistrationGrant.expires_at > datetime.utcnow(),
+        ).with_for_update().first()
+        token_hash = hashlib.sha256(data.registration_token.encode()).hexdigest()
+        if not grant or not hmac.compare_digest(grant.token_hash, token_hash):
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="This registration step has expired. Please verify your number again.",
+            )
+
         user = db.query(User).filter(User.phone_number == phone_number).first()
         if not user:
             user = User(
@@ -539,12 +595,13 @@ def verify_otp(
                 is_active=True
             )
             db.add(user)
-            db.commit()
-            db.refresh(user)
-            log.info("New user registered via OTP: %d (%s)", user.id, phone_number)
+        grant.used_at = datetime.utcnow()
+        db.commit()
+        db.refresh(user)
+        log.info("New user registered via OTP: %d", user.id)
 
-        token = login_user_with_session(response, request, db, user)
-        return VerifyOtpResponse(registered=True, user=user, token=token)
+        login_user_with_session(response, request, db, user)
+        return VerifyOtpResponse(registered=True, user=user)
 
     if not data.phone_number or not data.otp:
         raise HTTPException(
@@ -576,21 +633,20 @@ def verify_otp(
     if settings.ENABLE_SECURITY_LOCKS and sec_state.locked_until and now < sec_state.locked_until:
         lock_left = int((sec_state.locked_until - now).total_seconds())
         raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail=f"Account is temporarily locked. Try again in {lock_left} seconds."
+            status_code=status.HTTP_429_TOO_MANY_REQUESTS,
+            detail=f"Too many attempts. Try again in {lock_left} seconds.",
+            headers={"Retry-After": str(max(lock_left, 1))},
         )
 
-    is_bypass = (settings.DEBUG or settings.OTP_PROVIDER == "console") and data.otp == "123456"
-
     otp_record = db.query(UserOTP).filter(UserOTP.phone_number == clean_phone).first()
-    if not otp_record and not is_bypass:
+    if not otp_record:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="No OTP requested for this phone number.",
         )
 
     if otp_record:
-        if otp_record.is_verified and not is_bypass:
+        if otp_record.is_verified:
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
                 detail="This OTP has already been verified.",
@@ -604,29 +660,52 @@ def verify_otp(
                 detail="OTP has expired. Please request a new one.",
             )
 
-        input_hashed = hashlib.sha256(data.otp.strip().encode()).hexdigest()
-        if input_hashed != otp_record.hashed_otp and not is_bypass:
-            # Increment failed attempts
+        clean_otp = data.otp.strip()
+        if len(clean_otp) != 6 or not clean_otp.isdigit():
+            raise HTTPException(status_code=400, detail="Enter the six-digit verification code.")
+
+        input_hashed = hashlib.sha256(clean_otp.encode()).hexdigest()
+        if not hmac.compare_digest(input_hashed, otp_record.hashed_otp):
+            # Track failures against this OTP and invalidate it at the limit.
+            otp_record.attempts += 1
             sec_state.failed_attempts += 1
-            if settings.ENABLE_SECURITY_LOCKS and sec_state.failed_attempts >= 5:
-                sec_state.locked_until = now + timedelta(minutes=15)
+            if otp_record.attempts >= settings.MAX_OTP_ATTEMPTS:
+                db.delete(otp_record)
+                db.query(OtpRegistrationGrant).filter(OtpRegistrationGrant.phone_number == clean_phone).delete()
+                if settings.ENABLE_SECURITY_LOCKS:
+                    sec_state.locked_until = now + timedelta(minutes=15)
                 sec_state.failed_attempts = 0
+                record_activity(db, "auth.otp_failed", details={"reason": "attempt_limit"}, request=request)
                 db.commit()
                 raise HTTPException(
-                    status_code=status.HTTP_400_BAD_REQUEST,
-                    detail="Too many incorrect attempts. Account locked for 15 minutes."
+                    status_code=status.HTTP_429_TOO_MANY_REQUESTS,
+                    detail="Too many incorrect attempts. Please request a new code.",
+                    headers={"Retry-After": str(15 * 60)},
                 )
+            if settings.ENABLE_SECURITY_LOCKS and sec_state.failed_attempts >= settings.MAX_OTP_ATTEMPTS:
+                sec_state.locked_until = now + timedelta(minutes=15)
+                sec_state.failed_attempts = 0
+                record_activity(db, "auth.otp_failed", details={"reason": "attempt_limit"}, request=request)
+                db.commit()
+                raise HTTPException(
+                    status_code=status.HTTP_429_TOO_MANY_REQUESTS,
+                    detail="Too many incorrect attempts. Please request a new code.",
+                    headers={"Retry-After": str(15 * 60)},
+                )
+            record_activity(db, "auth.otp_failed", details={"reason": "incorrect"}, request=request)
             db.commit()
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
                 detail="Incorrect OTP. Please try again.",
             )
 
+        # Deletion makes the code unrecoverable and prevents replay.
         db.delete(otp_record)
 
     # Success! Reset failed attempts
     sec_state.failed_attempts = 0
     sec_state.locked_until = None
+    record_activity(db, "auth.otp_verified", details={}, request=request)
     db.commit()
 
     user = db.query(User).filter(User.phone_number == clean_phone).first()
@@ -636,13 +715,20 @@ def verify_otp(
                 status_code=status.HTTP_401_UNAUTHORIZED,
                 detail="Account is inactive.",
             )
-        token = login_user_with_session(response, request, db, user)
-        return VerifyOtpResponse(registered=True, user=user, token=token)
+        login_user_with_session(response, request, db, user)
+        return VerifyOtpResponse(registered=True, user=user)
     else:
         registration_token = create_access_token(
-            data={"sub": clean_phone, "action": "register"},
+            data={"sub": clean_phone, "action": "register", "jti": secrets.token_urlsafe(24)},
             expires_delta=timedelta(minutes=5)
         )
+        db.query(OtpRegistrationGrant).filter(OtpRegistrationGrant.phone_number == clean_phone).delete()
+        db.add(OtpRegistrationGrant(
+            phone_number=clean_phone,
+            token_hash=hashlib.sha256(registration_token.encode()).hexdigest(),
+            expires_at=now + timedelta(minutes=5),
+        ))
+        db.commit()
         return VerifyOtpResponse(registered=False, registration_token=registration_token)
 
 
@@ -665,16 +751,19 @@ def login(request: Request, data: UserLogin, response: Response, db: Session = D
             detail="This account has been deactivated.",
         )
 
-    token = login_user_with_session(response, request, db, user)
-    return LoginResponse(token=token, user=user)
+    login_user_with_session(response, request, db, user)
+    return LoginResponse(user=user)
 
 
 @router.post("/google", response_model=LoginResponse)
 @_rate_limit("10/minute")
 async def google_login(request: Request, data: GoogleLoginRequest, response: Response, db: Session = Depends(get_db)):
     """Verifies Google Sign-In credentials, creates or logs in user, and sets secure session cookies."""
+    if not settings.GOOGLE_CLIENT_ID:
+        log.error("Google login attempted without GOOGLE_CLIENT_ID configured")
+        raise HTTPException(status_code=503, detail="Google sign-in is not configured.")
     tokeninfo_url = f"https://oauth2.googleapis.com/tokeninfo?id_token={data.credential}"
-    async with httpx.AsyncClient() as client:
+    async with httpx.AsyncClient(timeout=settings.API_TIMEOUT) as client:
         res = await client.get(tokeninfo_url)
         if not res.is_success:
             raise HTTPException(
@@ -683,10 +772,18 @@ async def google_login(request: Request, data: GoogleLoginRequest, response: Res
             )
         info = res.json()
 
-    if "sub" not in info or "email" not in info:
+    valid_issuers = {"https://accounts.google.com", "accounts.google.com"}
+    email_verified = str(info.get("email_verified", "")).lower() == "true"
+    if (
+        "sub" not in info
+        or "email" not in info
+        or info.get("aud") != settings.GOOGLE_CLIENT_ID
+        or info.get("iss") not in valid_issuers
+        or not email_verified
+    ):
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Google token validation failed: incomplete payload.",
+            detail="Google token validation failed.",
         )
 
     google_id = info["sub"]
@@ -733,13 +830,14 @@ async def google_login(request: Request, data: GoogleLoginRequest, response: Res
             detail="This account has been deactivated.",
         )
 
-    token = login_user_with_session(response, request, db, user)
-    return LoginResponse(token=token, user=user)
+    login_user_with_session(response, request, db, user)
+    return LoginResponse(user=user)
 
 
 @router.post("/refresh-session")
 def refresh_session(request: Request, response: Response, db: Session = Depends(get_db)):
     """Validates refresh cookie and returns a new access token, updating cookies."""
+    validate_request_origin(request)
     refresh_token = request.cookies.get(REFRESH_COOKIE_NAME)
     if not refresh_token:
         raise HTTPException(
@@ -825,14 +923,16 @@ def refresh_session(request: Request, response: Response, db: Session = Depends(
         secure=secure_cookie,
         samesite=samesite_val,
         max_age=15 * 60,
+        path="/",
     )
 
-    return {"ok": True, "token": new_access_token}
+    return {"ok": True}
 
 
 @router.post("/logout")
 def logout(request: Request, response: Response, db: Session = Depends(get_db)):
     """Clears session cookies and revokes session in the database."""
+    validate_request_origin(request)
     refresh_token = request.cookies.get(REFRESH_COOKIE_NAME)
     if refresh_token:
         hashed_token = hashlib.sha256(refresh_token.encode()).hexdigest()
@@ -848,11 +948,13 @@ def logout(request: Request, response: Response, db: Session = Depends(get_db)):
         key=COOKIE_NAME,
         secure=secure_cookie,
         samesite=samesite_val,
+        path="/",
     )
     response.delete_cookie(
         key=REFRESH_COOKIE_NAME,
         secure=secure_cookie,
         samesite=samesite_val,
+        path="/",
     )
     return {"ok": True, "message": "Logged out successfully"}
 
@@ -862,109 +964,22 @@ def get_me(user: User = Depends(get_current_user)):
     """Returns the currently logged-in user profile information."""
     return user
 
-@router.get("/admin/analytics")
-def get_admin_analytics(db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
-    """Tracks admin authentication and device analytics."""
-    if current_user.role != "Admin":
-        raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN,
-            detail="Access denied. Admin role required."
-        )
-
-    now = datetime.utcnow()
-    today_start = datetime.utcnow().replace(hour=0, minute=0, second=0, microsecond=0)
-
-    # 1. Active sessions
-    active_sessions_count = db.query(UserSession).filter(
-        UserSession.is_revoked == False,
-        UserSession.expires_at > now
-    ).count()
-
-    # 2. Locked accounts
-    locked_accounts_count = db.query(UserSecurityState).filter(
-        UserSecurityState.locked_until > now
-    ).count()
-
-    # 3. Successful logins (e.g. users logged in today)
-    successful_logins_today = db.query(User).filter(
-        User.last_login_at >= today_start
-    ).count()
-
-    # 4. Failed logins (current failed attempts in security state)
-    failed_attempts_sum = db.query(func.sum(UserSecurityState.failed_attempts)).scalar() or 0
-
-    # 5. Daily OTPs sent
-    daily_otps_count = db.query(UserSecurityState).filter(
-        UserSecurityState.last_request_at >= today_start
-    ).count()
-
-    # 6. Estimated SMS usage
-    estimated_sms_cost = round(daily_otps_count * 0.12, 2)
-
-    # 7. Top states
-    users_with_loc = db.query(User).filter(User.lat.isnot(None), User.lon.isnot(None)).all()
-    states_dict = {}
-    for u in users_with_loc:
-        if u.lat > 28:
-            state = "Punjab"
-        elif u.lat > 24:
-            state = "Uttar Pradesh"
-        elif u.lat > 18:
-            state = "Maharashtra"
-        else:
-            state = "Karnataka"
-        states_dict[state] = states_dict.get(state, 0) + 1
-    
-    if not states_dict:
-        states_dict = {"Punjab": 12, "Maharashtra": 8, "Uttar Pradesh": 5, "Karnataka": 3}
-    
-    top_states = [{"state": k, "count": v} for k, v in sorted(states_dict.items(), key=lambda x: x[1], reverse=True)]
-
-    # 8. Top languages
-    lang_query = db.query(User.language, func.count(User.id)).group_by(User.language).all()
-    top_languages = [{"language": lang or "en", "count": count} for lang, count in lang_query]
-
-    return {
-        "daily_otps_sent": daily_otps_count,
-        "successful_logins": successful_logins_today,
-        "failed_logins": failed_attempts_sum,
-        "locked_accounts": locked_accounts_count,
-        "active_sessions": active_sessions_count,
-        "top_states": top_states,
-        "top_languages": top_languages,
-        "estimated_sms_usage": {
-            "sms_sent": daily_otps_count,
-            "estimated_cost_inr": estimated_sms_cost
-        }
-    }
-
 @router.post("/forgot-password")
 @_rate_limit("5/minute")
 def forgot_password(request: Request, data: ForgotPasswordRequest, db: Session = Depends(get_db)):
-    """Generates a secure password reset link and prints it to backend logs."""
+    """Avoid user enumeration without leaking reset tokens to application logs."""
     clean_email = data.email.strip().lower()
     user = db.query(User).filter(User.email == clean_email).first()
     
     if not user or user.provider != "email":
         # Security best-practice: return generic success message to prevent user enumeration
-        return {"ok": True, "message": "If an email exists, a reset link has been logged."}
+        return {"ok": True, "delivery_available": False}
 
-    # Access token valid for 15 minutes
-    reset_token = create_access_token(
-        data={"sub": str(user.id), "action": "reset_password"},
-        expires_delta=timedelta(minutes=15),
-    )
-    
-    reset_link = f"http://localhost:3000/reset-password?token={reset_token}"
-    log.info("==========================================")
-    log.info(" PASSWORD RESET LINK GENERATED FOR %s:", clean_email.upper())
-    log.info(" %s", reset_link)
-    log.info("==========================================")
-    
-    # For user convenience, print to stderr/stdout so it shows in terminal clearly
-    print(f"\n[RESET LINK]: {reset_link}\n", flush=True)
-
-    return {"ok": True, "message": "If an email exists, a reset link has been logged."}
+    # An email delivery provider is not configured in this project. Issuing a
+    # token that cannot be delivered would create a fake success path, and
+    # logging it would expose an account-recovery credential.
+    log.warning("Password-reset delivery is not configured")
+    return {"ok": True, "delivery_available": False}
 
 @router.post("/reset-password")
 @_rate_limit("5/minute")

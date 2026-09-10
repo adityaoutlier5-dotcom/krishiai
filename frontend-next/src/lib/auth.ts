@@ -2,9 +2,8 @@
 
 import { useEffect, useState } from "react";
 
-const SESSION_KEY = "kisaanbuddy_user";
-const TOKEN_KEY = "kisaanbuddy_token";
 const EVENT_NAME = "kisaanbuddy-auth-change";
+let sessionUser: AuthUser | null = null;
 
 export type AuthUser = {
   id: number;
@@ -24,35 +23,17 @@ export type LoginResult =
   | { ok: true; name?: string; user: AuthUser }
   | { ok: false; error: string };
 
-// Helper to get request headers (includes Bearer token if present)
+// Authentication is cookie-only. Never persist bearer tokens in web storage.
 export function getAuthHeaders(): Record<string, string> {
-  const headers: Record<string, string> = {
+  return {
     "Content-Type": "application/json",
   };
-
-  if (typeof window !== "undefined") {
-    let token = window.localStorage.getItem(TOKEN_KEY);
-
-    if (!token) {
-      const oldToken = window.localStorage.getItem("krishi_token");
-      if (oldToken) {
-        token = oldToken;
-        window.localStorage.setItem(TOKEN_KEY, oldToken);
-        window.localStorage.removeItem("krishi_token");
-      }
-    }
-
-    if (token) {
-      headers["Authorization"] = `Bearer ${token}`;
-    }
-  }
-
-  return headers;
 }
 
 export async function fetchWithAuth(url: string, options: RequestInit = {}): Promise<Response> {
+  const isMultipart = typeof FormData !== "undefined" && options.body instanceof FormData;
   const headers = {
-    ...getAuthHeaders(),
+    ...(isMultipart ? {} : getAuthHeaders()),
     ...(options.headers || {}),
   };
   let response = await fetch(url, {
@@ -82,13 +63,13 @@ export async function fetchWithAuth(url: string, options: RequestInit = {}): Pro
         });
         if (meRes.status === 200) {
           const user = await meRes.json();
-          writeSession(user,null);
+          writeSession(user);
         }
       } else {
-        writeSession(null,null);
+        writeSession(null);
       }
-    } catch (e) {
-      console.error("Silent refresh failed:", e);
+    } catch {
+      writeSession(null);
     }
   }
 
@@ -98,45 +79,14 @@ export async function fetchWithAuth(url: string, options: RequestInit = {}): Pro
 // ---------------------- low-level storage helpers ----------------------
 
 function readSession(): AuthUser | null {
-  if (typeof window === "undefined") return null;
-  try {
-    let raw = window.localStorage.getItem(SESSION_KEY);
-    if (!raw) {
-      raw = window.localStorage.getItem("krishi_user");
-      if (raw) {
-        window.localStorage.setItem(SESSION_KEY, raw);
-        window.localStorage.removeItem("krishi_user");
-        const token = window.localStorage.getItem("krishi_token");
-        if (token) {
-          window.localStorage.setItem(TOKEN_KEY, token);
-          window.localStorage.removeItem("krishi_token");
-        }
-      }
-    }
-    if (!raw) return null;
-    return JSON.parse(raw) as AuthUser;
-  } catch {
-    return null;
-  }
+  return sessionUser;
 }
 
-function writeSession(user: AuthUser | null, token: string | null = null) {
-  if (typeof window === "undefined") return;
-
-  initPromise = null;
-
-  if (user) {
-    window.localStorage.setItem(SESSION_KEY, JSON.stringify(user));
-
-    if (token) {
-      window.localStorage.setItem(TOKEN_KEY, token);
-    }
-  } else {
-    window.localStorage.removeItem(SESSION_KEY);
-    window.localStorage.removeItem(TOKEN_KEY);
+function writeSession(user: AuthUser | null) {
+  sessionUser = user;
+  if (typeof window !== "undefined") {
+    window.dispatchEvent(new Event(EVENT_NAME));
   }
-
-  window.dispatchEvent(new Event(EVENT_NAME));
 }
 
 let initPromise: Promise<AuthUser | null> | null = null;
@@ -152,7 +102,7 @@ export function verifySessionOnLoad(): Promise<AuthUser | null> {
       });
       if (res.status === 200) {
         const user = await res.json();
-        writeSession(user,null);
+        writeSession(user);
         return user;
       }
 
@@ -168,22 +118,23 @@ export function verifySessionOnLoad(): Promise<AuthUser | null> {
           });
           if (retryRes.status === 200) {
             const user = await retryRes.json();
-            writeSession(user,null);
+            writeSession(user);
             return user;
           }
         }
       }
 
       if (res.status === 401 || res.status === 403) {
-        writeSession(null,null);
+        writeSession(null);
         return null;
       }
 
-      console.warn("Transient server error during session verification:", res.status);
+      // Preserve the in-memory state only for transient failures.
       return readSession();
     } catch (err) {
-      console.error("Failed to verify session on load:", err);
       return readSession();
+    } finally {
+      initPromise = null;
     }
   })();
 
@@ -207,8 +158,8 @@ export async function registerUser(
   if (!cleanEmail.includes("@") || !cleanEmail.includes(".")) {
     return { ok: false, error: "Please enter a valid email address." };
   }
-  if (password.length < 4) {
-    return { ok: false, error: "Password must be at least 4 characters." };
+  if (password.length < 8) {
+    return { ok: false, error: "Password must be at least 8 characters." };
   }
 
   try {
@@ -255,7 +206,7 @@ export async function verifyAndLogin(email: string, password: string): Promise<L
     }
 
     const { user } = data;
-    writeSession(user,null);
+    writeSession(user);
     return { ok: true, name: user.name, user };
   } catch (error) {
     return { ok: false, error: "Network error. Please try again later." };
@@ -277,14 +228,14 @@ export async function googleLogin(credential: string): Promise<LoginResult> {
     }
 
     const { user } = data;
-    writeSession(user,null);
+    writeSession(user);
     return { ok: true, name: user.name, user };
   } catch (error) {
     return { ok: false, error: "Network error. Please try again later." };
   }
 }
 
-export async function sendOtp(phone: string): Promise<{ ok: boolean; error?: string }> {
+export async function sendOtp(phone: string): Promise<{ ok: boolean; error?: string; resendAfter?: number }> {
   try {
     const response = await fetch("/api/auth/send-otp", {
       method: "POST",
@@ -292,11 +243,14 @@ export async function sendOtp(phone: string): Promise<{ ok: boolean; error?: str
       body: JSON.stringify({ phone_number: phone }),
       credentials: "include",
     });
-    const data = await response.json();
+    const data = await response.json().catch(() => ({}));
     if (!response.ok) {
-      return { ok: false, error: data.detail || "Failed to send OTP." };
+      const fallback = response.status === 504 || response.status === 502
+        ? "Server is waking up (cold start). Please retry in 10-15 seconds."
+        : "Failed to send OTP.";
+      return { ok: false, error: data.detail || fallback };
     }
-    return { ok: true };
+    return { ok: true, resendAfter: data.resend_after };
   } catch (error) {
     return { ok: false, error: "Network error. Please try again later." };
   }
@@ -315,13 +269,16 @@ export async function verifyOtp(phone: string, otp: string): Promise<VerifyOtpRe
       body: JSON.stringify({ phone_number: phone, otp }),
       credentials: "include",
     });
-    const data = await response.json();
+    const data = await response.json().catch(() => ({}));
     if (!response.ok) {
-      return { ok: false, error: data.detail || "Invalid OTP code." };
+      const fallback = response.status === 504 || response.status === 502
+        ? "Server is waking up. Please retry in a few seconds."
+        : "Invalid OTP code.";
+      return { ok: false, error: data.detail || fallback };
     }
 
     if (data.registered) {
-      writeSession(data.user,null);
+      writeSession(data.user);
       return { ok: true, registered: true, user: data.user };
     } else {
       return { ok: true, registered: false, registrationToken: data.registration_token };
@@ -342,12 +299,12 @@ export async function completeOtpRegistration(
       body: JSON.stringify({ registration_token: registrationToken, name }),
       credentials: "include",
     });
-    const data = await response.json();
+    const data = await response.json().catch(() => ({}));
     if (!response.ok) {
       return { ok: false, error: data.detail || "Registration failed." };
     }
 
-    writeSession(data.user,null);
+    writeSession(data.user);
     return { ok: true, user: data.user };
   } catch (error) {
     return { ok: false, error: "Network error. Please try again later." };
@@ -358,9 +315,9 @@ export async function logoutUser() {
   try {
     await fetchWithAuth("/api/auth/logout", { method: "POST" });
   } catch (error) {
-    console.error("Logout request failed", error);
+    // Local state still clears if the network request cannot complete.
   } finally {
-    writeSession(null,null);
+    writeSession(null);
   }
 }
 

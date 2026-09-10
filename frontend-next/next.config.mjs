@@ -24,7 +24,11 @@ const nextConfig = {
     ];
   },
   async rewrites() {
-    const backendUrl = process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:8000'
+    const backendUrl =
+      process.env.NEXT_PUBLIC_API_URL ||
+      (process.env.NODE_ENV === 'production'
+        ? 'https://krishiai-api.onrender.com'
+        : 'http://127.0.0.1:8000')
     return [
       // Auth
       {
@@ -34,6 +38,19 @@ const nextConfig = {
       {
         source: '/api/auth/:path*',
         destination: `${backendUrl}/api/auth/:path*`
+      },
+      // Owner portal and published CMS content
+      {
+        source: '/api/admin/:path*',
+        destination: `${backendUrl}/api/admin/:path*`
+      },
+      {
+        source: '/api/content/:path*',
+        destination: `${backendUrl}/api/content/:path*`
+      },
+      {
+        source: '/api/media/:path*',
+        destination: `${backendUrl}/api/media/:path*`
       },
       // Weather
       {
@@ -79,6 +96,24 @@ const nextConfig = {
       {
         source: '/api/sensor/:path*',
         destination: `${backendUrl}/api/sensor/:path*`
+      },
+      // Farmer Profile & Fields
+      {
+        source: '/api/farmer/:path*/',
+        destination: `${backendUrl}/api/farmer/:path*/`
+      },
+      {
+        source: '/api/farmer/:path*',
+        destination: `${backendUrl}/api/farmer/:path*`
+      },
+      // Disease
+      {
+        source: '/api/disease/:path*/',
+        destination: `${backendUrl}/api/disease/:path*/`
+      },
+      {
+        source: '/api/disease/:path*',
+        destination: `${backendUrl}/api/disease/:path*`
       }
     ]
   }

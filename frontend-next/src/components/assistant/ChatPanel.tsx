@@ -1,4 +1,4 @@
-﻿"use client"
+"use client"
 import { useLanguage } from '@/lib/language'
 /**
  * The expanded chat panel — mounted by the floating widget.
@@ -194,22 +194,22 @@ export function ChatPanel({ onClose }: { onClose: () => void }) {
       animate={{ opacity: 1, y: 0, scale: 1 }}
       exit={{ opacity: 0, y: 24, scale: 0.95 }}
       transition={{ type: "spring", stiffness: 300, damping: 28 }}
-      className="glass-panel fixed bottom-24 right-4 z-[60] flex h-[min(600px,calc(100vh-8rem))] w-[min(380px,calc(100vw-2rem))] flex-col overflow-hidden border border-white/[0.08] backdrop-blur-xl bg-slate-950/70 shadow-2xl rounded-3xl"
+      className="glass-panel fixed bottom-24 right-4 z-[60] flex h-[min(600px,calc(100vh-8rem))] w-[min(380px,calc(100vw-2rem))] flex-col overflow-hidden border border-border backdrop-blur-xl bg-card/95 shadow-2xl rounded-3xl text-card-foreground"
       role="dialog"
       aria-label={t("common.KisaanBuddy_assistant")}
     >
       {/* Header */}
-      <div className="flex flex-shrink-0 items-center justify-between gap-2 border-b border-white/[0.06] bg-slate-950/40 px-4 py-3">
+      <div className="flex flex-shrink-0 items-center justify-between gap-2 border-b border-border bg-muted/40 px-4 py-3">
         <div className="flex items-center gap-2 min-w-0">
-          <div className="h-8 w-8 rounded-xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-400 text-sm font-black shadow-sm shrink-0">
+          <div className="h-8 w-8 rounded-xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-600 dark:text-emerald-400 text-sm font-black shadow-sm shrink-0">
             K
           </div>
           <div className="min-w-0">
-            <div className="text-xs font-bold text-white leading-none font-display">
+            <div className="text-xs font-bold text-foreground leading-none font-display">
               KisaanBuddy Assistant
             </div>
             <div className="text-[9px] text-muted-foreground leading-none mt-1 flex items-center gap-1 font-semibold">
-              <span className={`h-1.5 w-1.5 rounded-full ${activeTool || isSending ? "bg-amber-400 animate-pulse" : "bg-emerald-400 animate-pulse"}`} />
+              <span className={`h-1.5 w-1.5 rounded-full ${activeTool || isSending ? "bg-amber-500 animate-pulse" : "bg-emerald-500 animate-pulse"}`} />
               <span>
                 {activeTool
                   ? `Using ${activeTool.replace("_", " ")}…`
@@ -295,7 +295,7 @@ export function ChatPanel({ onClose }: { onClose: () => void }) {
               <Sparkles className="w-5.5 h-5.5" />
             </div>
             
-            <div className="text-xs font-bold text-white font-display mt-1">
+            <div className="text-xs font-bold text-foreground font-display mt-1">
               {language === "hi"
                 ? "Namaste! Main KisaanBuddy sahayak hoon."
                 : language === "kn"
@@ -319,7 +319,7 @@ export function ChatPanel({ onClose }: { onClose: () => void }) {
                     key={p.key}
                     type="button"
                     onClick={() => submit(label)}
-                    className="flex items-center gap-2.5 text-[11px] px-3.5 py-2.5 rounded-xl border border-white/[0.05] bg-white/[0.01] hover:bg-white/[0.04] hover:border-emerald-500/20 text-white/90 hover:text-white transition-all font-semibold"
+                    className="flex items-center gap-2.5 text-[11px] px-3.5 py-2.5 rounded-xl border border-border bg-card hover:bg-muted text-foreground transition-all font-semibold shadow-xs"
                   >
                     <span>{p.icon}</span>
                     <span className="truncate flex-1">{label}</span>
@@ -335,7 +335,7 @@ export function ChatPanel({ onClose }: { onClose: () => void }) {
         ))}
         
         {lastError && (
-          <div className="text-[10px] font-bold text-red-400 px-3 py-2 rounded-xl bg-red-500/10 border border-red-500/20">
+          <div className="text-[10px] font-bold text-red-500 px-3 py-2 rounded-xl bg-red-500/10 border border-red-500/20">
             {lastError}
           </div>
         )}
@@ -346,25 +346,25 @@ export function ChatPanel({ onClose }: { onClose: () => void }) {
 
       {/* Pending image preview */}
       {pendingImage && (
-        <div className="flex flex-shrink-0 items-center gap-2 border-t border-white/[0.06] bg-slate-950/40 px-4 py-2.5">
+        <div className="flex flex-shrink-0 items-center gap-2 border-t border-border bg-muted/40 px-4 py-2.5">
           <div className="relative">
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
               src={pendingImage}
               alt={t("common.uploaded_leaf")}
-              className="h-12 w-12 rounded-xl object-cover border border-white/[0.08]"
+              className="h-12 w-12 rounded-xl object-cover border border-border"
             />
             <button
               type="button"
               onClick={() => setPendingImage(null)}
-              className="absolute -right-1.5 -top-1.5 flex h-4 w-4 items-center justify-center rounded-full bg-slate-950 border border-white/[0.08] text-white hover:text-rose-400 transition-colors"
+              className="absolute -right-1.5 -top-1.5 flex h-4 w-4 items-center justify-center rounded-full bg-background border border-border text-foreground hover:text-destructive transition-colors"
               aria-label={t("common.remove_photo")}
             >
               <X className="h-2.5 w-2.5" />
             </button>
           </div>
-          <div className="text-[10px] text-muted-foreground/80 leading-relaxed font-medium">
-            <ImageIcon className="mr-1.5 inline h-3.5 w-3.5 text-emerald-400" />
+          <div className="text-[10px] text-muted-foreground leading-relaxed font-medium">
+            <ImageIcon className="mr-1.5 inline h-3.5 w-3.5 text-emerald-600 dark:text-emerald-400" />
             {language === "hi"
               ? "Send dabakar patti ki bimari ka treatment pata karein."
               : language === "kn"
@@ -375,7 +375,7 @@ export function ChatPanel({ onClose }: { onClose: () => void }) {
       )}
 
       {/* Input composer area */}
-      <div className="flex flex-shrink-0 items-center gap-2 border-t border-white/[0.06] bg-slate-950/40 px-3 py-3">
+      <div className="flex flex-shrink-0 items-center gap-2 border-t border-border bg-muted/30 px-3 py-3">
         <input
           ref={fileInputRef}
           type="file"
@@ -391,7 +391,7 @@ export function ChatPanel({ onClose }: { onClose: () => void }) {
         <button
           type="button"
           onClick={() => fileInputRef.current?.click()}
-          className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-xl bg-slate-900 border border-white/[0.08] hover:bg-white/[0.04] text-muted-foreground hover:text-white transition-colors"
+          className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-xl bg-background border border-border hover:bg-muted text-muted-foreground hover:text-foreground transition-colors"
           aria-label={
             language === "hi"
               ? "Patti ki photo bhejo"
@@ -415,7 +415,7 @@ export function ChatPanel({ onClose }: { onClose: () => void }) {
           onChange={(e) => setInput(e.target.value)}
           onKeyDown={onKey}
           placeholder={placeholder}
-          className="flex-1 rounded-xl border border-white/[0.08] bg-slate-950/60 px-3.5 py-2.5 text-xs text-white outline-none focus:border-emerald-500/40 focus:ring-1 focus:ring-emerald-500/20 placeholder:text-muted-foreground/60"
+          className="flex-1 rounded-xl border border-border bg-background px-3.5 py-2.5 text-xs text-foreground outline-none focus:border-primary focus:ring-1 focus:ring-primary/20 placeholder:text-muted-foreground"
           disabled={isSending && !!input}
         />
 
@@ -423,7 +423,7 @@ export function ChatPanel({ onClose }: { onClose: () => void }) {
           <button
             type="button"
             onClick={cancel}
-            className="flex h-10 w-10 items-center justify-center rounded-xl bg-slate-900 border border-white/[0.08] text-amber-400"
+            className="flex h-10 w-10 items-center justify-center rounded-xl bg-background border border-border text-amber-500"
             aria-label={t("common.stop_generating")}
           >
             <Loader2 className="h-4 w-4 animate-spin" />
@@ -432,7 +432,7 @@ export function ChatPanel({ onClose }: { onClose: () => void }) {
           <button
             type="button"
             onClick={() => submit()}
-            className="flex h-10 w-10 items-center justify-center rounded-xl bg-emerald-500 text-white shadow-lg shadow-emerald-500/10 hover:bg-emerald-600 transition-all hover:scale-105 active:scale-95"
+            className="flex h-10 w-10 items-center justify-center rounded-xl bg-emerald-600 text-white shadow-md shadow-emerald-600/10 hover:bg-emerald-700 transition-all hover:scale-105 active:scale-95"
             aria-label={t("common.send_message")}
           >
             <Send className="h-3.5 w-3.5" />

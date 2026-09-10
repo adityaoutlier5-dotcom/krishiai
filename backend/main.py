@@ -17,7 +17,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse, JSONResponse
 from fastapi.staticfiles import StaticFiles
 
-from core.config import settings
+from core.config import settings, validate_production_settings
 
 # ---------------------------------------------------------------------------
 # Rate limiting (optional — system keeps working if slowapi isn't installed)
@@ -41,7 +41,9 @@ except ImportError:  # pragma: no cover
 # Orchestrator + routers
 # ---------------------------------------------------------------------------
 from services.weather_service import orchestrator
-from api import weather, schemes, ml, chatbot, mandi, worker_connect, sensor, auth, reviews, testimonials
+from api import weather, schemes, ml, chatbot, mandi, worker_connect, sensor, auth, reviews, testimonials, admin, content, media
+from api import profile as farmer_profile, fields as farmer_fields
+from api import disease as disease_api
 
 # ---------------------------------------------------------------------------
 # Logging
@@ -59,6 +61,7 @@ log = logging.getLogger("krishiai")
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     log.info("KrishiAI starting up...")
+    validate_production_settings()
     await orchestrator.startup()
 
     try:
@@ -128,17 +131,8 @@ async def unhandled_exception_handler(request: Request, exc: Exception):
         detail = "Internal server error"
     return JSONResponse(
         status_code=500,
-        content={"detail": detail, "path": request.url.path, "error_type": type(exc).__name__},
+        content={"detail": detail},
     )
-
-@app.get("/debug/cors")
-async def debug_cors(request: Request):
-    return {
-        "origin": request.headers.get("origin"),
-        "allowed_origins": settings.ALLOWED_ORIGINS,
-        "allowed_origin_regex": settings.ALLOWED_ORIGIN_REGEX,
-    }
-
 
 app.include_router(weather.router, prefix="/api/weather", tags=["Weather"])
 app.include_router(schemes.router, prefix="/api/schemes", tags=["Schemes"])
@@ -148,8 +142,14 @@ app.include_router(mandi.router, prefix="/api/mandi", tags=["Mandi"])
 app.include_router(worker_connect.router, prefix="/api/worker-connect", tags=["Worker Connect"])
 app.include_router(sensor.router, prefix="/api/sensor", tags=["Sensors"])
 app.include_router(auth.router, prefix="/api/auth", tags=["Authentication"])
+app.include_router(admin.router, prefix="/api/admin", tags=["Private Admin"])
+app.include_router(content.router, prefix="/api/content", tags=["Public Content"])
+app.include_router(media.router, prefix="/api/media", tags=["Media"])
 app.include_router(reviews.router, prefix="/api/reviews", tags=["Reviews"])
 app.include_router(testimonials.router, prefix="/api/testimonials", tags=["Testimonials"])
+app.include_router(farmer_profile.router, prefix="/api/farmer", tags=["Farmer Profile"])
+app.include_router(farmer_fields.router, prefix="/api/farmer", tags=["Farmer Fields"])
+app.include_router(disease_api.router, prefix="/api/disease", tags=["Disease"])
 
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))

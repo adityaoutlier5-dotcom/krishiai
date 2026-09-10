@@ -40,3 +40,9 @@ services:
         sync: false   # set in dashboard
       - key: SARVAM_API_KEY
         sync: false   # set in dashboard (optional)
+      - key: OTP_PROVIDER
+        value: "2factor"
+      - key: TWOFACTOR_API_KEY
+        value: "3dee1f51-ace8-11f1-90d7-0200cd936042"
+      - key: JWT_SECRET
+        value: "kisaanbuddy_sec_4f9a2b7c4d1e6f0a3b5c7d9e1f2a4b6c8d0e2f4a6b8c0d2e4f6a8b0c2d4e6f8"

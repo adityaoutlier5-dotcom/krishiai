@@ -509,7 +509,7 @@ function PriceAlertPanel({ crops }: { crops: MandiCrop[] }) {
             <Bell className="h-5 w-5 text-amber-400" />
           </div>
           <div>
-            <div className="font-bold text-white text-sm font-display">{currentLang.panelTitle}</div>
+            <div className="font-bold text-foreground text-sm font-display">{currentLang.panelTitle}</div>
             <div className="text-xs text-muted-foreground">{alerts.length === 0 ? currentLang.setupMonitors : currentLang.activeMonitors(alerts.length)}</div>
           </div>
         </div>
@@ -526,14 +526,14 @@ function PriceAlertPanel({ crops }: { crops: MandiCrop[] }) {
             <button 
               onClick={checkNow} 
               disabled={checking} 
-              className="text-xs rounded-xl border border-white/[0.08] bg-white/[0.02] hover:bg-white/[0.05] px-3.5 py-2 text-white font-semibold flex items-center gap-1.5 transition-all"
+              className="text-xs rounded-xl border border-border bg-card hover:bg-accent px-3.5 py-2 text-foreground font-semibold flex items-center gap-1.5 transition-all shadow-xs"
             >
               {checking ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Bell className="h-3.5 w-3.5" />} {currentLang.checkStatus}
             </button>
           )}
           <button 
             onClick={() => setShowForm(!showForm)} 
-            className="text-xs rounded-xl border border-amber-500/30 bg-amber-500/10 hover:bg-amber-500/20 px-3.5 py-2 text-amber-400 font-bold flex items-center gap-1.5 transition-all"
+            className="text-xs rounded-xl border border-amber-500/30 bg-amber-500/10 hover:bg-amber-500/20 px-3.5 py-2 text-amber-600 dark:text-amber-400 font-bold flex items-center gap-1.5 transition-all"
           >
             <Plus className="h-3.5 w-3.5" /> {showForm ? currentLang.cancel : currentLang.addTargetPrice}
           </button>
@@ -541,21 +541,21 @@ function PriceAlertPanel({ crops }: { crops: MandiCrop[] }) {
       </div>
 
       {alerts.length > 0 && (
-        <div className="mt-4 flex flex-wrap gap-2 pt-3 border-t border-white/[0.04]">
+        <div className="mt-4 flex flex-wrap gap-2 pt-3 border-t border-border/50">
           {alerts.map((alert) => (
             <div 
               key={alert.id} 
               className={`flex items-center gap-2 text-xs rounded-full px-3 py-1.5 border transition-all ${
                 alert.fired 
-                  ? "bg-emerald-500/10 border-emerald-500/20 text-emerald-400" 
-                  : "bg-amber-500/10 border-amber-500/20 text-amber-400"
+                  ? "bg-emerald-500/10 border-emerald-500/20 text-emerald-600 dark:text-emerald-400" 
+                  : "bg-amber-500/10 border-amber-500/20 text-amber-600 dark:text-amber-400"
               }`}
             >
               <span className="h-1.5 w-1.5 rounded-full bg-current animate-pulse" />
               <span>{translateData(alert.cropName, activeAlertLang)} {alert.direction === "above" ? "≥" : "≤"} ₹{alert.threshold}</span>
               <button 
                 onClick={() => removeAlert(alert.id)} 
-                className="hover:text-white transition-colors"
+                className="hover:text-foreground transition-colors"
                 title={t("mandi.remove_alert")}
               >
                 <X className="h-3.5 w-3.5 ml-1" />
@@ -566,32 +566,32 @@ function PriceAlertPanel({ crops }: { crops: MandiCrop[] }) {
       )}
 
       {showForm && (
-        <div className="mt-4 pt-4 border-t border-white/[0.04] grid gap-4 sm:flex sm:items-end sm:flex-wrap">
+        <div className="mt-4 pt-4 border-t border-border/50 grid gap-4 sm:flex sm:items-end sm:flex-wrap">
           <div className="space-y-1">
             <span className="text-[10px] uppercase tracking-wider text-muted-foreground font-bold">{currentLang.cropCommodity}</span>
             <select 
               value={newCrop} 
               onChange={(e) => setNewCrop(e.target.value)} 
-              className="w-full sm:w-48 rounded-xl border border-white/[0.08] bg-slate-950 px-3 py-2 text-xs text-white focus:outline-none"
+              className="w-full sm:w-48 rounded-xl border border-border bg-card px-3 py-2 text-xs text-foreground focus:outline-none focus:ring-1 focus:ring-amber-500"
             >
-              <option value="" className="bg-slate-900">{currentLang.selectCommodity}</option>
-              {uniqueCrops.map((c) => <option key={c} value={c} className="bg-slate-900">{translateData(c, activeAlertLang)}</option>)}
+              <option value="" className="bg-card text-foreground">{currentLang.selectCommodity}</option>
+              {uniqueCrops.map((c) => <option key={c} value={c} className="bg-card text-foreground">{translateData(c, activeAlertLang)}</option>)}
             </select>
           </div>
           <div className="space-y-1">
             <span className="text-[10px] uppercase tracking-wider text-muted-foreground font-bold">{currentLang.triggerRule}</span>
-            <div className="flex p-0.5 rounded-xl border border-white/[0.08] bg-slate-950">
+            <div className="flex p-0.5 rounded-xl border border-border bg-card">
               <button 
                 onClick={() => setNewDir("above")} 
                 type="button"
-                className={`text-[11px] rounded-lg px-3 py-1.5 font-bold transition-all ${newDir === "above" ? "bg-amber-500 text-white" : "text-muted-foreground hover:text-white"}`}
+                className={`text-[11px] rounded-lg px-3 py-1.5 font-bold transition-all ${newDir === "above" ? "bg-amber-500 text-white" : "text-muted-foreground hover:text-foreground"}`}
               >
                 {currentLang.goesAbove}
               </button>
               <button 
                 onClick={() => setNewDir("below")} 
                 type="button"
-                className={`text-[11px] rounded-lg px-3 py-1.5 font-bold transition-all ${newDir === "below" ? "bg-amber-500 text-white" : "text-muted-foreground hover:text-white"}`}
+                className={`text-[11px] rounded-lg px-3 py-1.5 font-bold transition-all ${newDir === "below" ? "bg-amber-500 text-white" : "text-muted-foreground hover:text-foreground"}`}
               >
                 {currentLang.goesBelow}
               </button>
@@ -604,7 +604,7 @@ function PriceAlertPanel({ crops }: { crops: MandiCrop[] }) {
               value={newThreshold} 
               onChange={(e) => setNewThreshold(e.target.value)} 
               placeholder={currentLang.targetPricePlaceholder} 
-              className="w-full sm:w-32 rounded-xl border border-white/[0.08] bg-slate-950 px-3 py-2 text-xs text-white focus:outline-none" 
+              className="w-full sm:w-32 rounded-xl border border-border bg-card px-3 py-2 text-xs text-foreground focus:outline-none focus:ring-1 focus:ring-amber-500" 
             />
           </div>
           <Button 
@@ -746,8 +746,8 @@ export default function MandiPage() {
               <Store className="h-3.5 w-3.5" />
               {MANDI_PAGE_LANG[lang].enamConnected}
             </div>
-            <h1 className="text-3xl md:text-5xl font-black font-display tracking-tight text-white flex items-center gap-3">
-              {MANDI_PAGE_LANG[lang].mandi} <span className="bg-gradient-to-r from-orange-400 via-amber-300 to-emerald-400 bg-clip-text text-transparent">{MANDI_PAGE_LANG[lang].marketplace}</span>
+            <h1 className="text-3xl md:text-5xl font-black font-display tracking-tight text-foreground flex items-center gap-3">
+              {MANDI_PAGE_LANG[lang].mandi} <span className="bg-gradient-to-r from-orange-500 via-amber-500 to-emerald-600 bg-clip-text text-transparent">{MANDI_PAGE_LANG[lang].marketplace}</span>
             </h1>
             <p className="text-muted-foreground text-sm md:text-base mt-2 max-w-2xl leading-relaxed">
               {MANDI_PAGE_LANG[lang].heroDesc}
@@ -755,17 +755,17 @@ export default function MandiPage() {
           </div>
           {/* Stats widget */}
           <div className="flex gap-3 flex-wrap">
-            <div className="rounded-2xl border border-white/[0.06] bg-slate-900/60 p-4 min-w-[120px] backdrop-blur-sm">
+            <div className="rounded-2xl border border-border bg-card p-4 min-w-[120px] shadow-xs">
               <div className="text-[10px] uppercase font-bold text-muted-foreground tracking-wider mb-1">{MANDI_PAGE_LANG[lang].totalCrops}</div>
-              <div className="text-xl font-extrabold text-white flex items-center gap-1.5">
-                <Package className="h-4.5 w-4.5 text-orange-400" />
+              <div className="text-xl font-extrabold text-foreground flex items-center gap-1.5">
+                <Package className="h-4.5 w-4.5 text-orange-500" />
                 {crops.length}
               </div>
             </div>
-            <div className="rounded-2xl border border-white/[0.06] bg-slate-900/60 p-4 min-w-[150px] backdrop-blur-sm">
+            <div className="rounded-2xl border border-border bg-card p-4 min-w-[150px] shadow-xs">
               <div className="text-[10px] uppercase font-bold text-muted-foreground tracking-wider mb-1">{MANDI_PAGE_LANG[lang].mandiArrivals}</div>
-              <div className="text-xl font-extrabold text-white flex items-center gap-1.5">
-                <Users className="h-4.5 w-4.5 text-emerald-400" />
+              <div className="text-xl font-extrabold text-foreground flex items-center gap-1.5">
+                <Users className="h-4.5 w-4.5 text-emerald-600 dark:text-emerald-400" />
                 {crops.reduce((a, c) => a + c.arrival_tonnes, 0).toLocaleString()} {t("mandi.t")}
               </div>
             </div>
@@ -799,12 +799,12 @@ export default function MandiPage() {
                   placeholder={MANDI_PAGE_LANG[lang].searchPlaceholder}
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-full pl-11 pr-10 py-3 rounded-2xl border border-white/[0.08] bg-slate-950/40 backdrop-blur-sm text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-emerald-500/30 transition-all text-white font-medium"
+                  className="w-full pl-11 pr-10 py-3 rounded-2xl border border-border bg-card shadow-xs text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-emerald-500/30 transition-all text-foreground font-medium"
                 />
                 {searchQuery && (
                   <button
                     onClick={() => setSearchQuery("")}
-                    className="absolute right-3.5 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-white transition-colors"
+                    className="absolute right-3.5 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
                   >
                     <X className="h-4.5 w-4.5" />
                   </button>
@@ -817,8 +817,8 @@ export default function MandiPage() {
                     onClick={() => setCategoryFilter(cat)}
                     className={`px-4 py-2 rounded-xl text-xs font-bold border transition-all duration-300 ${
                       categoryFilter === cat
-                        ? "bg-emerald-500 text-white border-emerald-500 shadow-lg shadow-emerald-500/15"
-                        : "border-white/[0.08] bg-slate-950/40 hover:bg-white/[0.04] text-muted-foreground hover:text-white"
+                        ? "bg-emerald-600 text-white border-emerald-600 shadow-md shadow-emerald-600/15"
+                        : "border-border bg-card hover:bg-accent text-muted-foreground hover:text-foreground shadow-xs"
                     }`}
                   >
                     {CATEGORY_LANG[lang]?.[cat] || cat}
@@ -886,14 +886,14 @@ export default function MandiPage() {
             {/* Back button */}
             <button
               onClick={handleBack}
-              className="flex items-center gap-2 text-xs font-bold text-muted-foreground hover:text-white transition-colors w-fit pb-2"
+              className="flex items-center gap-2 text-xs font-bold text-muted-foreground hover:text-foreground transition-colors w-fit pb-2"
             >
               <ArrowLeft className="h-4.5 w-4.5" /> {MANDI_PAGE_LANG[lang].returnMarketplace}
             </button>
 
             <div className="grid grid-cols-1 lg:grid-cols-5 gap-8 items-start">
               {/* Crop detail card */}
-              <GlassCard className="lg:col-span-3 overflow-hidden border border-white/[0.08] backdrop-blur-md shadow-xl bg-slate-950/20">
+              <GlassCard className="lg:col-span-3 overflow-hidden border border-border backdrop-blur-md shadow-xl bg-card">
                 <div className={`h-2 bg-gradient-to-r ${getCategoryGradient(selectedCrop.category)}`} />
                 <CardHeader className="pb-4">
                   <div className="flex items-start justify-between">
@@ -901,8 +901,8 @@ export default function MandiPage() {
                       <span className={`inline-block px-3 py-1 rounded-full text-[10px] font-bold tracking-wider uppercase bg-gradient-to-r ${CATEGORY_COLORS[selectedCrop.category] || "from-gray-500/20 to-gray-500/20 text-gray-500"}`}>
                         {CATEGORY_LANG[lang]?.[selectedCrop.category] || selectedCrop.category}
                       </span>
-                      <CardTitle className="text-3xl font-black font-display text-white mt-3">{translateData(selectedCrop.name, lang)}</CardTitle>
-                      <p className="text-muted-foreground text-xs mt-1">{MANDI_PAGE_LANG[lang].varietyLabel}<span className="font-semibold text-white/80">{translateData(selectedCrop.variety, lang)}</span></p>
+                      <CardTitle className="text-3xl font-black font-display text-foreground mt-3">{translateData(selectedCrop.name, lang)}</CardTitle>
+                      <p className="text-muted-foreground text-xs mt-1">{MANDI_PAGE_LANG[lang].varietyLabel}<span className="font-semibold text-foreground/80">{translateData(selectedCrop.variety, lang)}</span></p>
                     </div>
                     <TrendBadge trend={selectedCrop.trend} change={selectedCrop.change_percent} size="lg" />
                   </div>
@@ -910,12 +910,12 @@ export default function MandiPage() {
 
                 <CardContent className="space-y-6">
                   {/* Price display row */}
-                  <div className="p-5 rounded-2xl bg-white/[0.02] border border-white/[0.04] flex items-center justify-between">
+                  <div className="p-5 rounded-2xl bg-muted/40 border border-border flex items-center justify-between">
                     <div>
                       <span className="text-[10px] uppercase font-bold text-muted-foreground tracking-wider block">{MANDI_PAGE_LANG[lang].livePriceIndex}</span>
                       <div className="flex items-baseline gap-1.5 mt-1">
-                        <IndianRupee className="h-5 w-5 text-emerald-400" />
-                        <span className="text-3xl font-black text-emerald-400 font-display">
+                        <IndianRupee className="h-5 w-5 text-emerald-600 dark:text-emerald-400" />
+                        <span className="text-3xl font-black text-emerald-600 dark:text-emerald-400 font-display">
                           {selectedCrop.price.toLocaleString()}
                         </span>
                         <span className="text-muted-foreground text-xs font-medium">/{translateData(selectedCrop.unit, lang)}</span>
@@ -923,7 +923,7 @@ export default function MandiPage() {
                     </div>
                     <div className="text-right">
                       <span className="text-[10px] uppercase font-bold text-muted-foreground tracking-wider block">{MANDI_PAGE_LANG[lang].arrivalTonnes}</span>
-                      <span className="text-xl font-bold text-white block mt-1">{selectedCrop.arrival_tonnes.toLocaleString()} {t("mandi.tons")}</span>
+                      <span className="text-xl font-bold text-foreground block mt-1">{selectedCrop.arrival_tonnes.toLocaleString()} {t("mandi.tons")}</span>
                     </div>
                   </div>
 
@@ -931,10 +931,10 @@ export default function MandiPage() {
                   <div className="space-y-3">
                     <div className="flex justify-between text-xs text-muted-foreground font-semibold">
                       <span>{t("mandi.low")}: ₹{selectedCrop.min_price.toLocaleString()}</span>
-                      <span className="text-white">{t("mandi.current_model")}: ₹{selectedCrop.modal_price.toLocaleString()}</span>
+                      <span className="text-foreground">{t("mandi.current_model")}: ₹{selectedCrop.modal_price.toLocaleString()}</span>
                       <span>{t("mandi.high")}: ₹{selectedCrop.max_price.toLocaleString()}</span>
                     </div>
-                    <div className="relative h-2 rounded-full bg-slate-900 overflow-hidden">
+                    <div className="relative h-2 rounded-full bg-muted border border-border/50 overflow-hidden">
                       {/* Range slider indicator */}
                       <div
                         className="absolute top-0 h-full w-2.5 bg-emerald-500 rounded-full shadow-[0_0_8px_rgba(16,185,129,0.7)]"
@@ -947,18 +947,18 @@ export default function MandiPage() {
 
                   {/* Details grid */}
                   <div className="grid grid-cols-2 gap-4 pt-2">
-                    <InfoTile icon={<MapPin className="h-4 w-4 text-orange-400" />} label={MANDI_PAGE_LANG[lang].apmcMandi} value={translateData(selectedCrop.mandi, lang)} />
-                    <InfoTile icon={<MapPin className="h-4 w-4 text-emerald-400" />} label={MANDI_PAGE_LANG[lang].stateCenter} value={translateData(selectedCrop.state, lang)} />
+                    <InfoTile icon={<MapPin className="h-4 w-4 text-orange-500" />} label={MANDI_PAGE_LANG[lang].apmcMandi} value={translateData(selectedCrop.mandi, lang)} />
+                    <InfoTile icon={<MapPin className="h-4 w-4 text-emerald-600 dark:text-emerald-400" />} label={MANDI_PAGE_LANG[lang].stateCenter} value={translateData(selectedCrop.state, lang)} />
                   </div>
 
                   {/* Historical Graph Chart */}
-                  <div className="pt-4 border-t border-white/[0.04]">
+                  <div className="pt-4 border-t border-border">
                     <div className="flex items-center justify-between mb-4">
                       <div>
-                        <span className="text-xs uppercase font-bold text-white tracking-wider block">{MANDI_PAGE_LANG[lang].priceHistory}</span>
+                        <span className="text-xs uppercase font-bold text-foreground tracking-wider block">{MANDI_PAGE_LANG[lang].priceHistory}</span>
                         <span className="text-[10px] text-muted-foreground">{MANDI_PAGE_LANG[lang].historyTrend}</span>
                       </div>
-                      <span className="text-[10px] font-bold text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded border border-emerald-500/10 flex items-center gap-1">
+                      <span className="text-[10px] font-bold text-emerald-600 dark:text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded border border-emerald-500/20 flex items-center gap-1">
                         <TrendingUp className="w-3 h-3" /> {MANDI_PAGE_LANG[lang].liveGraph}
                       </span>
                     </div>
@@ -1050,7 +1050,7 @@ function CropCard({ crop, index, onClick, lang }: { crop: MandiCrop; index: numb
       whileHover={{ y: -4 }}
     >
       <GlassCard
-        className="cursor-pointer group overflow-hidden relative border border-white/[0.08] backdrop-blur-md shadow-lg hover:shadow-2xl hover:border-emerald-500/30 transition-all duration-300 bg-slate-950/20 h-full flex flex-col justify-between"
+        className="cursor-pointer group overflow-hidden relative border border-border backdrop-blur-md shadow-sm hover:shadow-lg hover:border-emerald-500/30 transition-all duration-300 bg-card h-full flex flex-col justify-between"
         onClick={onClick}
       >
         <div>
@@ -1063,7 +1063,7 @@ function CropCard({ crop, index, onClick, lang }: { crop: MandiCrop; index: numb
                 <span className={`inline-block px-2.5 py-0.5 rounded-full text-[9px] font-bold uppercase tracking-wider bg-gradient-to-r ${CATEGORY_COLORS[crop.category] || "from-gray-500/20 to-gray-500/20 text-gray-500"}`}>
                   {CATEGORY_LANG[lang]?.[crop.category] || crop.category}
                 </span>
-                <CardTitle className="text-base font-extrabold text-white mt-3 group-hover:text-emerald-400 transition-colors truncate font-display">
+                <CardTitle className="text-base font-extrabold text-foreground mt-3 group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition-colors truncate font-display">
                   {translateData(crop.name, lang)}
                 </CardTitle>
                 <p className="text-[11px] text-muted-foreground mt-0.5 truncate">{translateData(crop.variety, lang)}</p>
@@ -1074,10 +1074,10 @@ function CropCard({ crop, index, onClick, lang }: { crop: MandiCrop; index: numb
 
           <CardContent className="space-y-4">
             {/* Price */}
-            <div className="flex items-baseline gap-1 bg-white/[0.02] border border-white/[0.04] p-3 rounded-xl justify-between">
+            <div className="flex items-baseline gap-1 bg-muted/40 border border-border p-3 rounded-xl justify-between">
               <span className="text-[10px] text-muted-foreground font-semibold">{t("mandi.modal_price")}</span>
               <div className="flex items-baseline gap-1">
-                <span className="text-xl font-black text-emerald-400 font-display">
+                <span className="text-xl font-black text-emerald-600 dark:text-emerald-400 font-display">
                   ₹{crop.price.toLocaleString()}
                 </span>
                 <span className="text-xs text-muted-foreground font-medium">/{translateData(crop.unit, lang)}</span>
@@ -1086,7 +1086,7 @@ function CropCard({ crop, index, onClick, lang }: { crop: MandiCrop; index: numb
 
             {/* Mandi + State */}
             <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
-              <MapPin className="h-3.5 w-3.5 shrink-0 text-emerald-400/80" />
+              <MapPin className="h-3.5 w-3.5 shrink-0 text-emerald-600 dark:text-emerald-400/80" />
               <span className="truncate">{translateData(crop.mandi, lang)}, {translateData(crop.state, lang)}</span>
             </div>
           </CardContent>
@@ -1097,14 +1097,14 @@ function CropCard({ crop, index, onClick, lang }: { crop: MandiCrop; index: numb
           <div className="flex gap-2.5 pt-2">
             <Button
               size="sm"
-              className="flex-1 text-xs bg-emerald-500 hover:bg-emerald-600 text-white font-bold shadow-md shadow-emerald-500/10 rounded-xl"
+              className="flex-1 text-xs bg-emerald-600 hover:bg-emerald-700 text-white font-bold shadow-md shadow-emerald-600/10 rounded-xl"
             >
               <ShoppingCart className="h-3.5 w-3.5 mr-1" /> {MANDI_PAGE_LANG[lang].buy}
             </Button>
             <Button
               size="sm"
               variant="outline"
-              className="flex-1 text-xs border-white/[0.08] hover:bg-white/[0.03] text-orange-400 font-bold rounded-xl"
+              className="flex-1 text-xs border-border hover:bg-accent text-orange-600 dark:text-orange-400 font-bold rounded-xl"
             >
               <Tag className="h-3.5 w-3.5 mr-1" /> {MANDI_PAGE_LANG[lang].sell}
             </Button>
@@ -1140,10 +1140,10 @@ function BuySellPanel({
   return (
     <div className="space-y-6">
       {/* Choose action */}
-      <GlassCard className="border border-white/[0.08] backdrop-blur-md shadow-xl bg-slate-950/20">
+      <GlassCard className="border border-border backdrop-blur-md shadow-xl bg-card">
         <CardHeader className="pb-3">
-          <CardTitle className="flex items-center gap-2 text-md font-bold font-display text-white">
-            <ArrowUpDown className="h-4.5 w-4.5 text-orange-400" />
+          <CardTitle className="flex items-center gap-2 text-md font-bold font-display text-foreground">
+            <ArrowUpDown className="h-4.5 w-4.5 text-orange-500" />
             Trade Commodity
           </CardTitle>
         </CardHeader>
@@ -1202,33 +1202,33 @@ function BuySellPanel({
               <CardContent className="pt-6 space-y-4">
                 {connectionStatus === "connecting" && (
                   <div className="flex flex-col items-center gap-3 py-6">
-                    <Loader2 className="h-8 w-8 animate-spin text-amber-400" />
-                    <p className="text-sm font-bold text-white font-display">
+                    <Loader2 className="h-8 w-8 animate-spin text-amber-500" />
+                    <p className="text-sm font-bold text-foreground font-display">
                       Connecting eNAM broker...
                     </p>
                     <p className="text-xs text-muted-foreground text-center leading-relaxed">
                       Securing encrypted pipeline with registered trading agents for{" "}
-                      <span className="font-semibold text-white">{crop.name}</span> in {crop.mandi}
+                      <span className="font-semibold text-foreground">{crop.name}</span> in {crop.mandi}
                     </p>
                   </div>
                 )}
 
                 {connectionStatus === "connected" && (
                   <div className="space-y-4">
-                    <div className="flex items-center gap-2 text-emerald-400">
+                    <div className="flex items-center gap-2 text-emerald-600 dark:text-emerald-400">
                       <CheckCircle2 className="h-5 w-5" />
                       <span className="font-bold text-sm font-display">
                         eNAM Agent Connected!
                       </span>
                     </div>
 
-                    <div className="p-4 rounded-xl bg-white/[0.02] border border-white/[0.04] space-y-3">
+                    <div className="p-4 rounded-xl bg-muted/40 border border-border space-y-3">
                       <div className="flex items-center gap-3">
                         <div className="h-9 w-9 rounded-xl bg-gradient-to-tr from-orange-400 to-emerald-500 flex items-center justify-center text-white font-black text-[10px] shadow-md shadow-orange-500/10">
                           eNAM
                         </div>
                         <div>
-                          <p className="font-bold text-xs text-white">{t("mandi.national_agriculture_market")}</p>
+                          <p className="font-bold text-xs text-foreground">{t("mandi.national_agriculture_market")}</p>
                           <p className="text-[10px] text-muted-foreground">
                             Govt of India • Verification Center
                           </p>
@@ -1236,14 +1236,14 @@ function BuySellPanel({
                       </div>
 
                       <div className="flex items-center gap-1.5 text-[11px] text-muted-foreground">
-                        <MapPin className="h-3.5 w-3.5 text-emerald-400" />
+                        <MapPin className="h-3.5 w-3.5 text-emerald-600 dark:text-emerald-400" />
                         {crop.mandi}, {crop.state}
                       </div>
 
-                      <div className="pt-2 border-t border-white/[0.04] flex items-center justify-between">
+                      <div className="pt-2 border-t border-border flex items-center justify-between">
                         <div>
                           <p className="text-[9px] text-muted-foreground uppercase font-bold">{t("mandi.trading_value")}</p>
-                          <p className="text-base font-extrabold text-emerald-400 font-display">
+                          <p className="text-base font-extrabold text-emerald-600 dark:text-emerald-400 font-display">
                             ₹{crop.price.toLocaleString()}
                             <span className="text-[10px] font-normal text-muted-foreground">
                               /{crop.unit}
@@ -1261,8 +1261,8 @@ function BuySellPanel({
                           onClick={() => onLangChange(l)}
                           className={`px-3 py-1.5 rounded-lg text-[10px] font-bold border transition-all ${
                             lang === l
-                              ? "bg-emerald-500 text-white border-emerald-500 shadow-md shadow-emerald-500/15"
-                              : "border-white/[0.08] text-muted-foreground hover:bg-white/[0.04]"
+                              ? "bg-emerald-600 text-white border-emerald-600 shadow-md shadow-emerald-600/15"
+                              : "border-border text-muted-foreground hover:bg-accent hover:text-foreground"
                           }`}
                         >
                           {l === "hi" ? "हिंदी" : l === "kn" ? "ಕನ್ನಡ" : "English"}
@@ -1272,22 +1272,22 @@ function BuySellPanel({
 
                     {/* eNAM fill instructions */}
                     <div className="rounded-xl p-3.5 space-y-2 border border-emerald-500/20 bg-emerald-500/5">
-                      <p className="text-[11px] font-bold text-emerald-400 flex items-center gap-1">
+                      <p className="text-[11px] font-bold text-emerald-600 dark:text-emerald-400 flex items-center gap-1">
                         <Sparkles className="w-3.5 h-3.5" /> {ENAM_LANG[lang].title}:
                       </p>
                       <div className="grid grid-cols-2 gap-y-1 gap-x-2 text-[11px] text-muted-foreground font-medium">
                         <span>{ENAM_LANG[lang].state}:</span>
-                        <span className="font-bold text-white text-right">{crop.state}</span>
+                        <span className="font-bold text-foreground text-right">{crop.state}</span>
                         <span>{ENAM_LANG[lang].commodity}:</span>
-                        <span className="font-bold text-white text-right">{crop.name.split("(")[0].trim()}</span>
+                        <span className="font-bold text-foreground text-right">{crop.name.split("(")[0].trim()}</span>
                         <span>{ENAM_LANG[lang].price}:</span>
-                        <span className="font-bold text-emerald-400 text-right">&#x20B9;{crop.price.toLocaleString()}</span>
+                        <span className="font-bold text-emerald-600 dark:text-emerald-400 text-right">&#x20B9;{crop.price.toLocaleString()}</span>
                       </div>
                     </div>
                     
                     <div className="flex gap-2 pt-2">
                       <Button
-                        className="flex-1 bg-emerald-500 hover:bg-emerald-600 text-white text-xs font-bold shadow-lg shadow-emerald-500/15 rounded-xl h-10"
+                        className="flex-1 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold shadow-lg shadow-emerald-600/15 rounded-xl h-10"
                         onClick={() => {
                           const commodity = crop.name.split("(")[0].trim()
                           const url = `https://enam.gov.in/web/dashboard/trade-data?state=${encodeURIComponent(crop.state)}&commodity=${encodeURIComponent(commodity)}`
@@ -1299,7 +1299,7 @@ function BuySellPanel({
                       </Button>
                       <Button 
                         variant="outline" 
-                        className="border-white/[0.08] hover:bg-white/[0.03] text-muted-foreground hover:text-white rounded-xl text-xs h-10" 
+                        className="border-border hover:bg-accent text-muted-foreground hover:text-foreground rounded-xl text-xs h-10" 
                         onClick={onReset}
                       >
                         Cancel
@@ -1315,189 +1315,6 @@ function BuySellPanel({
           </motion.div>
         )}
       </AnimatePresence>
-
-      {/* ── Educational Guide Section ── */}
-      <section className="mt-12 border-t border-white/[0.08] pt-10 select-none">
-        {lang === "hi" ? (
-          <div className="space-y-8 text-foreground">
-            <div className="space-y-3">
-              <h2 className="text-2xl md:text-3xl font-display font-extrabold text-white">🌾 मंडी भाव क्या हैं और <TermTooltip term="MSP" lang={lang}>न्यूनतम समर्थन मूल्य (MSP)</TermTooltip> कैसे काम करता है?</h2>
-              <p className="text-muted-foreground text-sm leading-relaxed max-w-4xl">
-                कृषि क्षेत्र में मंडी भाव का तात्पर्य उन दरों से है जिन पर कृषि उपज (जैसे अनाज, दलहन, तिलहन और सब्जियां) विभिन्न थोक बाजारों (कृषि उपज विपणन समितियों या APMC) में बेची जाती हैं। मंडी भाव दैनिक मांग और आपूर्ति के आधार पर उतार-चढ़ाव करते हैं। फसलों के विपणन को स्थिरता देने के लिए भारत सरकार <TermTooltip term="MSP" lang={lang}>न्यूनतम समर्थन मूल्य (MSP)</TermTooltip> लागू करती है।
-              </p>
-            </div>
-
-            <div className="grid gap-6 md:grid-cols-2">
-              <div className="p-6 rounded-2xl border border-white/[0.06] bg-white/[0.01] hover:bg-white/[0.02] transition-colors space-y-3">
-                <h3 className="text-lg font-bold text-amber-400 font-display">📈 <TermTooltip term="MSP" lang={lang}>न्यूनतम समर्थन मूल्य (MSP)</TermTooltip> और इसकी आवश्यकता</h3>
-                <p className="text-xs text-muted-foreground leading-relaxed">
-                  सरकार प्रत्येक फसल सीजन से पहले कृषि लागत और मूल्य आयोग (CACP) की सिफारिशों पर 22 अनिवार्य फसलों के लिए <TermTooltip term="MSP" lang={lang}>न्यूनतम समर्थन मूल्य (MSP)</TermTooltip> की घोषणा करती है। यह किसानों के लिए एक सुरक्षा कवच है, जिससे बाजार में कीमतों में भारी गिरावट आने पर भी वे अपनी फसल एक निश्चित दर पर सरकार को बेच सकें। यह उत्तर प्रदेश, पंजाब और हरियाणा के गेहूं और धान उत्पादक किसानों के लिए विशेष रूप से सहायक है।
-                </p>
-              </div>
-
-              <div className="p-6 rounded-2xl border border-white/[0.06] bg-white/[0.01] hover:bg-white/[0.02] transition-colors space-y-3">
-                <h3 className="text-lg font-bold text-amber-400 font-display">💻 राष्ट्रीय कृषि बाजार (eNAM) क्या है?</h3>
-                <p className="text-xs text-muted-foreground leading-relaxed">
-                  eNAM (इलेक्ट्रॉनिक नेशनल एग्रीकल्चर मार्केट) भारत सरकार द्वारा शुरू किया गया एक अखिल भारतीय इलेक्ट्रॉनिक ट्रेडिंग पोर्टल है। यह पोर्टल मौजूदा APMC मंडियों को एक नेटवर्क में जोड़कर किसानों को अपनी उपज की ऑनलाइन नीलामी करने की सुविधा देता है। इससे बिचौलियों की भूमिका कम होती है और राजस्थान या मध्य प्रदेश का किसान भी सीधे देश के किसी भी कोने के खरीदार से बेहतर मूल्य प्राप्त कर सकता है।
-                </p>
-              </div>
-            </div>
-
-            <div className="p-6 rounded-2xl border border-emerald-500/10 bg-emerald-500/[0.02] space-y-4">
-              <h3 className="text-lg font-bold text-emerald-400 font-display">📊 मंडी में बेहतर मूल्य प्राप्त करने की गाइड</h3>
-              <div className="grid gap-4 sm:grid-cols-3 text-xs leading-relaxed text-muted-foreground">
-                <div className="space-y-2 border-r border-white/[0.06] pr-4">
-                  <h4 className="font-extrabold text-white">1. ग्रेडिंग और छंटाई</h4>
-                  <p>فसल बेचने से पहले उसकी सफाई और छंटाई जरूर करें। कंकड़-पत्थर और टूटे दाने अलग करने से मंडी में 10% से 15% तक अधिक दाम मिलता है।</p>
-                </div>
-                <div className="space-y-2 border-r border-white/[0.06] px-4">
-                  <h4 className="font-extrabold text-white">2. नमी की जांच</h4>
-                  <p>मंडियों में अनाज में नमी का स्तर मापा जाता है। मानक नमी (आमतौर पर 12-14%) से अधिक होने पर दाम घटा दिए जाते हैं। फसल को धूप में अच्छी तरह सुखाकर ही मंडी ले जाएं।</p>
-                </div>
-                <div className="space-y-2 pl-4">
-                  <h4 className="font-extrabold text-white">3. ऑफ-सीजन बिक्री</h4>
-                  <p>कटाई के तुरंत बाद सभी किसान एक साथ मंडी में फसल लाते हैं, जिससे आपूर्ति बढ़ने के कारण दाम गिर जाते हैं। यदि संभव हो तो उपज का भंडारण करें और 2-3 महीने बाद बेचें जब कीमतें बढ़ती हैं।</p>
-                </div>
-              </div>
-            </div>
-
-            <div className="space-y-4">
-              <h2 className="text-2xl font-display font-extrabold text-white">❓ अक्सर पूछे जाने वाले प्रश्न (FAQs)</h2>
-              <div className="grid gap-4 md:grid-cols-2 text-xs text-muted-foreground">
-                <div className="p-4 rounded-xl border border-white/[0.04] bg-white/[0.005] space-y-2">
-                  <h4 className="font-bold text-white">Q1. न्यूनतम समर्थन मूल्य (MSP) कौन निर्धारित करता है?</h4>
-                  <p>भारत सरकार का कृषि लागत और मूल्य आयोग (CACP) लागत और विभिन्न कारकों का विश्लेषण कर MSP की सिफारिश करता है, और इसे आर्थिक मामलों की कैबिनेट समिति द्वारा मंजूरी दी जाती है।</p>
-                </div>
-                <div className="p-4 rounded-xl border border-white/[0.04] bg-white/[0.005] space-y-2">
-                  <h4 className="font-bold text-white">Q2. मंडी में मेरी फसल का भुगतान कब और कैसे होता है?</h4>
-                  <p>APMC नियमों के अनुसार आढ़ती या व्यापारी को तौल के दिन ही या अधिकतम 24-48 घंटों के भीतर सीधे किसान के बैंक खाते में आरटीजीएस/ऑनलाइन माध्यम से भुगतान करना होता है।</p>
-                </div>
-                <div className="p-4 rounded-xl border border-white/[0.04] bg-white/[0.005] space-y-2">
-                  <h4 className="font-bold text-white">Q3. eNAM पोर्टल पर पंजीकरण कैसे करें?</h4>
-                  <p>किसान नजदीकी मंडी कार्यालय में जाकर या सीधे eNAM की वेबसाइट पर अपना आधार, बैंक विवरण और भूमि दस्तावेज अपलोड कर निःशुल्क पंजीकरण करा सकते हैं।</p>
-                </div>
-                <div className="p-4 rounded-xl border border-white/[0.04] bg-white/[0.005] space-y-2">
-                  <h4 className="font-bold text-white">Q4. मॉडल प्राइस (Modal Price) का क्या अर्थ है?</h4>
-                  <p>मॉडल प्राइस का अर्थ है वह औसत दर जिस पर मंडी में उस दिन उस फसल की सबसे अधिक मात्रा बेची गई। यह न तो अधिकतम मूल्य होता है और न ही न्यूनतम मूल्य।</p>
-                </div>
-                <div className="p-4 rounded-xl border border-white/[0.04] bg-white/[0.005] space-y-2">
-                  <h4 className="font-bold text-white">Q5. यदि कोई व्यापारी MSP से कम पर फसल खरीदे तो क्या करें?</h4>
-                  <p>MSP सरकारी खरीद केंद्रों (जैसे FCI, NAFED) पर ही लागू होता है। निजी मंडियों या व्यापारियों पर इसे कानूनी रूप से थोपा नहीं जा सकता, इसलिए सरकारी खरीद केंद्रों पर ही उपज बेचने का प्रयास करें।</p>
-                </div>
-                <div className="p-4 rounded-xl border border-white/[0.04] bg-white/[0.005] space-y-2">
-                  <h4 className="font-bold text-white">Q6. क्या सब्जियों और फलों पर भी MSP मिलता है?</h4>
-                  <p>नहीं, वर्तमान में केवल 22 खरीफ और रबी फसलों पर ही केंद्र सरकार द्वारा MSP घोषित किया जाता है। सब्जियां और फल खराब होने वाली श्रेणी में आते हैं और इनका मूल्य मांग पर निर्भर होता है।</p>
-                </div>
-                <div className="p-4 rounded-xl border border-white/[0.04] bg-white/[0.005] space-y-2">
-                  <h4 className="font-bold text-white">Q7. मंडी में आढ़त शुल्क (Commission) कौन देता है?</h4>
-                  <p>नए नियमों के तहत आढ़त या कमिशन का भुगतान खरीदार (व्यापारी) करता है। किसानों से किसी भी तरह का आढ़त शुल्क काटना अवैध है।</p>
-                </div>
-                <div className="p-4 rounded-xl border border-white/[0.04] bg-white/[0.005] space-y-2">
-                  <h4 className="font-bold text-white">Q8. क्या दूसरे राज्य की मंडी में फसल बेचना संभव है?</h4>
-                  <p>हाँ, eNAM पोर्टल और 'एक देश, एक बाजार' नीति के तहत किसान देश की किसी भी मंडी में अपनी फसल बेचने के लिए स्वतंत्र हैं।</p>
-                </div>
-                <div className="p-4 rounded-xl border border-white/[0.04] bg-white/[0.005] space-y-2">
-                  <h4 className="font-bold text-white">Q9. फसल के कबाड़ (Trash) या डंठल को कैसे साफ करें?</h4>
-                  <p>फसलों की मड़ाई (Threshing) और ओसाई (Winnowing) के आधुनिक यंत्रों का उपयोग कर हवा की मदद से हल्के तिनकों को फसल से आसानी से अलग किया जा सकता है।</p>
-                </div>
-                <div className="p-4 rounded-xl border border-white/[0.04] bg-white/[0.005] space-y-2">
-                  <h4 className="font-bold text-white">Q10. क्या KisaanBuddy पर भाव वास्तविक समय में अपडेट होते हैं?</h4>
-                  <p>हाँ, KisaanBuddy भारत सरकार के विपणन और निरीक्षण निदेशालय (AGMARKNET) के सर्वरों से जुड़े लाइव एपीआई के माध्यम से हर दिन के मंडी भाव अपडेट करता है।</p>
-                </div>
-              </div>
-            </div>
-          </div>
-        ) : (
-          <div className="space-y-8 text-foreground">
-            <div className="space-y-3">
-              <h2 className="text-2xl md:text-3xl font-display font-extrabold text-white">🌾 What Are Mandi Prices and How Does Minimum Support Price (MSP) Work?</h2>
-              <p className="text-muted-foreground text-sm leading-relaxed max-w-4xl">
-                Mandi prices refer to the wholesale market rates at which agricultural produce (such as cereals, oilseeds, pulses, and fresh vegetables) are traded inside Agricultural Produce Market Committees (APMCs). These rates fluctuate daily based on supply and demand dynamics. To protect farm revenues, the Government of India institutes the Minimum Support Price (MSP) framework.
-              </p>
-            </div>
-
-            <div className="grid gap-6 md:grid-cols-2">
-              <div className="p-6 rounded-2xl border border-white/[0.06] bg-white/[0.01] hover:bg-white/[0.02] transition-colors space-y-3">
-                <h3 className="text-lg font-bold text-amber-400 font-display">📈 Minimum Support Price (MSP) and Farm Protection</h3>
-                <p className="text-xs text-muted-foreground leading-relaxed">
-                  MSP is declared by the central government prior to each sowing cycle based on recommendations from the Commission for Agricultural Costs and Prices (CACP) for 22 mandated crops. It acts as an economic safety net, guaranteeing that farmers can sell their harvests at a baseline price even if open market rates crash. This is especially vital for wheat and paddy cultivators in Punjab, Haryana, and Uttar Pradesh.
-                </p>
-              </div>
-
-              <div className="p-6 rounded-2xl border border-white/[0.06] bg-white/[0.01] hover:bg-white/[0.02] transition-colors space-y-3">
-                <h3 className="text-lg font-bold text-amber-400 font-display">💻 What is the eNAM Digital Trade Portal?</h3>
-                <p className="text-xs text-muted-foreground leading-relaxed">
-                  eNAM (Electronic National Agriculture Market) is an all-India online trading portal launched by the central government. It links existing physical APMC mandies into a single digital market, allowing farmers to auction their products online. By eliminating middlemen commissions, it enables cultivators from states like Rajasthan or Madhya Pradesh to secure maximum payouts from buyers nationwide.
-                </p>
-              </div>
-            </div>
-
-            <div className="p-6 rounded-2xl border border-emerald-500/10 bg-emerald-500/[0.02] space-y-4">
-              <h3 className="text-lg font-bold text-emerald-400 font-display">📊 Mandi Profit Optimization Guide</h3>
-              <div className="grid gap-4 sm:grid-cols-3 text-xs leading-relaxed text-muted-foreground">
-                <div className="space-y-2 border-r border-white/[0.06] pr-4">
-                  <h4 className="font-extrabold text-white">1. Grading & Cleaning</h4>
-                  <p>Sort and grade your grains to remove chaff, stones, and broken seeds. Clean bags fetch 10% to 15% higher bids in auctions compared to uncleaned lots.</p>
-                </div>
-                <div className="space-y-2 border-r border-white/[0.06] px-4">
-                  <h4 className="font-extrabold text-white">2. Moisture Control</h4>
-                  <p>Mandi agents measure moisture percentages. Anything above standard limits (typically 12-14%) results in price deductions. Air-dry your grains under the sun before dispatch.</p>
-                </div>
-                <div className="space-y-2 pl-4">
-                  <h4 className="font-extrabold text-white">3. Off-Season Supply</h4>
-                  <p>Avoid dumping crops immediately after harvest when supplies peak and prices drop. If storage facilities are accessible, delay sales by 2 to 3 months to sell during peak market demand.</p>
-                </div>
-              </div>
-            </div>
-
-            <div className="space-y-4">
-              <h2 className="text-2xl font-display font-extrabold text-white">❓ Mandi Prices FAQs</h2>
-              <div className="grid gap-4 md:grid-cols-2 text-xs text-muted-foreground">
-                <div className="p-4 rounded-xl border border-white/[0.04] bg-white/[0.005] space-y-2">
-                  <h4 className="font-bold text-white">Q1. Who calculates the MSP rate?</h4>
-                  <p>It is recommended by the CACP based on cost of cultivation and domestic/international demand, and approved by the Cabinet Committee on Economic Affairs (CCEA).</p>
-                </div>
-                <div className="p-4 rounded-xl border border-white/[0.04] bg-white/[0.005] space-y-2">
-                  <h4 className="font-bold text-white">Q2. What is the standard payment duration in mandis?</h4>
-                  <p>Under APMC acts, commission agents must settle payments directly to the farmer's bank account via RTGS/online transfer within 24 to 48 hours of weighing.</p>
-                </div>
-                <div className="p-4 rounded-xl border border-white/[0.04] bg-white/[0.005] space-y-2">
-                  <h4 className="font-bold text-white">Q3. How do I register on the eNAM platform?</h4>
-                  <p>Farmers can sign up online for free via the eNAM official portal or by visiting their local APMC office with their bank account, Aadhaar card, and land patta.</p>
-                </div>
-                <div className="p-4 rounded-xl border border-white/[0.04] bg-white/[0.005] space-y-2">
-                  <h4 className="font-bold text-white">Q4. What does "Modal Price" mean?</h4>
-                  <p>Modal Price is the most frequently occurring rate at which the highest volume of a specific crop was sold in the mandi during that day.</p>
-                </div>
-                <div className="p-4 rounded-xl border border-white/[0.04] bg-white/[0.005] space-y-2">
-                  <h4 className="font-bold text-white">Q5. Can I demand MSP from a private trader?</h4>
-                  <p>No, MSP is only legally binding for government procurement agencies. Private traders buy based on open-market demand, which is why utilizing government silos is recommended.</p>
-                </div>
-                <div className="p-4 rounded-xl border border-white/[0.04] bg-white/[0.005] space-y-2">
-                  <h4 className="font-bold text-white">Q6. Are fruits and vegetables covered under MSP?</h4>
-                  <p>No, currently only 22 grains, pulses, oilseeds, and cotton are covered under the central government's MSP framework.</p>
-                </div>
-                <div className="p-4 rounded-xl border border-white/[0.04] bg-white/[0.005] space-y-2">
-                  <h4 className="font-bold text-white">Q7. Who pays the commission agent's fee?</h4>
-                  <p>The buyer (trader) is responsible for commission fees. Deducting commission or mandi fee from the farmer's payout is strictly illegal.</p>
-                </div>
-                <div className="p-4 rounded-xl border border-white/[0.04] bg-white/[0.005] space-y-2">
-                  <h4 className="font-bold text-white">Q8. Is it possible to sell crops to other states?</h4>
-                  <p>Yes, eNAM and inter-state trade permits allow selling to buyers located anywhere in India.</p>
-                </div>
-                <div className="p-4 rounded-xl border border-white/[0.04] bg-white/[0.005] space-y-2">
-                  <h4 className="font-bold text-white">Q9. How do we remove dirt and stones from paddy?</h4>
-                  <p>Run grain pre-cleaners or perform manual winnowing to let wind carry away empty husks and light dirt particles.</p>
-                </div>
-                <div className="p-4 rounded-xl border border-white/[0.04] bg-white/[0.005] space-y-2">
-                  <h4 className="font-bold text-white">Q10. Where does KisaanBuddy get its mandi prices from?</h4>
-                  <p>We aggregate mandi prices daily through live connections to the Ministry of Agriculture's AGMARKNET databases.</p>
-                </div>
-              </div>
-            </div>
-          </div>
-        )}
-      </section>
     </div>
   )
 }
@@ -1516,12 +1333,12 @@ function TrendBadge({ trend, change, size = "sm" }: { trend: string; change: num
 
 function InfoTile({ icon, label, value }: { icon: React.ReactNode; label: string; value: string }) {
   return (
-    <div className="p-3.5 rounded-xl bg-white/[0.02] border border-white/[0.04]">
+    <div className="p-3.5 rounded-xl bg-muted/40 border border-border">
       <div className="flex items-center gap-1.5 text-[10px] uppercase font-bold text-muted-foreground tracking-wider mb-1">
         {icon} 
         <span>{label}</span>
       </div>
-      <p className="text-sm font-bold text-white truncate">{value}</p>
+      <p className="text-sm font-bold text-foreground truncate">{value}</p>
     </div>
   )
 }

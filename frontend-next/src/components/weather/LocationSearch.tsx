@@ -99,7 +99,7 @@ export function LocationSearch({
 
   return (
     <div ref={wrapRef} className={`relative w-full ${className}`}>
-      <div className="flex items-center gap-2 rounded-full border border-white/15 bg-white/60 px-4 py-2 shadow-sm backdrop-blur-lg transition focus-within:border-primary/50 focus-within:ring-2 focus-within:ring-primary/25 dark:bg-black/40">
+      <div className="flex items-center gap-2 rounded-full border border-border bg-card px-4 py-2 shadow-xs backdrop-blur-lg transition focus-within:border-primary/50 focus-within:ring-2 focus-within:ring-primary/25">
         <Search className="h-4 w-4 shrink-0 text-muted-foreground" />
         <input
           type="text"
@@ -108,7 +108,7 @@ export function LocationSearch({
           onFocus={() => query.trim().length >= 2 && setOpen(true)}
           onKeyDown={handleKey}
           placeholder={placeholder}
-          className="w-full bg-transparent text-sm outline-none placeholder:text-muted-foreground"
+          className="w-full bg-transparent text-sm text-foreground outline-none placeholder:text-muted-foreground"
           aria-label={t("weather.search_for_a_city")}
           autoComplete="off"
         />
@@ -126,7 +126,7 @@ export function LocationSearch({
       </div>
 
       {open && (results.length > 0 || error) && (
-        <div className="absolute left-0 right-0 z-50 mt-2 overflow-hidden rounded-2xl border border-white/10 bg-white/95 shadow-xl backdrop-blur-xl dark:bg-neutral-900/95">
+        <div className="absolute left-0 right-0 z-50 mt-2 overflow-hidden rounded-2xl border border-border bg-popover shadow-xl backdrop-blur-xl">
           {error ? (
             <div className="p-4 text-sm text-red-500">{error}</div>
           ) : (

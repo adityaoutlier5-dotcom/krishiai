@@ -1,5 +1,4 @@
 import type { Metadata, Viewport } from 'next';
-import { Inter, Outfit } from 'next/font/google';
 import './globals.css';
 import { Providers } from '@/components/Providers';
 import { Header } from '@/components/Header';
@@ -9,18 +8,19 @@ import { Analytics } from '@vercel/analytics/react';
 import { SwRegister } from '@/components/SwRegister';
 import Breadcrumbs from '@/components/Breadcrumbs';
 import Script from 'next/script';
- 
-const inter = Inter({
-  subsets: ['latin'],
-  variable: '--font-sans',
-  display: 'swap',
-});
 
-const outfit = Outfit({
-  subsets: ['latin'],
-  variable: '--font-display',
-  display: 'swap',
-});
+/* ---------- System font stacks ----------
+ * Replaced next/font/google to avoid build-time downloads from
+ * fonts.googleapis.com.  The CSS variables --font-sans and --font-display
+ * are consumed by Tailwind (tailwind.config.ts) and globals.css.
+ *
+ * If Inter / Outfit are installed on the system they will be used;
+ * otherwise the browser falls back through the standard system-ui stack.
+ */
+const FONT_SANS =
+  'Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji"';
+const FONT_DISPLAY =
+  'Outfit, Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif';
 
 export const metadata: Metadata = {
   metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || 'https://kisaanbuddy.com'),
@@ -73,7 +73,11 @@ export const viewport: Viewport = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" suppressHydrationWarning className={`${inter.variable} ${outfit.variable}`}>
+    <html
+      lang="en"
+      suppressHydrationWarning
+      style={{ '--font-sans': FONT_SANS, '--font-display': FONT_DISPLAY } as React.CSSProperties}
+    >
       <head>
         <script
           type="application/ld+json"
@@ -113,7 +117,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           }}
         />
       </head>
-      <body className={`${inter.className} min-h-screen antialiased`}>
+      <body className="font-sans min-h-screen antialiased">
         <Providers>
           <a
             href="#main-content"

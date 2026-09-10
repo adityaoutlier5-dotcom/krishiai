@@ -1026,5 +1026,37 @@
     "disease_photo": "Disease photo attached",
     "speech_not_supported": "Voice speech recognition is not supported in this browser. Please use Chrome on Android.",
     "success_submit": "Spoken query sent"
+  },
+  "ui": {
+    "navigation": { "open_menu": "Open menu", "close_menu": "Close menu" },
+    "search": { "label": "Search", "title": "Search KisaanBuddy (Ctrl+K)" },
+    "footer": { "khet_diary": "Khet Diary (Farm Ledger)" },
+    "home": {
+      "badge": "Practical tools for Indian farming",
+      "weather_cta": "Check farm weather",
+      "helper": "Use your own inputs and location to get started.",
+      "field_label": "Built for the field",
+      "card_title": "The essentials, without the clutter.",
+      "capabilities": { "weather": "Weather for your farm", "disease": "Identify crop disease", "crop": "Plan the next crop" }
+    },
+    "auth": {
+      "invalid_phone": "Please enter a valid Indian mobile number.",
+      "otp_sent": "Verification code sent successfully by SMS.",
+      "otp_send_failed": "We could not send the verification code. Please try again.",
+      "otp_resent": "A new verification code has been sent.",
+      "otp_resend_failed": "We could not resend the verification code.",
+      "otp_incorrect": "The verification code is incorrect. Please try again.",
+      "change_phone": "Change phone number",
+      "resend_in": "Resend in {seconds}s",
+      "resend_otp": "Resend verification code",
+      "otp_group": "Six-digit verification code",
+      "otp_digit": "Verification code digit",
+      "network_error": "Network error. Please try again later.",
+      "password_length": "Use at least 8 characters for your new password.",
+      "reset_failed": "We could not reset your password. Please try again.",
+      "reset_request_failed": "We could not request a reset link. Please try again.",
+      "reset_delivery_unavailable": "Password reset email is not configured. Please contact support for help accessing your account.",
+      "email_instructions": "Enter your email address. If password-reset email delivery is available, we’ll send instructions."
+    }
   }
 }

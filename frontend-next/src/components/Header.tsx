@@ -2,16 +2,15 @@
 
 import Link from 'next/link';
 import {
-  Leaf, Menu, X, LogOut, User as UserIcon,
+  Menu, X, LogOut, User as UserIcon,
   LayoutDashboard, CloudSun, Sprout, Bug,
-  FileText, TrendingUp, Users, MessageSquare, Mic,
-  Star, ChevronDown, BookOpen, FlaskConical, Landmark, Cpu,
-  Search
+  TrendingUp, Users, Mic, Star, ChevronDown,
+  FlaskConical, Landmark, Search, Sparkles, Globe
 } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { usePathname, useRouter } from 'next/navigation';
 import { ThemeToggle } from '@/components/ThemeToggle';
-import { useLanguage, LANG_NAMES, type Lang } from '@/lib/language';
+import { useLanguage, LANG_NAMES, SELECTABLE_LANGS, type Lang } from '@/lib/language';
 import { useAuth, logoutUser } from '@/lib/auth';
 import SearchModal from '@/components/SearchModal';
 import { trackEvent } from '@/lib/analytics';
@@ -25,48 +24,22 @@ const NAV_LINK_DEFS = [
   { href: '/schemes',        key: 'schemes',        icon: Landmark        },
   { href: '/mandi',          key: 'mandi',          icon: TrendingUp      },
   { href: '/worker-connect', key: 'workers',        icon: Users           },
-  { href: '/chatbot',        key: 'aiChatbot',      icon: Mic   },
+  { href: '/chatbot',        key: 'aiChatbot',      icon: Mic             },
 ] as const;
 
 const PUBLIC_ROUTES = ['/', '/login', '/signup', '/about', '/contact', '/privacy', '/terms', '/disclaimer', '/cookie-policy'];
 
-function LangFlag({ lang }: { lang: Lang }) {
-  const { t } = useLanguage()
-  if (lang === 'en') {
-    return (
-      <svg className="h-3.5 w-5 rounded-sm shrink-0 border border-black/10 dark:border-white/10" viewBox="0 0 60 30" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <path d="M0 0h60v30H0z" fill="#012169"/>
-        <path d="M0 0l60 30M60 0L0 30" stroke="#fff" strokeWidth="6"/>
-        <path d="M0 0l60 30M60 0L0 30" stroke="#C8102E" strokeWidth="4"/>
-        <path d="M30 0v30M0 15h60" stroke="#fff" strokeWidth="10"/>
-        <path d="M30 0v30M0 15h60" stroke="#C8102E" strokeWidth="6"/>
-      </svg>
-    );
-  }
-  return (
-    <svg className="h-3.5 w-5 rounded-sm shrink-0 border border-black/10 dark:border-white/10" viewBox="0 0 900 600" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <path d="M0 0h900v200H0z" fill="#FF9933"/>
-      <path d="M0 200h900v200H0z" fill="#fff"/>
-      <path d="M0 400h900v200H0z" fill="#138808"/>
-      <circle cx="450" cy="300" r="80" stroke="#000080" strokeWidth="10"/>
-      <circle cx="450" cy="300" r="10" fill="#000080"/>
-      <line x1="450" y1="220" x2="450" y2="380" stroke="#000080" strokeWidth="6"/>
-      <line x1="370" y1="300" x2="530" y2="300" stroke="#000080" strokeWidth="6"/>
-      <line x1="393.4" y1="243.4" x2="506.6" y2="356.6" stroke="#000080" strokeWidth="6"/>
-      <line x1="393.4" y1="356.6" x2="506.6" y2="243.4" stroke="#000080" strokeWidth="6"/>
-    </svg>
-  );
-}
+
 
 export function Header() {
   const [open, setOpen]           = useState(false);
   const [scrolled, setScrolled]   = useState(false);
   const pathname                  = usePathname();
   const router                    = useRouter();
-  const { user, ready }           = useAuth()
-  const { lang, setLang, t }        = useLanguage()
-  const [langOpen, setLangOpen]     = useState(false)
-  const [searchOpen, setSearchOpen] = useState(false)
+  const { user, ready }           = useAuth();
+  const { lang, setLang, t }        = useLanguage();
+  const [langOpen, setLangOpen]     = useState(false);
+  const [searchOpen, setSearchOpen] = useState(false);
   const NAV_LINKS = NAV_LINK_DEFS.map(d => ({ href: d.href, label: t(d.key as any) as string, icon: d.icon }));
 
   /* close drawer on route change */
@@ -90,7 +63,7 @@ export function Header() {
     return () => { document.body.style.overflow = ''; };
   }, [open]);
 
-  /* shrink header on scroll */
+  /* scroll monitor */
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 8);
     window.addEventListener('scroll', onScroll, { passive: true });
@@ -124,275 +97,297 @@ export function Header() {
   return (
     <>
       <header
-        className={`sticky top-3 z-50 mx-3 md:mx-auto max-w-7xl w-[calc(100%-1.5rem)] md:w-full h-14
-          flex items-center justify-between px-4 md:px-6 transition-all duration-500 rounded-2xl
-          ${scrolled
-            ? 'glass-panel shadow-lg shadow-black/5 dark:shadow-emerald-950/5 backdrop-blur-xl border-emerald-500/10'
-            : 'glass-panel border-transparent bg-transparent backdrop-blur-none shadow-none'
-          }`}
+        className={`sticky top-0 z-40 w-full transition-all duration-200 border-b ${
+          scrolled
+            ? 'bg-background/90 backdrop-blur-md border-border/80 shadow-2xs'
+            : 'bg-background/70 backdrop-blur-xs border-border/60'
+        }`}
       >
-        {/* ── Logo ── */}
-        <Link
-          href={user ? '/dashboard' : '/'}
-          onClick={() => setOpen(false)}
-          className="flex items-center gap-2.5 shrink-0 group select-none"
-        >
-          <div className="relative flex h-9 w-9 items-center justify-center rounded-xl bg-slate-950/20 border border-white/10 group-hover:scale-105 group-hover:border-primary/30 transition-all duration-300 overflow-hidden p-1">
-            <img src="/icon-logo.png" alt="Kisaan Buddy Icon" className="h-full w-full object-contain dark:brightness-110" />
-          </div>
-          <div className="flex flex-col leading-none">
-            <span className="font-display text-lg tracking-tight">
-              <span className="font-black text-foreground">Kisaan</span>
-              <span className="font-light text-primary">Buddy</span>
-            </span>
-            {isPublic && !user && (
-              <span className="text-[9px] font-bold uppercase tracking-widest text-muted-foreground/80">
-                Smart Farming
-              </span>
-            )}
-          </div>
-        </Link>
-
-        {/* ── Desktop Nav ── */}
-        {showFullNav && (
-          <nav className="hidden lg:flex items-center gap-1.5 text-xs font-semibold">
-            {NAV_LINKS.map(({ href, label, icon: Icon }) => (
-              <Link
-                key={href}
-                href={href}
-                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl transition-all duration-300
-                  ${isActive(href)
-                    ? 'glass-pill-active text-emerald-500 font-bold scale-[1.02]'
-                    : 'text-muted-foreground hover:text-foreground hover:bg-background/40 dark:hover:bg-white/5'
-                  }`}
-              >
-                <Icon className="h-3.5 w-3.5 shrink-0 transition-transform duration-300 group-hover:scale-110" />
-                {label}
-              </Link>
-            ))}
-          </nav>
-        )}
-
-        {/* ── Right side ── */}
-        <div className="flex items-center gap-1.5 md:gap-2">
-          {/* Site-wide Search Trigger Button */}
-          <button
-            type="button"
-            onClick={() => setSearchOpen(true)}
-            title="Search KisaanBuddy (Ctrl+K)"
-            className="flex h-9 w-9 items-center justify-center rounded-xl text-muted-foreground border border-border/40 bg-background/30 hover:bg-muted/40 hover:text-emerald-500 transition-colors duration-200 cursor-pointer"
+        <div className="max-w-7xl mx-auto flex h-14 items-center justify-between px-4 md:px-8">
+          {/* ── Logo ── */}
+          <Link
+            href={user ? '/dashboard' : '/'}
+            onClick={() => setOpen(false)}
+            className="flex items-center gap-2 shrink-0 group select-none"
           >
-            <Search className="h-4 w-4" />
-          </button>
-          
-          <ThemeToggle />
-
-          {/* Language selector */}
-          <div className="relative">
-            <button
-              onClick={() => setLangOpen(v => !v)}
-              className="flex items-center gap-1.5 h-9 rounded-xl border border-border/40 bg-background/30 px-2.5 text-xs font-semibold text-foreground hover:bg-muted/40 transition-all duration-200 backdrop-blur-sm select-none"
-            >
-              <LangFlag lang={lang} />
-              <span>{LANG_NAMES[lang]}</span>
-              <ChevronDown className={`h-3 w-3 text-muted-foreground/75 transition-transform duration-200 ${langOpen ? 'rotate-180' : ''}`} />
-            </button>
-            {langOpen && (
-              <>
-                <button className="fixed inset-0 z-40" onClick={() => setLangOpen(false)} aria-label={t("header.close")} />
-                <div className="absolute right-0 top-11 z-50 w-38 rounded-xl border border-border/40 bg-popover/90 backdrop-blur-md shadow-xl overflow-hidden animate-fade-in p-1">
-                  {(Object.keys(LANG_NAMES) as Lang[]).map((l) => (
-                    <button
-                      key={l}
-                      onClick={() => {
-                        trackEvent({ type: 'language_switch', from: lang, to: l });
-                        setLang(l);
-                        setLangOpen(false);
-                      }}
-                      className={"w-full flex items-center gap-2 px-3 py-2 text-xs rounded-lg transition-colors " + (lang === l ? "bg-emerald-500/10 text-emerald-500 font-semibold" : "text-foreground hover:bg-muted/50")}
-                    >
-                      <LangFlag lang={l} /> <span>{LANG_NAMES[l]}</span>
-                    </button>
-                  ))}
-                </div>
-              </>
-            )}
-          </div>
-
-          {/* Founders link — always visible on desktop */}
-          {pathname !== '/founders' && (
-            <Link
-              href="/founders"
-              className="hidden md:inline-flex items-center gap-1 text-xs font-semibold text-muted-foreground hover:text-emerald-500 transition-colors whitespace-nowrap px-3 py-2 rounded-xl hover:bg-background/40 dark:hover:bg-white/5 select-none"
-            >
-              <Star className="h-3 w-3 text-amber-500 animate-pulse-glow rounded-full" /> {t("founders")}
-            </Link>
-          )}
-
-
-
-          {/* Logged-out CTA */}
-          {ready && !user && isPublic && pathname !== '/login' && (
-            <Link
-              href="/login"
-              className="inline-flex items-center justify-center rounded-xl px-4 py-2 text-xs font-semibold text-white shadow-md transition-all duration-300
-                bg-gradient-to-r from-emerald-500 to-teal-500
-                hover:shadow-glow-primary hover:brightness-105 active:scale-95 select-none"
-            >
-              {t("loginLabel")}
-            </Link>
-          )}
-
-          {/* Logged-in user badge */}
-          {ready && user && showFullNav && (
-            <div className="hidden md:flex items-center gap-1">
-              <Link
-                href="/profile"
-                className="flex items-center gap-2 rounded-xl border border-emerald-500/10 bg-emerald-500/5 dark:bg-emerald-500/5 px-2.5 py-1.5 text-xs hover:bg-emerald-500/10 transition-colors"
-              >
-                {user.profile_image ? (
-                  <img
-                    src={user.profile_image}
-                    alt={t("header.profile")}
-                    className="h-5 w-5 rounded-full object-cover shrink-0 border border-emerald-500/10"
-                  />
-                ) : (
-                  <div className="flex h-5 w-5 items-center justify-center rounded-full bg-gradient-to-br from-emerald-400 to-teal-500 text-white text-[9px] font-extrabold shrink-0 shadow shadow-emerald-500/20">
-                    {initials}
-                  </div>
-                )}
-                <span className="font-semibold text-muted-foreground max-w-[90px] truncate">
-                  {user.name || user.email.split('@')[0]}
+            <div className="flex flex-col leading-none">
+              <span className="font-display text-lg md:text-xl tracking-tight">
+                <span className="font-extrabold text-foreground">Kisaan</span>
+                <span className="font-bold text-emerald-600 dark:text-emerald-400">Buddy</span>
+              </span>
+              {isPublic && !user && (
+                <span className="text-[9px] font-semibold uppercase tracking-wider text-muted-foreground/80">
+                  Smart Farming
                 </span>
-              </Link>
-              <button
-                onClick={handleLogout}
-                title={t("header.sign_out")}
-                className="flex h-9 w-9 items-center justify-center rounded-xl text-muted-foreground border border-transparent
-                  hover:bg-red-500/10 hover:border-red-500/15 hover:text-red-500 transition-colors duration-200"
-              >
-                <LogOut className="h-3.5 w-3.5" />
-              </button>
+              )}
             </div>
+          </Link>
+
+          {/* ── Desktop Nav ── */}
+          {showFullNav ? (
+            <nav className="hidden lg:flex items-center gap-1 text-xs font-medium">
+              {NAV_LINKS.map(({ href, label, icon: Icon }) => (
+                <Link
+                  key={href}
+                  href={href}
+                  className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg transition-colors duration-150 ${
+                    isActive(href)
+                      ? 'bg-primary/10 text-primary font-semibold border border-primary/20'
+                      : 'text-muted-foreground hover:text-foreground hover:bg-muted/60'
+                  }`}
+                >
+                  <Icon className="h-3.5 w-3.5 shrink-0" />
+                  <span>{label}</span>
+                </Link>
+              ))}
+            </nav>
+          ) : (
+            <nav className="hidden lg:flex items-center gap-1 text-xs font-semibold">
+              <Link href="/#features" className="px-3 py-1.5 rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted/60 transition-colors">
+                {lang === 'hi' ? "एक ही जगह सब कुछ" : "All In One Place"}
+              </Link>
+              <Link href="/mandi" className="px-3 py-1.5 rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted/60 transition-colors">
+                {lang === 'hi' ? "मंडी भाव" : "Mandi"}
+              </Link>
+              <Link href="/weather" className="px-3 py-1.5 rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted/60 transition-colors">
+                {lang === 'hi' ? "मौसम" : "Weather"}
+              </Link>
+              <Link href="/#technology" className="px-3 py-1.5 rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted/60 transition-colors">
+                {lang === 'hi' ? "कृषि तकनीक आर्किटेक्चर" : "Agritech Architecture"}
+              </Link>
+              <Link href="/#founders" className="px-3 py-1.5 rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted/60 transition-colors">
+                {lang === 'hi' ? "संस्थापक" : "Founders"}
+              </Link>
+            </nav>
           )}
 
-          {/* Mobile hamburger */}
-          {(showFullNav || (!user && isPublic && pathname !== '/login')) && (
+          {/* ── Right side controls ── */}
+          <div className="flex items-center gap-1.5 md:gap-2">
+            {/* Quick Search */}
             <button
               type="button"
-              aria-label={open ? 'Close menu' : 'Open menu'}
-              aria-expanded={open}
-              onClick={() => setOpen(v => !v)}
-              className="lg:hidden flex h-9 w-9 items-center justify-center rounded-xl border border-border/40 bg-background/30 backdrop-blur-sm
-                text-foreground hover:bg-white/20 dark:hover:bg-white/10 transition-colors"
+              onClick={() => setSearchOpen(true)}
+              title={t("ui.search.title")}
+              className="flex h-8 items-center gap-2 rounded-lg border border-border/70 bg-card/60 px-2.5 text-xs text-muted-foreground hover:text-foreground hover:border-border transition-colors cursor-pointer"
             >
-              {open ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+              <Search className="h-3.5 w-3.5" />
+              <span className="hidden sm:inline text-[11px]">{t("ui.search.label")}</span>
+              <kbd className="hidden sm:inline-flex items-center rounded border border-border bg-muted/60 px-1 font-mono text-[9px] text-muted-foreground">
+                ⌘K
+              </kbd>
             </button>
-          )}
+            
+            <ThemeToggle />
+
+            {/* Language Selector */}
+            <div className="relative">
+              <button
+                type="button"
+                onClick={() => setLangOpen(v => !v)}
+                className="flex items-center gap-1.5 h-8 rounded-lg border border-border/70 bg-card/60 px-2.5 text-xs font-semibold text-foreground hover:bg-muted/60 transition-colors"
+                aria-expanded={langOpen}
+              >
+                <Globe className="h-3.5 w-3.5 text-emerald-600 dark:text-emerald-400" />
+                <span className="hidden sm:inline">{LANG_NAMES[lang]}</span>
+                <ChevronDown className={`h-3 w-3 text-muted-foreground transition-transform duration-150 ${langOpen ? 'rotate-180' : ''}`} />
+              </button>
+              {langOpen && (
+                <>
+                  <button className="fixed inset-0 z-40 cursor-default" onClick={() => setLangOpen(false)} aria-label={t("header.close")} />
+                  <div className="absolute right-0 top-10 z-50 w-36 rounded-xl border border-border bg-popover shadow-lg overflow-hidden p-1">
+                    {SELECTABLE_LANGS.map((l) => (
+                      <button
+                        key={l}
+                        type="button"
+                        onClick={() => {
+                          trackEvent({ type: 'language_switch', from: lang, to: l });
+                          setLang(l);
+                          setLangOpen(false);
+                        }}
+                        className={`w-full flex items-center justify-between px-3 py-1.5 text-xs rounded-lg transition-colors ${
+                          lang === l
+                            ? "bg-primary/10 text-primary font-bold"
+                            : "text-foreground hover:bg-muted/70 font-medium"
+                        }`}
+                      >
+                        <span>{LANG_NAMES[l]}</span>
+                        {lang === l && <span className="h-1.5 w-1.5 rounded-full bg-primary" />}
+                      </button>
+                    ))}
+                  </div>
+                </>
+              )}
+            </div>
+
+            {/* Logged-out Login + Start Free CTAs */}
+            {ready && !user && isPublic && pathname !== '/login' && (
+              <div className="flex items-center gap-2">
+                <Link
+                  href="/login"
+                  className="hidden sm:inline-flex items-center justify-center rounded-lg px-3 py-1.5 text-xs font-semibold text-foreground hover:bg-muted/80 border border-border/70 transition-all"
+                >
+                  {t("loginLabel")}
+                </Link>
+                <Link
+                  href="/signup"
+                  className="inline-flex h-8 items-center justify-center rounded-lg bg-emerald-700 hover:bg-emerald-800 px-3.5 text-xs font-semibold text-white transition-colors"
+                >
+                  {lang === 'hi' ? "मुफ़्त शुरू करें" : "Start Free"}
+                </Link>
+              </div>
+            )}
+
+            {/* Logged-in user badge */}
+            {ready && user && showFullNav && (
+              <div className="hidden md:flex items-center gap-1">
+                <Link
+                  href="/profile"
+                  className="flex items-center gap-2 rounded-lg border border-border/80 bg-card/60 px-2 py-1 text-xs hover:border-primary/40 hover:bg-muted/60 transition-colors"
+                >
+                  {user.profile_image ? (
+                    <img
+                      src={user.profile_image}
+                      alt={t("header.profile")}
+                      className="h-5 w-5 rounded-full object-cover shrink-0"
+                    />
+                  ) : (
+                    <div className="flex h-5 w-5 items-center justify-center rounded-full bg-primary text-primary-foreground text-[10px] font-bold shrink-0">
+                      {initials}
+                    </div>
+                  )}
+                  <span className="font-medium text-foreground max-w-[90px] truncate">
+                    {user.name || user.email?.split('@')[0]}
+                  </span>
+                </Link>
+                <button
+                  type="button"
+                  onClick={handleLogout}
+                  title={t("header.sign_out")}
+                  className="flex h-8 w-8 items-center justify-center rounded-lg text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-colors"
+                >
+                  <LogOut className="h-3.5 w-3.5" />
+                </button>
+              </div>
+            )}
+
+            {/* Mobile hamburger */}
+            {(showFullNav || (!user && isPublic && pathname !== '/login')) && (
+              <button
+                type="button"
+                aria-label={open ? t("ui.navigation.close_menu") : t("ui.navigation.open_menu")}
+                aria-expanded={open}
+                onClick={() => setOpen(v => !v)}
+                className="lg:hidden flex h-8 w-8 items-center justify-center rounded-lg border border-border/70 bg-card/60 text-foreground hover:bg-muted transition-colors"
+              >
+                {open ? <X className="h-4 w-4" /> : <Menu className="h-4 w-4" />}
+              </button>
+            )}
+          </div>
         </div>
       </header>
 
       {/* ── Mobile Drawer ── */}
       {open && (
         <>
-          {/* Backdrop */}
           <button
             type="button"
             aria-label={t("header.close_menu")}
-            className="fixed inset-0 z-40 bg-black/60 backdrop-blur-md lg:hidden cursor-default transition-all duration-300"
+            className="fixed inset-0 z-40 bg-black/40 backdrop-blur-xs lg:hidden cursor-default transition-opacity"
             onClick={() => setOpen(false)}
           />
 
-          {/* Drawer panel */}
           <nav
-            className="fixed top-[4.5rem] left-3 right-3 z-50 lg:hidden glass-panel rounded-2xl p-4 flex flex-col gap-1.5 animate-slide-up max-h-[82vh] overflow-y-auto border-emerald-500/10 shadow-2xl"
+            className="fixed top-16 left-3 right-3 z-50 lg:hidden rounded-2xl border border-border bg-card p-4 shadow-xl flex flex-col gap-1.5 max-h-[82vh] overflow-y-auto"
             aria-label={t("header.mobile_navigation")}
           >
             {showFullNav ? (
               <>
-                {/* User info row */}
+                {/* User Info Row */}
                 <Link
                   href="/profile"
                   onClick={() => setOpen(false)}
-                  className="flex items-center gap-3 px-3 py-3 mb-2 rounded-xl bg-emerald-500/5 dark:bg-emerald-500/5 border border-emerald-500/10 hover:bg-emerald-500/10 transition-colors"
+                  className="flex items-center gap-3 p-2.5 mb-1 rounded-xl bg-muted/50 border border-border/60 hover:bg-muted transition-colors"
                 >
                   {user?.profile_image ? (
                     <img
                       src={user.profile_image}
                       alt={t("header.profile")}
-                      className="h-9 w-9 rounded-full object-cover shrink-0 border border-emerald-500/10"
+                      className="h-8 w-8 rounded-full object-cover shrink-0"
                     />
                   ) : (
-                    <div className="flex h-9 w-9 items-center justify-center rounded-full bg-gradient-to-br from-emerald-400 to-teal-500 text-white text-sm font-bold shrink-0 shadow shadow-emerald-500/25">
+                    <div className="flex h-8 w-8 items-center justify-center rounded-full bg-primary text-primary-foreground text-xs font-bold shrink-0">
                       {initials}
                     </div>
                   )}
                   <div className="flex flex-col min-w-0">
-                    <span className="font-semibold text-sm truncate">
+                    <span className="font-semibold text-xs text-foreground truncate">
                       {user?.name || user?.email?.split('@')[0]}
                     </span>
-                    <span className="text-[10px] text-muted-foreground truncate">{user?.email}</span>
+                    <span className="text-[11px] text-muted-foreground truncate">{user?.phone_number || user?.email}</span>
                   </div>
                 </Link>
 
-                {/* Nav links */}
-                {NAV_LINKS.map(({ href, label, icon: Icon }) => {
-                  const active = isActive(href);
-                  return (
-                    <Link
-                      key={href}
-                      href={href}
-                      onClick={() => setOpen(false)}
-                      className={`flex items-center gap-3 rounded-xl px-3 py-3 text-xs font-semibold transition-all duration-200
-                        ${active
-                          ? 'glass-pill-active text-emerald-500'
-                          : 'text-muted-foreground hover:text-foreground hover:bg-white/20 dark:hover:bg-white/5'
+                {/* Nav Links */}
+                <div className="grid grid-cols-1 gap-1 my-1">
+                  {NAV_LINKS.map(({ href, label, icon: Icon }) => {
+                    const active = isActive(href);
+                    return (
+                      <Link
+                        key={href}
+                        href={href}
+                        onClick={() => setOpen(false)}
+                        className={`flex items-center gap-3 rounded-lg px-3 py-2.5 text-xs font-medium transition-colors ${
+                          active
+                            ? 'bg-primary/10 text-primary font-semibold border border-primary/20'
+                            : 'text-muted-foreground hover:text-foreground hover:bg-muted/60'
                         }`}
-                    >
-                      <Icon className="h-4 w-4 shrink-0 text-emerald-500" />
-                      {label}
-                      {active && <span className="ml-auto h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse-glow" />}
-                    </Link>
-                  );
-                })}
+                      >
+                        <Icon className="h-4 w-4 shrink-0 text-primary" />
+                        <span>{label}</span>
+                        {active && <span className="ml-auto h-1.5 w-1.5 rounded-full bg-primary" />}
+                      </Link>
+                    );
+                  })}
+                </div>
 
-                {/* Founders */}
+                <div className="my-1 border-t border-border/60" />
+
                 <Link
                   href="/founders"
                   onClick={() => setOpen(false)}
-                  className="flex items-center gap-3 rounded-xl px-3 py-3 text-xs font-semibold text-muted-foreground hover:text-foreground hover:bg-white/20 dark:hover:bg-white/5 transition-all duration-200"
+                  className="flex items-center gap-3 rounded-lg px-3 py-2 text-xs font-medium text-muted-foreground hover:text-foreground hover:bg-muted/60 transition-colors"
                 >
-                  <Star className="h-4 w-4 shrink-0 text-amber-500" />
-                  {t("founders")}
+                  <Star className="h-4 w-4 shrink-0 text-amber-500 fill-amber-500/20" />
+                  <span>{t("founders")}</span>
                 </Link>
 
-                <div className="my-2 divider-gradient" />
-
                 <button
+                  type="button"
                   onClick={handleLogout}
-                  className="flex items-center gap-3 rounded-xl px-3 py-3 text-xs font-semibold text-red-500 hover:bg-red-500/5 border border-transparent hover:border-red-500/10 transition-all duration-200"
+                  className="flex items-center gap-3 rounded-lg px-3 py-2 text-xs font-medium text-destructive hover:bg-destructive/10 transition-colors mt-1"
                 >
-                  <LogOut className="h-4 w-4 shrink-0 text-red-500" />
-                  {t("logout")}
+                  <LogOut className="h-4 w-4 shrink-0" />
+                  <span>{t("logout")}</span>
                 </button>
               </>
             ) : (
-              <>
+              <div className="flex flex-col gap-2 pt-1">
                 <Link
                   href="/login"
                   onClick={() => setOpen(false)}
-                  className="rounded-xl bg-gradient-to-r from-emerald-500 to-teal-500 px-4 py-3 text-center text-xs font-semibold text-white shadow-lg shadow-emerald-500/25"
+                  className="rounded-lg bg-primary px-4 py-2.5 text-center text-xs font-semibold text-primary-foreground shadow-xs hover:bg-primary/90 transition-colors"
                 >
                   {t("loginLabel")}
                 </Link>
                 <Link
                   href="/founders"
                   onClick={() => setOpen(false)}
-                  className="rounded-xl px-4 py-3 text-center text-xs font-semibold text-muted-foreground hover:text-primary hover:bg-white/5 transition-colors flex items-center justify-center gap-2"
+                  className="rounded-lg border border-border px-4 py-2 text-center text-xs font-medium text-muted-foreground hover:text-foreground hover:bg-muted/60 transition-colors flex items-center justify-center gap-2"
                 >
-                  <Star className="h-4 w-4 text-amber-500" /> {t("founders")}
+                  <Star className="h-3.5 w-3.5 text-amber-500 fill-amber-500/20" />
+                  <span>{t("founders")}</span>
                 </Link>
-              </>
+              </div>
             )}
           </nav>
         </>
