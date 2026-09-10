@@ -340,15 +340,15 @@ function LanguagePicker({
     { id: "kn", label: "ಕನ್ನಡ" },
   ]
   return (
-    <div className="inline-flex rounded-xl border border-white/[0.08] bg-slate-950/40 p-1 backdrop-blur-sm">
+    <div className="inline-flex rounded-xl border border-border bg-card p-1 shadow-xs">
       {items.map((it) => (
         <button
           key={it.id}
           onClick={() => onChange(it.id)}
           className={`rounded-lg px-3 py-1.5 text-xs font-bold transition-all duration-300 ${
             language === it.id
-              ? "bg-emerald-500 text-white shadow-md shadow-emerald-500/10"
-              : "text-muted-foreground hover:text-white"
+              ? "bg-emerald-600 text-white shadow-xs"
+              : "text-muted-foreground hover:text-foreground"
           }`}
         >
           {it.label}
@@ -451,29 +451,29 @@ function HireTab({ language }: { language: Language }) {
   return (
     <div className="grid gap-8 lg:grid-cols-[1.2fr_1fr] items-start">
       {/* Left — form */}
-      <GlassCard className="border border-white/[0.08] backdrop-blur-md p-6 space-y-5 shadow-xl bg-slate-950/20">
-        <div className="flex items-center gap-2 pb-4 border-b border-white/[0.06]">
-          <div className="h-8 w-8 rounded-lg bg-emerald-500/10 flex items-center justify-center text-emerald-400">
+      <GlassCard className="border border-border backdrop-blur-md p-6 space-y-5 shadow-sm bg-card">
+        <div className="flex items-center gap-2 pb-4 border-b border-border">
+          <div className="h-8 w-8 rounded-lg bg-emerald-500/10 flex items-center justify-center text-emerald-600 dark:text-emerald-400">
             <Briefcase className="h-4 w-4" />
           </div>
           <div>
-            <h2 className="text-md font-bold text-white font-display">{lblEn("Job Specifications", "नौकरी का विवरण", "ಉದ್ಯೋಗದ ವಿವರಗಳು")}</h2>
+            <h2 className="text-md font-bold text-foreground font-display">{lblEn("Job Specifications", "नौकरी का विवरण", "ಉದ್ಯೋಗದ ವಿವರಗಳು")}</h2>
             <p className="text-[11px] text-muted-foreground">{lblEn("Complete criteria to dispatch notification matching algorithm", "मैचिंग नोटिफिकेशन भेजने के लिए मानदंड भरें", "ಹೊಂದಾಣಿಕೆಯ ಅಧಿಸೂಚನೆಯನ್ನು ಕಳುಹಿಸಲು ಮಾನದಂಡಗಳನ್ನು ಭರ್ತಿ ಮಾಡಿ")}</p>
           </div>
         </div>
 
         {/* Work type */}
         <div className="space-y-2">
-          <Label className="text-xs uppercase tracking-wider text-muted-foreground/80 font-bold">
+          <Label className="text-xs uppercase tracking-wider text-muted-foreground font-bold">
             {lblEn("Type of work", "काम का प्रकार", "ಕೆಲಸದ ಪ್ರಕಾರ")}
           </Label>
           <select
-            className="w-full rounded-xl border border-white/[0.08] bg-slate-950/40 px-3.5 py-3 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-emerald-500/30 transition-all cursor-pointer"
+            className="w-full rounded-xl border border-border bg-background px-3.5 py-3 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-emerald-500/30 transition-all cursor-pointer"
             value={form.work_type}
             onChange={(e) => update("work_type", e.target.value as WorkType)}
           >
             {WORK_TYPES.map((wt) => (
-              <option key={wt} value={wt} className="bg-slate-900">
+              <option key={wt} value={wt} className="bg-card text-foreground">
                 {workTypeLabel(wt, language)}
               </option>
             ))}
@@ -483,22 +483,22 @@ function HireTab({ language }: { language: Language }) {
         {/* Location village, district */}
         <div className="grid grid-cols-2 gap-4">
           <div className="space-y-2">
-            <Label className="text-xs uppercase tracking-wider text-muted-foreground/80 font-bold">
+            <Label className="text-xs uppercase tracking-wider text-muted-foreground font-bold">
               {lblEn("Village", "गाँव", "ಗ್ರಾಮ")}
             </Label>
             <Input
-              className="h-[46px] rounded-xl border-white/[0.08] bg-slate-950/40 text-foreground px-4 text-sm font-semibold focus-visible:ring-emerald-500/30"
+              className="h-[46px] rounded-xl border-border bg-background text-foreground px-4 text-sm font-semibold focus-visible:ring-emerald-500/30"
               placeholder={lblEn("Optional", "वैकल्पिक", "ಐಚ್ಛಿಕ")}
               value={form.location.village ?? ""}
               onChange={(e) => updateLoc("village", e.target.value)}
             />
           </div>
           <div className="space-y-2">
-            <Label className="text-xs uppercase tracking-wider text-muted-foreground/80 font-bold">
+            <Label className="text-xs uppercase tracking-wider text-muted-foreground font-bold">
               {lblEn("District *", "ज़िला *", "ಜಿಲ್ಲೆ *")}
             </Label>
             <Input
-              className="h-[46px] rounded-xl border-white/[0.08] bg-slate-950/40 text-foreground px-4 text-sm font-semibold focus-visible:ring-emerald-500/30"
+              className="h-[46px] rounded-xl border-border bg-background text-foreground px-4 text-sm font-semibold focus-visible:ring-emerald-500/30"
               placeholder={lblEn("e.g. Tumkur", "जैसे तुमकूर", "ಉದಾ. ತುಮಕೂರು")}
               value={form.location.district}
               onChange={(e) => updateLoc("district", e.target.value)}
@@ -508,11 +508,11 @@ function HireTab({ language }: { language: Language }) {
 
         {/* State */}
         <div className="space-y-2">
-          <Label className="text-xs uppercase tracking-wider text-muted-foreground/80 font-bold">
+          <Label className="text-xs uppercase tracking-wider text-muted-foreground font-bold">
             {lblEn("State *", "राज्य *", "ರಾಜ್ಯ *")}
           </Label>
           <Input
-            className="h-[46px] rounded-xl border-white/[0.08] bg-slate-950/40 text-foreground px-4 text-sm font-semibold focus-visible:ring-emerald-500/30"
+            className="h-[46px] rounded-xl border-border bg-background text-foreground px-4 text-sm font-semibold focus-visible:ring-emerald-500/30"
             placeholder={lblEn("e.g. Karnataka", "जैसे कर्नाटक", "ಉದಾ. ಕರ್ನಾಟಕ")}
             value={form.location.state}
             onChange={(e) => updateLoc("state", e.target.value)}
@@ -522,27 +522,27 @@ function HireTab({ language }: { language: Language }) {
         {/* Workers + duration */}
         <div className="grid grid-cols-2 gap-4">
           <div className="space-y-2">
-            <Label className="text-xs uppercase tracking-wider text-muted-foreground/80 font-bold">
+            <Label className="text-xs uppercase tracking-wider text-muted-foreground font-bold">
               {lblEn("Workers needed", "मज़दूर चाहिए", "ಕೆಲಸಗಾರರು")}
             </Label>
             <Input
               type="number"
               min={1}
               max={200}
-              className="h-[46px] rounded-xl border-white/[0.08] bg-slate-950/40 text-foreground px-4 text-sm font-semibold focus-visible:ring-emerald-500/30"
+              className="h-[46px] rounded-xl border-border bg-background text-foreground px-4 text-sm font-semibold focus-visible:ring-emerald-500/30"
               value={form.workers_needed}
               onChange={(e) => update("workers_needed", Math.max(1, Number(e.target.value) || 1))}
             />
           </div>
           <div className="space-y-2">
-            <Label className="text-xs uppercase tracking-wider text-muted-foreground/80 font-bold">
+            <Label className="text-xs uppercase tracking-wider text-muted-foreground font-bold">
               {lblEn("Duration (days)", "अवधि (दिन)", "ಅವಧಿ (ದಿನಗಳು)")}
             </Label>
             <Input
               type="number"
               min={1}
               max={60}
-              className="h-[46px] rounded-xl border-white/[0.08] bg-slate-950/40 text-foreground px-4 text-sm font-semibold focus-visible:ring-emerald-500/30"
+              className="h-[46px] rounded-xl border-border bg-background text-foreground px-4 text-sm font-semibold focus-visible:ring-emerald-500/30"
               value={form.duration_days ?? 1}
               onChange={(e) =>
                 update("duration_days", Math.max(1, Number(e.target.value) || 1))
@@ -553,19 +553,19 @@ function HireTab({ language }: { language: Language }) {
 
         {/* Wage input */}
         <div className="space-y-2">
-          <Label className="text-xs uppercase tracking-wider text-muted-foreground/80 font-bold">
+          <Label className="text-xs uppercase tracking-wider text-muted-foreground font-bold">
             {lblEn("Wage (₹ per day)", "मज़दूरी (₹ प्रतिदिन)", "ಕೂಲಿ (₹ ದಿನಕ್ಕೆ)")}
           </Label>
           <Input
             type="number"
             min={50}
             max={10000}
-            className="h-[46px] rounded-xl border-white/[0.08] bg-slate-950/40 text-foreground px-4 text-sm font-semibold focus-visible:ring-emerald-500/30"
+            className="h-[46px] rounded-xl border-border bg-background text-foreground px-4 text-sm font-semibold focus-visible:ring-emerald-500/30"
             value={form.wage_amount}
             onChange={(e) => update("wage_amount", Number(e.target.value) || 0)}
           />
           {wageHint && (
-            <div className="inline-flex items-center gap-1.5 text-[10px] font-bold text-emerald-400 bg-emerald-500/5 px-2.5 py-1 rounded-lg border border-emerald-500/10 mt-1">
+            <div className="inline-flex items-center gap-1.5 text-[10px] font-bold text-emerald-600 dark:text-emerald-400 bg-emerald-500/5 px-2.5 py-1 rounded-lg border border-emerald-500/10 mt-1">
               <TrendingUp className="h-3 w-3" />
               <span>
                 {lblEn("Normal range", "सामान्य रेंज", "ಸಾಮಾನ್ಯ ಶ್ರೇಣಿ")}: ₹{wageHint.suggested_min}–₹{wageHint.suggested_max}/{lblEn("day", "दिन", "ದಿನ")}
@@ -576,12 +576,12 @@ function HireTab({ language }: { language: Language }) {
 
         {/* Start date */}
         <div className="space-y-2">
-          <Label className="text-xs uppercase tracking-wider text-muted-foreground/80 font-bold">
+          <Label className="text-xs uppercase tracking-wider text-muted-foreground font-bold">
             {lblEn("Start date (optional)", "शुरू तारीख़ (वैकल्पिक)", "ಪ್ರಾರಂಭ ದಿನಾಂಕ (ಐಚ್ಛಿಕ)")}
           </Label>
           <Input
             type="date"
-            className="h-[46px] rounded-xl border-white/[0.08] bg-slate-950/40 text-foreground px-4 text-sm font-semibold focus-visible:ring-emerald-500/30 cursor-pointer"
+            className="h-[46px] rounded-xl border-border bg-background text-foreground px-4 text-sm font-semibold focus-visible:ring-emerald-500/30 cursor-pointer"
             value={form.start_date ?? ""}
             onChange={(e) => update("start_date", e.target.value || null)}
           />
@@ -590,22 +590,22 @@ function HireTab({ language }: { language: Language }) {
         {/* Contact info name, phone */}
         <div className="grid grid-cols-2 gap-4">
           <div className="space-y-2">
-            <Label className="text-xs uppercase tracking-wider text-muted-foreground/80 font-bold">
+            <Label className="text-xs uppercase tracking-wider text-muted-foreground font-bold">
               {lblEn("Your name *", "आपका नाम *", "ನಿಮ್ಮ ಹೆಸರು *")}
             </Label>
             <Input
-              className="h-[46px] rounded-xl border-white/[0.08] bg-slate-950/40 text-foreground px-4 text-sm font-semibold focus-visible:ring-emerald-500/30"
+              className="h-[46px] rounded-xl border-border bg-background text-foreground px-4 text-sm font-semibold focus-visible:ring-emerald-500/30"
               placeholder={lblEn("e.g. Ramesh", "जैसे रमेश", "ಉದಾ. ರಮೇಶ")}
               value={form.contact_name}
               onChange={(e) => update("contact_name", e.target.value)}
             />
           </div>
           <div className="space-y-2">
-            <Label className="text-xs uppercase tracking-wider text-muted-foreground/80 font-bold">
+            <Label className="text-xs uppercase tracking-wider text-muted-foreground font-bold">
               {lblEn("Phone *", "फ़ोन *", "ಫೋನ್ *")}
             </Label>
             <Input
-              className="h-[46px] rounded-xl border-white/[0.08] bg-slate-950/40 text-foreground px-4 text-sm font-semibold focus-visible:ring-emerald-500/30"
+              className="h-[46px] rounded-xl border-border bg-background text-foreground px-4 text-sm font-semibold focus-visible:ring-emerald-500/30"
               inputMode="tel"
               placeholder="+91 9876543210"
               value={form.contact_phone}
@@ -616,12 +616,12 @@ function HireTab({ language }: { language: Language }) {
 
         {/* Notes */}
         <div className="space-y-2">
-          <Label className="text-xs uppercase tracking-wider text-muted-foreground/80 font-bold">
+          <Label className="text-xs uppercase tracking-wider text-muted-foreground font-bold">
             {lblEn("Notes (optional)", "नोट्स (वैकल्पिक)", "ಟಿಪ್ಪಣಿ (ಐಚ್ಛಿಕ)")}
           </Label>
           <textarea
             rows={2}
-            className="w-full rounded-xl border border-white/[0.08] bg-slate-950/40 px-3.5 py-3 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-emerald-500/30 transition-all resize-none placeholder:text-muted-foreground/60"
+            className="w-full rounded-xl border border-border bg-background px-3.5 py-3 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-emerald-500/30 transition-all resize-none placeholder:text-muted-foreground/60"
             placeholder={lblEn(
               "Anything else workers should know",
               "मज़दूरों के लिए कोई और जानकारी",
@@ -633,7 +633,7 @@ function HireTab({ language }: { language: Language }) {
         </div>
 
         {error && (
-          <div className="rounded-xl border border-red-500/20 bg-red-500/10 px-4 py-3 text-xs text-red-400">
+          <div className="rounded-xl border border-red-500/20 bg-red-500/10 px-4 py-3 text-xs text-red-500">
             {error}
           </div>
         )}
@@ -641,34 +641,34 @@ function HireTab({ language }: { language: Language }) {
         <Button
           onClick={submit}
           disabled={busy}
-          className="w-full rounded-xl bg-emerald-500 hover:bg-emerald-600 text-white font-bold h-12 flex items-center justify-center gap-2 disabled:opacity-50 transition-all shadow-lg shadow-emerald-500/15"
+          className="w-full rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold h-12 flex items-center justify-center gap-2 disabled:opacity-50 transition-all shadow-md shadow-emerald-600/15"
         >
           {busy ? (
-            <Loader2 className="h-4.5 w-4.5 animate-spin" />
+            <Loader2 className="h-4 w-4 animate-spin" />
           ) : (
-            <Briefcase className="h-4.5 w-4.5" />
+            <Briefcase className="h-4 w-4" />
           )}
-          {lblEn("Post this job", "जॉब पोस्ट करें", "ಕೆಲಸ ಪೋಸ್ಟ್ ಮಾಡಿ")}
+          {lblEn("Publish Job Posting", "जॉब पोस्ट प्रकाशित करें", "ಉದ್ಯೋಗ ಪೋಸ್ಟ್ ಪ್ರಕಟಿಸಿ")}
         </Button>
       </GlassCard>
 
       {/* Right — live preview */}
       <section className="h-full">
-        <GlassCard className="border border-white/[0.08] backdrop-blur-md p-6 h-full shadow-xl bg-slate-950/20 flex flex-col justify-between">
+        <GlassCard className="border border-border backdrop-blur-md p-6 h-full shadow-sm bg-card flex flex-col justify-between">
           <div>
-            <div className="flex items-center gap-2 pb-4 border-b border-white/[0.06] mb-6">
-              <div className="h-8 w-8 rounded-lg bg-emerald-500/10 flex items-center justify-center text-emerald-400">
+            <div className="flex items-center gap-2 pb-4 border-b border-border mb-6">
+              <div className="h-8 w-8 rounded-lg bg-emerald-500/10 flex items-center justify-center text-emerald-600 dark:text-emerald-400">
                 <Sparkles className="h-4 w-4" />
               </div>
               <div>
-                <h2 className="text-md font-bold text-white font-display">{lblEn("Live Card Preview", "लाइव पूर्वावलोकन", "ಲೈವ್ ಕಾರ್ಡ್ ಮುನ್ನೋಟ")}</h2>
+                <h2 className="text-md font-bold text-foreground font-display">{lblEn("Live Card Preview", "लाइव पूर्वावलोकन", "ಲೈವ್ ಕಾರ್ಡ್ ಮುನ್ನೋಟ")}</h2>
                 <p className="text-[11px] text-muted-foreground">{lblEn("Real-time update of matching marketplace card", "मैचिंग मार्केटप्लेस कार्ड का रियल-टाइम अपडेट", "ಮಾರ್ಕೆಟ್‌ಪ್ಲೇಸ್ ಕಾರ್ಡ್‌ನ ನೈಜ-ಸಮಯದ ನವೀಕರಣ")}</p>
               </div>
             </div>
             <PreviewCard form={form} language={language} />
           </div>
 
-          <div className="pt-6 mt-6 border-t border-white/[0.04] text-[10px] text-muted-foreground/60 leading-relaxed text-center">
+          <div className="pt-6 mt-6 border-t border-border text-[10px] text-muted-foreground/80 leading-relaxed text-center">
             {lblEn("Once posted, this will be dispatched to matches in a ~15km radius.", "एक बार पोस्ट होने के बाद, यह ~15 किमी के दायरे में मैच होने वाले लोगों को भेज दिया जाएगा।", "ಪೋಸ್ಟ್ ಮಾಡಿದ ನಂತರ, ಇದನ್ನು ~15 ಕಿಮೀ ವ್ಯಾಪ್ತಿಯಲ್ಲಿ ಹೊಂದಾಣಿಕೆಯಾಗುವವರಿಗೆ ಕಳುಹಿಸಲಾಗುತ್ತದೆ.")}
           </div>
         </GlassCard>
@@ -686,41 +686,41 @@ function PreviewCard({ form, language }: { form: JobPostIn; language: Language }
     language === "hi" ? hi : language === "kn" ? kn : en
 
   return (
-    <div className="rounded-2xl border border-white/[0.08] bg-slate-950/40 p-5 space-y-4 shadow-inner relative overflow-hidden">
+    <div className="rounded-2xl border border-border bg-background p-5 space-y-4 shadow-inner relative overflow-hidden">
       <div className="absolute top-0 right-0 p-3">
-        <span className="text-[10px] font-bold text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 px-2 py-0.5 rounded-full">
+        <span className="text-[10px] font-bold text-emerald-600 dark:text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 px-2 py-0.5 rounded-full">
           {lblEn("Draft Preview", "ड्राफ्ट पूर्वावलोकन", "ಕರಡು ಮುನ್ನೋಟ")}
         </span>
       </div>
 
       <div className="space-y-3">
-        <div className="font-extrabold text-white text-base font-display flex items-center gap-2">
+        <div className="font-extrabold text-foreground text-base font-display flex items-center gap-2">
           <span>🌾</span>
           <span>{workTypeLabel(form.work_type, language)}</span>
         </div>
         
         <div className="flex items-center gap-2 text-muted-foreground text-xs font-semibold">
-          <MapPin className="h-4 w-4 shrink-0 text-emerald-400/80" />
+          <MapPin className="h-4 w-4 shrink-0 text-emerald-600 dark:text-emerald-400/80" />
           <span>{loc || lblEn("Add location", "स्थान जोड़ें", "ಸ್ಥಳ ಸೇರಿಸಿ")}</span>
         </div>
 
         <div className="grid grid-cols-2 gap-3 pt-2">
-          <div className="flex items-center gap-2 text-muted-foreground text-xs font-semibold p-2.5 rounded-xl bg-white/[0.02] border border-white/[0.04]">
-            <Users className="h-4 w-4 text-emerald-400/80 shrink-0" />
+          <div className="flex items-center gap-2 text-muted-foreground text-xs font-semibold p-2.5 rounded-xl bg-muted/40 border border-border">
+            <Users className="h-4 w-4 text-emerald-600 dark:text-emerald-400/80 shrink-0" />
             <div>
               <div className="text-[9px] uppercase text-muted-foreground font-bold tracking-wider">{lblEn("Required", "आवश्यकता", "ಅಗತ್ಯವಿದೆ")}</div>
-              <div className="text-white mt-0.5">
+              <div className="text-foreground font-semibold mt-0.5">
                 {form.workers_needed}{" "}
                 {lblEn("workers", "मज़दूर", "ಕೆಲಸಗಾರರು")}
               </div>
             </div>
           </div>
           
-          <div className="flex items-center gap-2 text-muted-foreground text-xs font-semibold p-2.5 rounded-xl bg-white/[0.02] border border-white/[0.04]">
-            <Calendar className="h-4 w-4 text-teal-400/80 shrink-0" />
+          <div className="flex items-center gap-2 text-muted-foreground text-xs font-semibold p-2.5 rounded-xl bg-muted/40 border border-border">
+            <Calendar className="h-4 w-4 text-teal-600 dark:text-teal-400/80 shrink-0" />
             <div>
               <div className="text-[9px] uppercase text-muted-foreground font-bold tracking-wider">{lblEn("Duration", "अवधि", "ಅವಧಿ")}</div>
-              <div className="text-white mt-0.5">
+              <div className="text-foreground font-semibold mt-0.5">
                 {form.duration_days}{" "}
                 {lblEn("Days", "दिन", "ದಿನಗಳು")}
               </div>
@@ -728,11 +728,11 @@ function PreviewCard({ form, language }: { form: JobPostIn; language: Language }
           </div>
         </div>
 
-        <div className="p-3.5 rounded-xl bg-white/[0.02] border border-white/[0.04] flex items-center justify-between">
+        <div className="p-3.5 rounded-xl bg-muted/40 border border-border flex items-center justify-between">
           <div>
             <span className="text-[9px] uppercase text-muted-foreground font-bold tracking-wider block">{lblEn("Estimated Wage", "अनुमानित मजदूरी", "ಅಂದಾಜು ಕೂಲಿ")}</span>
             <div className="flex items-baseline gap-1 mt-0.5">
-              <span className="text-lg font-black text-emerald-400 font-display">₹{form.wage_amount}</span>
+              <span className="text-lg font-black text-emerald-600 dark:text-emerald-400 font-display">₹{form.wage_amount}</span>
               <span className="text-[10px] text-muted-foreground font-semibold">/{lblEn("day", "दिन", "ದಿನ")}</span>
             </div>
           </div>
@@ -740,15 +740,15 @@ function PreviewCard({ form, language }: { form: JobPostIn; language: Language }
       </div>
 
       {form.contact_name && form.contact_phone && (
-        <div className="pt-3 border-t border-white/[0.04] space-y-2">
+        <div className="pt-3 border-t border-border space-y-2">
           <div className="flex items-center gap-2 text-xs text-muted-foreground">
-            <User className="h-4 w-4 text-emerald-400/80 shrink-0" />
+            <User className="h-4 w-4 text-emerald-600 dark:text-emerald-400/80 shrink-0" />
             <span>
-              {lblEn("Employer", "नियोक्ता", "ಉದ್ಯೋಗದಾತ")}: <span className="font-bold text-white">{form.contact_name}</span>
+              {lblEn("Employer", "नियोक्ता", "ಉದ್ಯೋಗದಾತ")}: <span className="font-bold text-foreground">{form.contact_name}</span>
             </span>
           </div>
           <div className="flex items-center gap-2 text-xs text-muted-foreground">
-            <Phone className="h-4 w-4 text-emerald-400/80 shrink-0" />
+            <Phone className="h-4 w-4 text-emerald-600 dark:text-emerald-400/80 shrink-0" />
             <span>{lblEn("Contact", "संपर्क", "ಸಂಪರ್ಕ")}: {form.contact_phone}</span>
           </div>
         </div>
@@ -805,54 +805,54 @@ function FindTab({ language }: { language: Language }) {
   return (
     <div className="space-y-6">
       {/* Filter search parameters */}
-      <GlassCard className="border border-white/[0.08] backdrop-blur-md p-5 grid gap-4 md:grid-cols-5 bg-slate-950/20 shadow-xl">
+      <GlassCard className="border border-border backdrop-blur-md p-5 grid gap-4 md:grid-cols-5 bg-card shadow-sm">
         <div className="space-y-1.5">
-          <Label className="text-xs uppercase tracking-wider text-muted-foreground/80 font-bold">
+          <Label className="text-xs uppercase tracking-wider text-muted-foreground font-bold">
             {lblEn("State", "राज्य", "ರಾಜ್ಯ")}
           </Label>
           <Input
-            className="h-10 rounded-xl border-white/[0.08] bg-slate-950/40 text-foreground px-4 text-xs font-semibold focus-visible:ring-emerald-500/30"
+            className="h-10 rounded-xl border-border bg-background text-foreground px-4 text-xs font-semibold focus-visible:ring-emerald-500/30"
             placeholder={lblEn("State", "राज्य", "ರಾಜ್ಯ")}
             value={state}
             onChange={(e) => setState(e.target.value)}
           />
         </div>
         <div className="space-y-1.5">
-          <Label className="text-xs uppercase tracking-wider text-muted-foreground/80 font-bold">
+          <Label className="text-xs uppercase tracking-wider text-muted-foreground font-bold">
             {lblEn("District", "ज़िला", "ಜಿಲ್ಲೆ")}
           </Label>
           <Input
-            className="h-10 rounded-xl border-white/[0.08] bg-slate-950/40 text-foreground px-4 text-xs font-semibold focus-visible:ring-emerald-500/30"
+            className="h-10 rounded-xl border-border bg-background text-foreground px-4 text-xs font-semibold focus-visible:ring-emerald-500/30"
             placeholder={lblEn("District", "ज़िला", "ಜಿಲ್ಲೆ")}
             value={district}
             onChange={(e) => setDistrict(e.target.value)}
           />
         </div>
         <div className="space-y-1.5">
-          <Label className="text-xs uppercase tracking-wider text-muted-foreground/80 font-bold">
+          <Label className="text-xs uppercase tracking-wider text-muted-foreground font-bold">
             {lblEn("Work type", "काम", "ಕೆಲಸ")}
           </Label>
           <select
-            className="w-full h-10 rounded-xl border border-white/[0.08] bg-slate-950/40 px-3 text-xs text-foreground focus:outline-none focus:ring-2 focus:ring-emerald-500/30 transition-all cursor-pointer"
+            className="w-full h-10 rounded-xl border border-border bg-background px-3 text-xs text-foreground focus:outline-none focus:ring-2 focus:ring-emerald-500/30 transition-all cursor-pointer"
             value={workType}
             onChange={(e) => setWorkType(e.target.value as WorkType | "")}
           >
-            <option value="" className="bg-slate-900">{lblEn("Any / कोई भी", "कोई भी", "ಯಾವುದಾದರೂ")}</option>
+            <option value="" className="bg-card text-foreground">{lblEn("Any / कोई भी", "कोई भी", "ಯಾವುದಾದರೂ")}</option>
             {WORK_TYPES.map((wt) => (
-              <option key={wt} value={wt} className="bg-slate-900">
+              <option key={wt} value={wt} className="bg-card text-foreground">
                 {workTypeLabel(wt, language)}
               </option>
             ))}
           </select>
         </div>
         <div className="space-y-1.5">
-          <Label className="text-xs uppercase tracking-wider text-muted-foreground/80 font-bold">
+          <Label className="text-xs uppercase tracking-wider text-muted-foreground font-bold">
             {lblEn("Min wage", "न्यूनतम मज़दूरी", "ಕನಿಷ್ಠ ಕೂಲಿ")}
           </Label>
           <Input
             type="number"
             min={0}
-            className="h-10 rounded-xl border-white/[0.08] bg-slate-950/40 text-foreground px-4 text-xs font-semibold focus-visible:ring-emerald-500/30"
+            className="h-10 rounded-xl border-border bg-background text-foreground px-4 text-xs font-semibold focus-visible:ring-emerald-500/30"
             placeholder="₹"
             value={minWage}
             onChange={(e) => setMinWage(e.target.value)}
@@ -862,7 +862,7 @@ function FindTab({ language }: { language: Language }) {
           <Button
             onClick={runSearch}
             disabled={busy}
-            className="w-full rounded-xl bg-emerald-500 hover:bg-emerald-600 text-white font-bold h-10 flex items-center justify-center gap-2 disabled:opacity-50 transition-all shadow-md shadow-emerald-500/10"
+            className="w-full rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold h-10 flex items-center justify-center gap-2 disabled:opacity-50 transition-all shadow-md shadow-emerald-600/10"
           >
             {busy ? <Loader2 className="h-4 w-4 animate-spin" /> : <Search className="h-4 w-4" />}
             {lblEn("Search", "ढूँढो", "ಹುಡುಕಿ")}
@@ -941,59 +941,59 @@ function JobCard({
         ml: "ആവശ്യമുണ്ട്", mr: "आवश्यकता", bn: "প্রয়োজন", pa: "ਲੋੜ ਹੈ", gu: "જરૂર છે"
       },
       days: {
-        en: "Days", hi: "दिन", kn: "ದินಗಳು", ta: "நாட்கள்", te: "రోజులు",
+        en: "Days", hi: "दिन", kn: "ದಿನಗಳು", ta: "நாட்கள்", te: "రోజులు",
         ml: "ദിവസങ്ങൾ", mr: "दिवस", bn: "দিন", pa: "ਦਿਨ", gu: "દિવસો"
       },
+      day: {
+        en: "day", hi: "दिन", kn: "ದಿನ", ta: "நாள்", te: "రోజు",
+        ml: "ദിവസം", mr: "दिवस", bn: "দিন", pa: "ਦਿਨ", gu: "દિવસ"
+      },
       contact: {
-        en: "Contact", hi: "संपर्क", kn: "ಸಂಪर्क", ta: "தொடர்பு", te: "సంప్రదించండి",
+        en: "Contact", hi: "संपर्क", kn: "ಸಂಪರ್ಕ", ta: "தொடர்பு", te: "సంప్రదించండి",
         ml: "ബന്ധപ്പെടുക", mr: "संपर्क", bn: "যোগাযোগ", pa: "ਸੰਪਰਕ", gu: "સંપર્ક"
       },
       kmAway: {
-        en: "km away", hi: "किमी दूर", kn: "ಕಿಮೀ ದೂರ", ta: "கிமீ தொலைவில்", te: "ಕಿమీ దూరంలో",
+        en: "km away", hi: "किमी दूर", kn: "ಕಿಮೀ ದೂರ", ta: "கிமீ தொலைவில்", te: "కిమీ దూరంలో",
         ml: "കിമീ ദൂരെ", mr: "किमी दूर", bn: "কিমি দূরে", pa: "ਕਿਲੋਮੀਟਰ ਦੂਰ", gu: "કિમી દૂર"
       },
       match: {
         en: "match", hi: "मैच", kn: "ಹೊಂದಾಣಿಕೆ", ta: "பொருத்தம்", te: "మ్యాచ్",
         ml: "ചേർച്ച", mr: "मॅच", bn: "মিল", pa: "ਮੈਚ", gu: "મેળ"
-      },
-      day: {
-        en: "day", hi: "दिन", kn: "ದಿನ", ta: "நாள்", te: "రోజు",
-        ml: "ദിവസം", mr: "दिवस", bn: "দিন", pa: "ਦਿਨ", gu: "દિવસ"
       }
     };
     const langKey = language in LOCAL_LABELS[key] ? language : "en";
-    return LOCAL_LABELS[key][langKey];
+    return LOCAL_LABELS[key]?.[langKey] ?? key;
   }
 
   const translateWageUnit = (unit: string) => {
-    const clean = unit.replace("per_", "")
+    const clean = unit.replace(/^per_/, "")
     if (clean === "day") return translateLabel("day")
     return clean
   }
 
   return (
-    <GlassCard className="border border-white/[0.08] backdrop-blur-md p-5 space-y-4 shadow-lg bg-slate-950/20 hover:border-emerald-500/20 hover:shadow-2xl transition-all duration-300 flex flex-col justify-between rounded-3xl">
+    <GlassCard className="border border-border backdrop-blur-md p-5 space-y-4 shadow-sm bg-card hover:border-emerald-500/30 hover:shadow-md transition-all duration-300 flex flex-col justify-between rounded-3xl">
       <div className="space-y-3">
-        <div className="flex items-start justify-between gap-2 pb-2 border-b border-white/[0.04]">
-          <div className="font-extrabold text-white text-base font-display flex items-center gap-2">
+        <div className="flex items-start justify-between gap-2 pb-2 border-b border-border">
+          <div className="font-extrabold text-foreground text-base font-display flex items-center gap-2">
             <span>🌾</span>
             <span>{workTypeLabel(job.work_type, language)}</span>
           </div>
           {match_score != null && (
-            <div className="text-[10px] font-bold rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 px-2.5 py-0.5">
+            <div className="text-[10px] font-bold rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-600 dark:text-emerald-400 px-2.5 py-0.5">
               {Math.round(match_score * 100)}% {translateLabel("match")}
             </div>
           )}
         </div>
 
         <div className="flex items-center gap-1.5 text-muted-foreground text-xs font-semibold">
-          <MapPin className="h-4 w-4 shrink-0 text-emerald-400/80" />
+          <MapPin className="h-4 w-4 shrink-0 text-emerald-600 dark:text-emerald-400/80" />
           <span>
             {[job.location.village, job.location.district, job.location.state]
               .filter(Boolean)
               .join(", ")}
             {distance_km != null && (
-              <span className="ml-1.5 text-emerald-400">
+              <span className="ml-1.5 text-emerald-600 dark:text-emerald-400">
                 · ~{distance_km} {translateLabel("kmAway")}
               </span>
             )}
@@ -1002,42 +1002,42 @@ function JobCard({
 
         <div className="flex flex-wrap items-center gap-4 text-xs font-semibold text-muted-foreground">
           <span className="flex items-center gap-1.5">
-            <Users className="h-4 w-4 text-emerald-400/80" />
+            <Users className="h-4 w-4 text-emerald-600 dark:text-emerald-400/80" />
             <span>{job.workers_needed} {translateLabel("required")}</span>
           </span>
           <span className="flex items-center gap-1.5">
-            <IndianRupee className="h-4 w-4 text-teal-400/80" />
-            <span className="text-white">₹{job.wage_amount}</span>
+            <IndianRupee className="h-4 w-4 text-teal-600 dark:text-teal-400/80" />
+            <span className="text-foreground font-bold">₹{job.wage_amount}</span>
             <span>/{translateWageUnit(job.wage_unit)}</span>
           </span>
           <span className="flex items-center gap-1.5">
-            <Calendar className="h-4 w-4 text-amber-400/80" />
+            <Calendar className="h-4 w-4 text-amber-600 dark:text-amber-400/80" />
             <span>{job.duration_days} {translateLabel("days")}</span>
           </span>
         </div>
 
         {job.notes && (
-          <div className="text-xs text-muted-foreground/80 border-l-2 border-emerald-500/40 pl-3 italic py-0.5">
+          <div className="text-xs text-muted-foreground/90 border-l-2 border-emerald-500/40 pl-3 italic py-0.5">
             {job.notes}
           </div>
         )}
       </div>
 
-      <div className="pt-3 border-t border-white/[0.04] space-y-3">
+      <div className="pt-3 border-t border-border space-y-3">
         <div className="flex items-center gap-2.5 text-xs text-muted-foreground pl-0.5">
-          <div className="h-6 w-6 rounded-full bg-emerald-500/10 flex items-center justify-center text-emerald-400 shrink-0">
+          <div className="h-6 w-6 rounded-full bg-emerald-500/10 flex items-center justify-center text-emerald-600 dark:text-emerald-400 shrink-0">
             <User className="h-3 w-3" />
           </div>
           <span>
-            {translateLabel("contact")}: <span className="font-bold text-white">{job.contact_name}</span>
+            {translateLabel("contact")}: <span className="font-bold text-foreground">{job.contact_name}</span>
           </span>
         </div>
         <div className="flex gap-2">
           <a
             href={"tel:" + job.contact_phone}
-            className="flex-1 text-xs rounded-xl bg-slate-900 border border-white/[0.08] hover:bg-white/[0.03] text-white font-bold h-9 flex items-center justify-center gap-1.5 transition-all"
+            className="flex-1 text-xs rounded-xl bg-muted/60 border border-border hover:bg-accent text-foreground font-bold h-9 flex items-center justify-center gap-1.5 transition-all shadow-xs"
           >
-            <Phone className="h-3.5 w-3.5 text-emerald-400" />
+            <Phone className="h-3.5 w-3.5 text-emerald-600 dark:text-emerald-400" />
             <span>{translateLabel("call")}</span>
           </a>
           <a

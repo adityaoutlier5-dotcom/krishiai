@@ -41,10 +41,10 @@ export function ChatMessage({ msg }: { msg: AssistantMessage }) {
 
       {/* Bubble Container */}
       <div
-        className={`max-w-[80%] rounded-2xl px-4 py-3 text-xs leading-relaxed shadow-sm whitespace-pre-wrap break-words transition-all duration-300 ${
+        className={`max-w-[80%] rounded-2xl px-4 py-3 text-xs leading-relaxed shadow-xs whitespace-pre-wrap break-words transition-all duration-300 ${
           isUser
-            ? "bg-gradient-to-tr from-emerald-600 to-teal-500 text-white rounded-tr-sm font-semibold shadow-md shadow-emerald-500/10"
-            : "bg-white/[0.03] dark:bg-white/[0.02] text-white/90 rounded-tl-sm border border-white/[0.05] backdrop-blur-sm"
+            ? "bg-gradient-to-tr from-emerald-600 to-teal-600 text-white rounded-tr-sm font-semibold shadow-md shadow-emerald-500/10"
+            : "bg-card dark:bg-card/90 text-foreground rounded-tl-sm border border-border shadow-xs backdrop-blur-sm"
         }`}
       >
         {/* Tool Call Badges */}

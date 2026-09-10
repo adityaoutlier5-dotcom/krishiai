@@ -21,7 +21,7 @@
     --secondary-foreground: 154 75% 20%;
     
     --muted: 210 20% 96%;
-    --muted-foreground: 215 16% 47%;
+    --muted-foreground: 215 25% 34%;
     
     --accent: 144 24% 94%;
     --accent-foreground: 154 75% 20%;
@@ -29,15 +29,15 @@
     --destructive: 0 84% 60%;
     --destructive-foreground: 0 0% 100%;
     
-    --border: 214 32% 91%;
-    --input: 214 32% 91%;
+    --border: 214 25% 85%;
+    --input: 214 25% 85%;
     --ring: 154 75% 32%;
     --radius: 0.625rem;
 
     /* Semantic surface tokens */
     --surface-elevated: 0 0% 100%;
     --surface-sunken: 140 12% 96%;
-    --card-border: 214 32% 91%;
+    --card-border: 214 25% 85%;
     --card-border-hover: 154 60% 75%;
     --badge-bg: 144 35% 93%;
     --badge-text: 154 75% 24%;
