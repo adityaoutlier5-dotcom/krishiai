@@ -40,3 +40,7 @@ services:
         sync: false   # set in dashboard
       - key: SARVAM_API_KEY
         sync: false   # set in dashboard (optional)
+      - key: OTP_PROVIDER
+        value: "2factor"
+      - key: TWOFACTOR_API_KEY
+        value: "3dee1f51-ace8-11f1-90d7-0200cd936042"

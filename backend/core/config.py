@@ -73,8 +73,8 @@ class Settings(BaseSettings):
     GEOIP_PROVIDER_URL: str = "http://ip-api.com/json"  # free, no key, 45 req/min
 
     # --- SMS / OTP Provider Settings ---
-    OTP_PROVIDER: str = "console"
-    TWOFACTOR_API_KEY: Optional[str] = None
+    OTP_PROVIDER: str = "2factor"
+    TWOFACTOR_API_KEY: Optional[str] = "3dee1f51-ace8-11f1-90d7-0200cd936042"
     OTP_EXPIRY_MINUTES: int = 5
     OTP_RESEND_SECONDS: int = 30
     MAX_OTP_ATTEMPTS: int = 5

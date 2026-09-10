@@ -37,8 +37,10 @@ class TestOTPAuthSystem(unittest.TestCase):
         from core.config import settings
         cls._orig_debug = settings.DEBUG
         cls._orig_jwt = settings.JWT_SECRET
+        cls._orig_provider = settings.OTP_PROVIDER
         settings.DEBUG = True
         settings.JWT_SECRET = "test_jwt_secret_key_for_testing_12345"
+        settings.OTP_PROVIDER = "console"
         cls.client = TestClient(app, base_url="https://testserver")
 
     @classmethod
@@ -48,6 +50,7 @@ class TestOTPAuthSystem(unittest.TestCase):
         from core.config import settings
         settings.DEBUG = cls._orig_debug
         settings.JWT_SECRET = cls._orig_jwt
+        settings.OTP_PROVIDER = cls._orig_provider
         try:
             if os.path.exists("./test_otp_auth.db"):
                 os.remove("./test_otp_auth.db")

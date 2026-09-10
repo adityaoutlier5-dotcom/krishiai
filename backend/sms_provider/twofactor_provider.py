@@ -18,13 +18,22 @@ class TwoFactorProvider(SMSProvider):
             print(f"\n[2Factor Fallback OTP]: {otp} (Sent to +91{phone_number})\n", flush=True)
             return True
             
-        url = f"https://2factor.in/API/V1/{api_key}/SMS/+91{phone_number}/{otp}/OTPTEMPLATE"
-        log.info("Sending OTP via 2Factor to +91%s", phone_number)
+        clean_phone = "".join(filter(str.isdigit, phone_number))
+        url = f"https://2factor.in/API/V1/{api_key}/SMS/+91{clean_phone}/{otp}"
+        log.info("Sending OTP via 2Factor to +91%s", clean_phone)
         try:
-            # Structurally ready for network requests once credentials are added
-            # response = httpx.get(url, timeout=5.0)
-            # return response.is_success
-            return True
+            with httpx.Client(timeout=10.0) as client:
+                response = client.get(url)
+                if response.status_code == 200:
+                    data = response.json()
+                    if data.get("Status") == "Success":
+                        log.info("2Factor OTP dispatched successfully to +91%s (session: %s)", clean_phone, data.get("Details"))
+                        return True
+                    else:
+                        log.error("2Factor API returned failure: %s", data)
+                        return False
+                log.error("2Factor HTTP error %d: %s", response.status_code, response.text)
+                return False
         except Exception as e:
             log.error("Failed to send OTP via 2Factor: %s", e)
             return False
