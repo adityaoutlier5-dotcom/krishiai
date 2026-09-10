@@ -6,7 +6,7 @@ import { LanguageProvider } from '@/lib/language';
 export function Providers({ children }: { children: React.ReactNode }) {
   return (
     <LanguageProvider>
-      <ThemeProvider attribute="class" defaultTheme="dark" enableSystem>
+      <ThemeProvider attribute="class" defaultTheme="light" enableSystem={false}>
         {children}
       </ThemeProvider>
     </LanguageProvider>
