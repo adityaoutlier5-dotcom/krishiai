@@ -144,7 +144,7 @@ export function Header() {
           ) : (
             <nav className="hidden lg:flex items-center gap-1 text-xs font-semibold">
               <Link href="/#features" className="px-3 py-1.5 rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted/60 transition-colors">
-                {lang === 'hi' ? 'सुविधाएं' : 'Features'}
+                {t("featuresBadge") || "All In One Place"}
               </Link>
               <Link href="/mandi" className="px-3 py-1.5 rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted/60 transition-colors">
                 {t("mandi")}
