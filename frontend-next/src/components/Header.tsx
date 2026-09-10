@@ -110,6 +110,11 @@ export function Header() {
             onClick={() => setOpen(false)}
             className="flex items-center gap-2 shrink-0 group select-none"
           >
+          <img
+            src="/logo.jpeg"
+            alt="KisaanBuddy Logo"
+           className="w-7 h-7 object-contain"
+          />
             <div className="flex flex-col leading-none">
               <span className="font-display text-lg md:text-xl tracking-tight">
                 <span className="font-extrabold text-foreground">Kisaan</span>
