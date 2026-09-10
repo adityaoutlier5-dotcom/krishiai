@@ -5,7 +5,7 @@ import {
   Menu, X, LogOut, User as UserIcon,
   LayoutDashboard, CloudSun, Sprout, Bug,
   TrendingUp, Users, Mic, Star, ChevronDown,
-  FlaskConical, Landmark, Search, Sparkles
+  FlaskConical, Landmark, Search, Sparkles, Globe
 } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { usePathname, useRouter } from 'next/navigation';
@@ -29,32 +29,7 @@ const NAV_LINK_DEFS = [
 
 const PUBLIC_ROUTES = ['/', '/login', '/signup', '/about', '/contact', '/privacy', '/terms', '/disclaimer', '/cookie-policy'];
 
-function LangFlag({ lang }: { lang: Lang }) {
-  if (lang === 'en') {
-    return (
-      <svg className="h-3.5 w-5 rounded-xs shrink-0 border border-border" viewBox="0 0 60 30" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <path d="M0 0h60v30H0z" fill="#012169"/>
-        <path d="M0 0l60 30M60 0L0 30" stroke="#fff" strokeWidth="6"/>
-        <path d="M0 0l60 30M60 0L0 30" stroke="#C8102E" strokeWidth="4"/>
-        <path d="M30 0v30M0 15h60" stroke="#fff" strokeWidth="10"/>
-        <path d="M30 0v30M0 15h60" stroke="#C8102E" strokeWidth="6"/>
-      </svg>
-    );
-  }
-  return (
-    <svg className="h-3.5 w-5 rounded-xs shrink-0 border border-border" viewBox="0 0 900 600" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <path d="M0 0h900v200H0z" fill="#FF9933"/>
-      <path d="M0 200h900v200H0z" fill="#fff"/>
-      <path d="M0 400h900v200H0z" fill="#138808"/>
-      <circle cx="450" cy="300" r="80" stroke="#000080" strokeWidth="10"/>
-      <circle cx="450" cy="300" r="10" fill="#000080"/>
-      <line x1="450" y1="220" x2="450" y2="380" stroke="#000080" strokeWidth="6"/>
-      <line x1="370" y1="300" x2="530" y2="300" stroke="#000080" strokeWidth="6"/>
-      <line x1="393.4" y1="243.4" x2="506.6" y2="356.6" stroke="#000080" strokeWidth="6"/>
-      <line x1="393.4" y1="356.6" x2="506.6" y2="243.4" stroke="#000080" strokeWidth="6"/>
-    </svg>
-  );
-}
+
 
 export function Header() {
   const [open, setOpen]           = useState(false);
@@ -133,15 +108,12 @@ export function Header() {
           <Link
             href={user ? '/dashboard' : '/'}
             onClick={() => setOpen(false)}
-            className="flex items-center gap-2.5 shrink-0 group select-none"
+            className="flex items-center gap-2 shrink-0 group select-none"
           >
-            <div className="relative flex h-8 w-8 items-center justify-center rounded-lg bg-primary/10 border border-primary/20 overflow-hidden p-1 transition-transform duration-200 group-hover:scale-105">
-              <img src="/icon-logo.png" alt="Kisaan Buddy" className="h-full w-full object-contain" />
-            </div>
             <div className="flex flex-col leading-none">
-              <span className="font-display text-base md:text-lg tracking-tight">
-                <span className="font-bold text-foreground">Kisaan</span>
-                <span className="font-light text-primary">Buddy</span>
+              <span className="font-display text-lg md:text-xl tracking-tight">
+                <span className="font-extrabold text-foreground">Kisaan</span>
+                <span className="font-bold text-emerald-600 dark:text-emerald-400">Buddy</span>
               </span>
               {isPublic && !user && (
                 <span className="text-[9px] font-semibold uppercase tracking-wider text-muted-foreground/80">
@@ -172,7 +144,7 @@ export function Header() {
           ) : (
             <nav className="hidden lg:flex items-center gap-1 text-xs font-semibold">
               <Link href="/#features" className="px-3 py-1.5 rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted/60 transition-colors">
-                {t("featuresBadge") || "Features"}
+                {lang === 'hi' ? 'सुविधाएं' : 'Features'}
               </Link>
               <Link href="/mandi" className="px-3 py-1.5 rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted/60 transition-colors">
                 {t("mandi")}
@@ -212,17 +184,17 @@ export function Header() {
               <button
                 type="button"
                 onClick={() => setLangOpen(v => !v)}
-                className="flex items-center gap-1.5 h-8 rounded-lg border border-border/70 bg-card/60 px-2 text-xs font-medium text-foreground hover:bg-muted/60 transition-colors"
+                className="flex items-center gap-1.5 h-8 rounded-lg border border-border/70 bg-card/60 px-2.5 text-xs font-semibold text-foreground hover:bg-muted/60 transition-colors"
                 aria-expanded={langOpen}
               >
-                <LangFlag lang={lang} />
+                <Globe className="h-3.5 w-3.5 text-emerald-600 dark:text-emerald-400" />
                 <span className="hidden sm:inline">{LANG_NAMES[lang]}</span>
                 <ChevronDown className={`h-3 w-3 text-muted-foreground transition-transform duration-150 ${langOpen ? 'rotate-180' : ''}`} />
               </button>
               {langOpen && (
                 <>
                   <button className="fixed inset-0 z-40 cursor-default" onClick={() => setLangOpen(false)} aria-label={t("header.close")} />
-                  <div className="absolute right-0 top-10 z-50 w-40 rounded-xl border border-border bg-popover shadow-lg overflow-hidden p-1">
+                  <div className="absolute right-0 top-10 z-50 w-36 rounded-xl border border-border bg-popover shadow-lg overflow-hidden p-1">
                     {(Object.keys(LANG_NAMES) as Lang[]).map((l) => (
                       <button
                         key={l}
@@ -232,16 +204,13 @@ export function Header() {
                           setLang(l);
                           setLangOpen(false);
                         }}
-                        className={`w-full flex items-center justify-between px-2.5 py-1.5 text-xs rounded-lg transition-colors ${
+                        className={`w-full flex items-center justify-between px-3 py-1.5 text-xs rounded-lg transition-colors ${
                           lang === l
-                            ? "bg-primary/10 text-primary font-semibold"
-                            : "text-foreground hover:bg-muted/70"
+                            ? "bg-primary/10 text-primary font-bold"
+                            : "text-foreground hover:bg-muted/70 font-medium"
                         }`}
                       >
-                        <span className="flex items-center gap-2">
-                          <LangFlag lang={l} />
-                          <span>{LANG_NAMES[l]}</span>
-                        </span>
+                        <span>{LANG_NAMES[l]}</span>
                         {lang === l && <span className="h-1.5 w-1.5 rounded-full bg-primary" />}
                       </button>
                     ))}

@@ -211,7 +211,7 @@ export default function LoginPage() {
                   onChange={(e) => setPhone(e.target.value.replace(/[^0-9]/g, ""))}
                   placeholder={lt.phonePlaceholder}
                   disabled={loading}
-                  className="w-full h-11 rounded-lg border border-border bg-background pl-18 pr-4 text-sm font-medium font-mono text-foreground placeholder:text-muted-foreground/60 transition-colors focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20 disabled:opacity-50"
+                  className="w-full h-11 rounded-lg border border-border bg-background pl-[78px] pr-4 text-sm font-medium font-mono text-foreground placeholder:text-muted-foreground/60 transition-colors focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20 disabled:opacity-50"
                   autoFocus
                 />
               </div>
