@@ -19,8 +19,8 @@ class TwoFactorProvider(SMSProvider):
             return True
             
         clean_phone = "".join(filter(str.isdigit, phone_number))
-        url = f"https://2factor.in/API/V1/{api_key}/SMS/+91{clean_phone}/{otp}"
-        log.info("Sending OTP via 2Factor to +91%s", clean_phone)
+        url = f"https://2factor.in/API/V1/{api_key}/SMS/+91{clean_phone}/{otp}/kisaanbuddy"
+        log.info("Sending OTP via 2Factor (template: kisaanbuddy) to +91%s", clean_phone)
         try:
             with httpx.Client(timeout=10.0) as client:
                 response = client.get(url)
