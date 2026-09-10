@@ -49,12 +49,12 @@ class Settings(BaseSettings):
         "http://127.0.0.1:3002",
         "https://kisaanbuddy.com",
         "https://www.kisaanbuddy.com",
+        "https://krishiai.vercel.app",
+        "https://kisaanbuddy.vercel.app",
     ]
-    # Regex pattern for allowed origins — covers Vercel preview deploys
+    # Regex pattern for allowed origins — covers Vercel preview & production deploys
     # like https://krishiai-git-feature-branch-username.vercel.app
-    # Preview deployments must be explicitly opted into. Credentialed CORS must
-    # never trust every Vercel project by default.
-    ALLOWED_ORIGIN_REGEX: Optional[str] = None
+    ALLOWED_ORIGIN_REGEX: Optional[str] = r"^https:\/\/.*\.vercel\.app$"
 
     # --- HTTP / perf ---
     API_TIMEOUT: float = 5.0  # per-provider request timeout

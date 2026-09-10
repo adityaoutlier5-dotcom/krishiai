@@ -243,9 +243,12 @@ export async function sendOtp(phone: string): Promise<{ ok: boolean; error?: str
       body: JSON.stringify({ phone_number: phone }),
       credentials: "include",
     });
-    const data = await response.json();
+    const data = await response.json().catch(() => ({}));
     if (!response.ok) {
-      return { ok: false, error: data.detail || "Failed to send OTP." };
+      const fallback = response.status === 504 || response.status === 502
+        ? "Server is waking up (cold start). Please retry in 10-15 seconds."
+        : "Failed to send OTP.";
+      return { ok: false, error: data.detail || fallback };
     }
     return { ok: true, resendAfter: data.resend_after };
   } catch (error) {
@@ -266,9 +269,12 @@ export async function verifyOtp(phone: string, otp: string): Promise<VerifyOtpRe
       body: JSON.stringify({ phone_number: phone, otp }),
       credentials: "include",
     });
-    const data = await response.json();
+    const data = await response.json().catch(() => ({}));
     if (!response.ok) {
-      return { ok: false, error: data.detail || "Invalid OTP code." };
+      const fallback = response.status === 504 || response.status === 502
+        ? "Server is waking up. Please retry in a few seconds."
+        : "Invalid OTP code.";
+      return { ok: false, error: data.detail || fallback };
     }
 
     if (data.registered) {
@@ -293,7 +299,7 @@ export async function completeOtpRegistration(
       body: JSON.stringify({ registration_token: registrationToken, name }),
       credentials: "include",
     });
-    const data = await response.json();
+    const data = await response.json().catch(() => ({}));
     if (!response.ok) {
       return { ok: false, error: data.detail || "Registration failed." };
     }

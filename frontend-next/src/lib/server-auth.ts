@@ -6,7 +6,12 @@ import { redirect } from "next/navigation"
 type ServerUser = { id: number; role: string }
 
 function backendUrl() {
-  return process.env.NEXT_PUBLIC_API_URL || "http://127.0.0.1:8000"
+  return (
+    process.env.NEXT_PUBLIC_API_URL ||
+    (process.env.NODE_ENV === "production"
+      ? "https://krishiai-api.onrender.com"
+      : "http://127.0.0.1:8000")
+  );
 }
 
 export async function requireServerAdmin(): Promise<ServerUser> {
