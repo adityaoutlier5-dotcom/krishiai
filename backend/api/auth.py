@@ -29,7 +29,8 @@ from services.auth_service import (
     create_access_token,
     decode_access_token,
 )
-from core.config import settings
+from core.config import settings, is_configured_admin
+from services.audit import record_activity
 
 log = logging.getLogger("krishiai.auth")
 
@@ -334,6 +335,22 @@ async def get_current_user(
     return user
 
 
+def require_admin(current_user: User = Depends(get_current_user)) -> User:
+    """Server-side authorization dependency for every owner-only endpoint."""
+    if (current_user.role or "").casefold() != "admin":
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Administrator access is required.",
+        )
+
+    # The initial owner account can be designated only through server-side
+    # configuration. Once promoted, the database role remains the authority.
+    if is_configured_admin(user.email) and (user.role or "").casefold() != "admin":
+        user.role = "Admin"
+        db.commit()
+    return current_user
+
+
 # ===========================================================================
 # Routes
 # ===========================================================================
@@ -494,6 +511,7 @@ def send_otp(request: Request, data: SendOtpRequest, db: Session = Depends(get_d
         sent_success = provider.send_otp(clean_phone, otp_code)
         if not sent_success:
             raise Exception("Provider returned False during SMS dispatch")
+        record_activity(db, "auth.otp_requested", details={}, request=request)
         db.commit()
     except HTTPException:
         db.rollback()
@@ -657,6 +675,7 @@ def verify_otp(
                 if settings.ENABLE_SECURITY_LOCKS:
                     sec_state.locked_until = now + timedelta(minutes=15)
                 sec_state.failed_attempts = 0
+                record_activity(db, "auth.otp_failed", details={"reason": "attempt_limit"}, request=request)
                 db.commit()
                 raise HTTPException(
                     status_code=status.HTTP_429_TOO_MANY_REQUESTS,
@@ -666,12 +685,14 @@ def verify_otp(
             if settings.ENABLE_SECURITY_LOCKS and sec_state.failed_attempts >= settings.MAX_OTP_ATTEMPTS:
                 sec_state.locked_until = now + timedelta(minutes=15)
                 sec_state.failed_attempts = 0
+                record_activity(db, "auth.otp_failed", details={"reason": "attempt_limit"}, request=request)
                 db.commit()
                 raise HTTPException(
                     status_code=status.HTTP_429_TOO_MANY_REQUESTS,
                     detail="Too many incorrect attempts. Please request a new code.",
                     headers={"Retry-After": str(15 * 60)},
                 )
+            record_activity(db, "auth.otp_failed", details={"reason": "incorrect"}, request=request)
             db.commit()
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
@@ -684,6 +705,7 @@ def verify_otp(
     # Success! Reset failed attempts
     sec_state.failed_attempts = 0
     sec_state.locked_until = None
+    record_activity(db, "auth.otp_verified", details={}, request=request)
     db.commit()
 
     user = db.query(User).filter(User.phone_number == clean_phone).first()
@@ -941,82 +963,6 @@ def logout(request: Request, response: Response, db: Session = Depends(get_db)):
 def get_me(user: User = Depends(get_current_user)):
     """Returns the currently logged-in user profile information."""
     return user
-
-@router.get("/admin/analytics")
-def get_admin_analytics(db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
-    """Tracks admin authentication and device analytics."""
-    if current_user.role != "Admin":
-        raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN,
-            detail="Access denied. Admin role required."
-        )
-
-    now = datetime.utcnow()
-    today_start = datetime.utcnow().replace(hour=0, minute=0, second=0, microsecond=0)
-
-    # 1. Active sessions
-    active_sessions_count = db.query(UserSession).filter(
-        UserSession.is_revoked == False,
-        UserSession.expires_at > now
-    ).count()
-
-    # 2. Locked accounts
-    locked_accounts_count = db.query(UserSecurityState).filter(
-        UserSecurityState.locked_until > now
-    ).count()
-
-    # 3. Successful logins (e.g. users logged in today)
-    successful_logins_today = db.query(User).filter(
-        User.last_login_at >= today_start
-    ).count()
-
-    # 4. Failed logins (current failed attempts in security state)
-    failed_attempts_sum = db.query(func.sum(UserSecurityState.failed_attempts)).scalar() or 0
-
-    # 5. Daily OTPs sent
-    daily_otps_count = db.query(UserSecurityState).filter(
-        UserSecurityState.last_request_at >= today_start
-    ).count()
-
-    # 6. Estimated SMS usage
-    estimated_sms_cost = round(daily_otps_count * 0.12, 2)
-
-    # 7. Top states
-    users_with_loc = db.query(User).filter(User.lat.isnot(None), User.lon.isnot(None)).all()
-    states_dict = {}
-    for u in users_with_loc:
-        if u.lat > 28:
-            state = "Punjab"
-        elif u.lat > 24:
-            state = "Uttar Pradesh"
-        elif u.lat > 18:
-            state = "Maharashtra"
-        else:
-            state = "Karnataka"
-        states_dict[state] = states_dict.get(state, 0) + 1
-    
-    if not states_dict:
-        states_dict = {"Punjab": 12, "Maharashtra": 8, "Uttar Pradesh": 5, "Karnataka": 3}
-    
-    top_states = [{"state": k, "count": v} for k, v in sorted(states_dict.items(), key=lambda x: x[1], reverse=True)]
-
-    # 8. Top languages
-    lang_query = db.query(User.language, func.count(User.id)).group_by(User.language).all()
-    top_languages = [{"language": lang or "en", "count": count} for lang, count in lang_query]
-
-    return {
-        "daily_otps_sent": daily_otps_count,
-        "successful_logins": successful_logins_today,
-        "failed_logins": failed_attempts_sum,
-        "locked_accounts": locked_accounts_count,
-        "active_sessions": active_sessions_count,
-        "top_states": top_states,
-        "top_languages": top_languages,
-        "estimated_sms_usage": {
-            "sms_sent": daily_otps_count,
-            "estimated_cost_inr": estimated_sms_cost
-        }
-    }
 
 @router.post("/forgot-password")
 @_rate_limit("5/minute")

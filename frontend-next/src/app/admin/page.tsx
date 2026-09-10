@@ -2,11 +2,8 @@ import type { Metadata } from "next"
 import AdminClient from "./AdminClient"
 
 export const metadata: Metadata = {
-  title: "Admin Testimonial Dashboard | KisaanBuddy",
-  description: "Moderate, search, edit, approve, or delete user-submitted testimonials on KisaanBuddy.",
-  alternates: {
-    canonical: "/admin",
-  },
+  title: "Owner portal",
+  robots: { index: false, follow: false },
 }
 
 export default function AdminPage() {

@@ -10,7 +10,7 @@ import {
 import { useEffect, useState } from 'react';
 import { usePathname, useRouter } from 'next/navigation';
 import { ThemeToggle } from '@/components/ThemeToggle';
-import { useLanguage, LANG_NAMES, type Lang } from '@/lib/language';
+import { useLanguage, LANG_NAMES, SELECTABLE_LANGS, type Lang } from '@/lib/language';
 import { useAuth, logoutUser } from '@/lib/auth';
 import SearchModal from '@/components/SearchModal';
 import { trackEvent } from '@/lib/analytics';
@@ -167,11 +167,11 @@ export function Header() {
             <button
               type="button"
               onClick={() => setSearchOpen(true)}
-              title="Search KisaanBuddy (Ctrl+K)"
+              title={t("ui.search.title")}
               className="flex h-8 items-center gap-2 rounded-lg border border-border/70 bg-card/60 px-2.5 text-xs text-muted-foreground hover:text-foreground hover:border-border transition-colors cursor-pointer"
             >
               <Search className="h-3.5 w-3.5" />
-              <span className="hidden sm:inline text-[11px]">Search</span>
+              <span className="hidden sm:inline text-[11px]">{t("ui.search.label")}</span>
               <kbd className="hidden sm:inline-flex items-center rounded border border-border bg-muted/60 px-1 font-mono text-[9px] text-muted-foreground">
                 ⌘K
               </kbd>
@@ -195,7 +195,7 @@ export function Header() {
                 <>
                   <button className="fixed inset-0 z-40 cursor-default" onClick={() => setLangOpen(false)} aria-label={t("header.close")} />
                   <div className="absolute right-0 top-10 z-50 w-36 rounded-xl border border-border bg-popover shadow-lg overflow-hidden p-1">
-                    {(Object.keys(LANG_NAMES) as Lang[]).map((l) => (
+                    {SELECTABLE_LANGS.map((l) => (
                       <button
                         key={l}
                         type="button"
@@ -232,7 +232,7 @@ export function Header() {
                   href="/signup"
                   className="inline-flex h-8 items-center justify-center rounded-lg bg-primary px-3.5 text-xs font-semibold text-primary-foreground transition-colors hover:bg-primary/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                 >
-                  {t("hero.start_free") || "Get Started"}
+                  {t("hero.start_free")}
                 </Link>
               </div>
             )}
@@ -274,7 +274,7 @@ export function Header() {
             {(showFullNav || (!user && isPublic && pathname !== '/login')) && (
               <button
                 type="button"
-                aria-label={open ? 'Close menu' : 'Open menu'}
+                aria-label={open ? t("ui.navigation.close_menu") : t("ui.navigation.open_menu")}
                 aria-expanded={open}
                 onClick={() => setOpen(v => !v)}
                 className="lg:hidden flex h-8 w-8 items-center justify-center rounded-lg border border-border/70 bg-card/60 text-foreground hover:bg-muted transition-colors"

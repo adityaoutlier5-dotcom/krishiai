@@ -1,6 +1,7 @@
 "use client";
 
 import { ClipboardEvent, KeyboardEvent, useEffect, useRef } from "react";
+import { useLanguage } from "@/lib/language";
 
 type OtpInputProps = {
   value: string;
@@ -11,6 +12,7 @@ type OtpInputProps = {
 const OTP_LENGTH = 6;
 
 export function OtpInput({ value, onChange, disabled = false }: OtpInputProps) {
+  const { t } = useLanguage();
   const inputs = useRef<Array<HTMLInputElement | null>>([]);
   const digits = Array.from({ length: OTP_LENGTH }, (_, index) => value[index] || "");
 
@@ -52,12 +54,12 @@ export function OtpInput({ value, onChange, disabled = false }: OtpInputProps) {
   };
 
   return (
-    <div className="flex justify-between gap-2 sm:gap-2.5" role="group" aria-label="Six-digit verification code">
+    <div className="flex justify-between gap-2 sm:gap-2.5" role="group" aria-label={t("ui.auth.otp_group") }>
       {digits.map((digit, index) => (
         <input
           key={index}
           ref={(element) => { inputs.current[index] = element; }}
-          aria-label={`Verification code digit ${index + 1}`}
+          aria-label={`${t("ui.auth.otp_digit")} ${index + 1}`}
           autoComplete={index === 0 ? "one-time-code" : "off"}
           className={`h-12 sm:h-13 min-w-0 flex-1 rounded-lg border text-center font-mono text-xl font-bold transition-all outline-none ${
             digit 

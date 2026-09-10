@@ -35,6 +35,19 @@ const nextConfig = {
         source: '/api/auth/:path*',
         destination: `${backendUrl}/api/auth/:path*`
       },
+      // Owner portal and published CMS content
+      {
+        source: '/api/admin/:path*',
+        destination: `${backendUrl}/api/admin/:path*`
+      },
+      {
+        source: '/api/content/:path*',
+        destination: `${backendUrl}/api/content/:path*`
+      },
+      {
+        source: '/api/media/:path*',
+        destination: `${backendUrl}/api/media/:path*`
+      },
       // Weather
       {
         source: '/api/weather/:path*/',

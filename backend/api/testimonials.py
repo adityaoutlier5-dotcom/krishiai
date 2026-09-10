@@ -9,7 +9,7 @@ from sqlalchemy.orm import Session
 
 from db.session import get_db
 from db import models
-from api.auth import get_current_user
+from api.auth import get_current_user, require_admin
 
 router = APIRouter()
 
@@ -59,15 +59,6 @@ async def get_optional_current_user(
     except Exception:
         return None
 
-def require_admin(user: models.User = Depends(get_current_user)) -> models.User:
-    """Enforces that the current authenticated user has an Admin role."""
-    if user.role.lower() != "admin":
-        raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN,
-            detail="Forbidden: Admin authentication required.",
-        )
-    return user
-
 # ---------------------------------------------------------------------------
 # Endpoints
 # ---------------------------------------------------------------------------
@@ -99,7 +90,7 @@ def get_testimonials(
     db: Session = Depends(get_db)
 ):
     """Retrieve testimonials. Public sees only approved; Admin sees all with optional filters."""
-    is_admin = user is not None and user.role.lower() == "admin"
+    is_admin = user is not None and (user.role or "").casefold() == "admin"
     query = db.query(models.Review)
 
     if not is_admin:

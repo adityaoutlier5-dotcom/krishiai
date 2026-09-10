@@ -7,12 +7,12 @@ from datetime import datetime
 
 try:
     from sqlalchemy import (
-        Column, Integer, String, Float, Text, DateTime, Date, ForeignKey, Boolean,
+        Column, Integer, String, Float, Text, DateTime, Date, ForeignKey, Boolean, LargeBinary,
     )
     from sqlalchemy.orm import relationship
 except ImportError:
     # SQLAlchemy optional; module importable so schema tools can still run.
-    Column = Integer = String = Float = Text = DateTime = Date = ForeignKey = Boolean = None  # type: ignore
+    Column = Integer = String = Float = Text = DateTime = Date = ForeignKey = Boolean = LargeBinary = None  # type: ignore
     relationship = lambda *a, **k: None  # type: ignore
 
 from db.session import Base
@@ -142,6 +142,30 @@ if Column is not None:
         ip_address = Column(String(50))
         device_info = Column(String(255))
         logged_at = Column(DateTime, default=datetime.utcnow, index=True)
+
+    class SiteContent(Base):
+        """A published, locale-specific override for public site copy."""
+        __tablename__ = "site_content"
+        id = Column(Integer, primary_key=True, index=True)
+        locale = Column(String(10), nullable=False, index=True)
+        content_key = Column(String(255), nullable=False, unique=True, index=True)
+        value = Column(Text, nullable=False)
+        is_published = Column(Boolean, default=True, nullable=False, index=True)
+        updated_by = Column(Integer, ForeignKey("users.id"), nullable=False)
+        created_at = Column(DateTime, default=datetime.utcnow, nullable=False)
+        updated_at = Column(DateTime, default=datetime.utcnow, nullable=False, onupdate=datetime.utcnow)
+
+    class MediaAsset(Base):
+        """Owner-uploaded media stored durably with the application database."""
+        __tablename__ = "media_assets"
+        id = Column(Integer, primary_key=True, index=True)
+        filename = Column(String(255), nullable=False)
+        content_type = Column(String(100), nullable=False)
+        data = Column(LargeBinary, nullable=False)
+        size_bytes = Column(Integer, nullable=False)
+        is_published = Column(Boolean, default=True, nullable=False, index=True)
+        uploaded_by = Column(Integer, ForeignKey("users.id"), nullable=False)
+        created_at = Column(DateTime, default=datetime.utcnow, nullable=False, index=True)
 
     class Notification(Base):
         __tablename__ = "notifications"

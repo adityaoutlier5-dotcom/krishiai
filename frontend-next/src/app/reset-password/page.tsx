@@ -47,7 +47,7 @@ function ResetPasswordForm() {
       return;
     }
     if (password.length < 8) {
-      setError("Use at least 8 characters for your new password.");
+      setError(t("ui.auth.password_length"));
       return;
     }
 
@@ -63,12 +63,12 @@ function ResetPasswordForm() {
 
       const data = await response.json();
       if (!response.ok) {
-        setError(data.detail || "Failed to reset password.");
+        setError(data.detail || t("ui.auth.reset_failed"));
       } else {
         setSuccess(true);
       }
     } catch (err: any) {
-      setError("Network error. Please try again later.");
+      setError(t("ui.auth.network_error"));
     } finally {
       setLoading(false);
     }

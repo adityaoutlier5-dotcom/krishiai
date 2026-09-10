@@ -70,7 +70,7 @@ export default function LoginPage() {
       "1234567890"
     ];
     if (!indianPhoneRegex.test(cleanPhone) || fakeNumbers.includes(cleanPhone)) {
-      setError("Please enter a valid Indian mobile number.");
+      setError(t("ui.auth.invalid_phone"));
       return;
     }
 
@@ -83,9 +83,9 @@ export default function LoginPage() {
     if (res.ok) {
       setStep("otp");
       setResendCooldown(res.resendAfter || 30);
-      setNotice("Code sent successfully via SMS.");
+      setNotice(t("ui.auth.otp_sent"));
     } else {
-      setError(res.error || "Failed to send OTP. Please try again.");
+      setError(res.error || t("ui.auth.otp_send_failed"));
     }
   };
 
@@ -98,9 +98,9 @@ export default function LoginPage() {
     setLoading(false);
     if (res.ok) {
       setResendCooldown(res.resendAfter || 30);
-      setNotice("A new code has been sent.");
+      setNotice(t("ui.auth.otp_resent"));
     } else {
-      setError(res.error || "Failed to resend OTP.");
+      setError(res.error || t("ui.auth.otp_resend_failed"));
     }
   };
 
@@ -126,7 +126,7 @@ export default function LoginPage() {
         setStep("register");
       }
     } else {
-      setError(res.error || "Incorrect OTP. Please try again.");
+      setError(res.error || t("ui.auth.otp_incorrect"));
     }
   };
 
@@ -254,13 +254,13 @@ export default function LoginPage() {
                 onClick={() => { setStep("phone"); setError(null); }}
                 className="text-muted-foreground hover:text-foreground transition-colors disabled:opacity-50 font-medium"
               >
-                ← Change Phone
+                ← {t("ui.auth.change_phone")}
               </button>
 
               {resendCooldown > 0 ? (
                 <span className="text-muted-foreground flex items-center gap-1.5 font-medium">
                   <RefreshCw className="h-3 w-3 animate-spin text-primary" />
-                  Resend in {resendCooldown}s
+                  {t("ui.auth.resend_in").replace("{seconds}", String(resendCooldown))}
                 </span>
               ) : (
                 <button
@@ -269,7 +269,7 @@ export default function LoginPage() {
                   disabled={loading}
                   className="text-primary hover:underline font-semibold transition-colors disabled:opacity-50"
                 >
-                  Resend OTP
+                  {t("ui.auth.resend_otp")}
                 </button>
               )}
             </div>

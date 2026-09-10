@@ -68,7 +68,7 @@ export function Footer() {
                 {t("schemes")}
               </Link>
               <Link href="/khet-diary" className="hover:text-foreground transition-colors">
-                Khet Diary (Farm Ledger)
+                {t("ui.footer.khet_diary")}
               </Link>
             </div>
           </div>

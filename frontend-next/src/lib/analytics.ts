@@ -36,5 +36,14 @@ export function trackEvent(event: AnalyticsEvent) {
     } catch (err) {
       console.warn('Analytics push failed:', err)
     }
+
+    // Persist only the bounded event type and active language for owner reporting.
+    // The event payload itself never leaves the browser through this endpoint.
+    void fetch('/api/content/events/track', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ type: event.type, lang: 'lang' in event ? event.lang : undefined }),
+      keepalive: true,
+    })
   }
 }

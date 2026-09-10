@@ -31,8 +31,9 @@ export function getAuthHeaders(): Record<string, string> {
 }
 
 export async function fetchWithAuth(url: string, options: RequestInit = {}): Promise<Response> {
+  const isMultipart = typeof FormData !== "undefined" && options.body instanceof FormData;
   const headers = {
-    ...getAuthHeaders(),
+    ...(isMultipart ? {} : getAuthHeaders()),
     ...(options.headers || {}),
   };
   let response = await fetch(url, {
