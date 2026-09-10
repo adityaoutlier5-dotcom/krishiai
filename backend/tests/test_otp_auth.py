@@ -34,14 +34,25 @@ class TestOTPAuthSystem(unittest.TestCase):
         Base.metadata.create_all(bind=engine)
         if limiter:
             limiter.enabled = False
+        from core.config import settings
+        cls._orig_debug = settings.DEBUG
+        cls._orig_jwt = settings.JWT_SECRET
+        settings.DEBUG = True
+        settings.JWT_SECRET = "test_jwt_secret_key_for_testing_12345"
         cls.client = TestClient(app, base_url="https://testserver")
 
     @classmethod
     def tearDownClass(cls):
         Base.metadata.drop_all(bind=engine)
         engine.dispose()
-        if os.path.exists("./test_otp_auth.db"):
-            os.remove("./test_otp_auth.db")
+        from core.config import settings
+        settings.DEBUG = cls._orig_debug
+        settings.JWT_SECRET = cls._orig_jwt
+        try:
+            if os.path.exists("./test_otp_auth.db"):
+                os.remove("./test_otp_auth.db")
+        except OSError:
+            pass
 
     def setUp(self):
         app.dependency_overrides[get_db] = override_get_db
@@ -125,6 +136,11 @@ class TestOTPAuthSystem(unittest.TestCase):
         self.assertEqual(data["user"]["name"], "Kisan Bhai")
         self.assertEqual(data["user"]["phone_number"], "9876543210")
         
+        # The handoff token is single-use and cannot mint another session.
+        replay = self.client.post("/api/auth/verify-otp", json=reg_payload)
+        self.assertEqual(replay.status_code, 400)
+        self.assertIn("expired", replay.json()["detail"])
+        
         # Verify cookies are set
         self.assertIn("krishiai_session", response.cookies)
         self.assertIn("krishiai_refresh_session", response.cookies)
@@ -154,15 +170,15 @@ class TestOTPAuthSystem(unittest.TestCase):
             self.assertEqual(res.status_code, 400)
             self.assertIn("Incorrect OTP", res.json()["detail"])
             
-        # 5th attempt locks the account
+        # 5th attempt invalidates the OTP and throttles further guesses.
         res = self.client.post("/api/auth/verify-otp", json=verify_payload)
-        self.assertEqual(res.status_code, 400)
-        self.assertIn("Account locked for 15 minutes", res.json()["detail"])
+        self.assertEqual(res.status_code, 429)
+        self.assertIn("Please request a new code", res.json()["detail"])
         
         # 6th attempt fails due to lockout
         res = self.client.post("/api/auth/verify-otp", json=verify_payload)
-        self.assertEqual(res.status_code, 400)
-        self.assertIn("temporarily locked", res.json()["detail"])
+        self.assertEqual(res.status_code, 429)
+        self.assertIn("Too many attempts", res.json()["detail"])
 
     def test_verify_otp_expired(self):
         self.client.post("/api/auth/send-otp", json={"phone_number": "9876543210"})
@@ -206,7 +222,8 @@ class TestOTPAuthSystem(unittest.TestCase):
         # 3. Call refresh-session with cookies
         refresh_res = self.client.post("/api/auth/refresh-session", cookies=cookies)
         self.assertEqual(refresh_res.status_code, 200)
-        self.assertTrue(refresh_res.json()["token"])
+        self.assertTrue(refresh_res.json()["ok"])
+        self.assertNotIn("token", refresh_res.json())
 
         # 4. Logout
         logout_res = self.client.post("/api/auth/logout", cookies=cookies)
@@ -272,20 +289,23 @@ class TestOTPAuthSystem(unittest.TestCase):
         phone = "9999999999"
         self.client.post("/api/auth/send-otp", json={"phone_number": phone})
         
-        # 5 incorrect attempts
-        for _ in range(5):
+        # First four incorrect attempts are rejected; the fifth invalidates the code.
+        for _ in range(4):
             res = self.client.post("/api/auth/verify-otp", json={"phone_number": phone, "otp": "000000"})
             self.assertEqual(res.status_code, 400)
+
+        res = self.client.post("/api/auth/verify-otp", json={"phone_number": phone, "otp": "000000"})
+        self.assertEqual(res.status_code, 429)
             
         # The 6th verify-otp attempt should fail with account locked message
         res = self.client.post("/api/auth/verify-otp", json={"phone_number": phone, "otp": "000000"})
-        self.assertEqual(res.status_code, 400)
-        self.assertIn("temporarily locked", res.json()["detail"])
+        self.assertEqual(res.status_code, 429)
+        self.assertIn("Too many attempts", res.json()["detail"])
 
         # Also, send-otp should fail with locked message
         res_send = self.client.post("/api/auth/send-otp", json={"phone_number": phone})
-        self.assertEqual(res_send.status_code, 400)
-        self.assertIn("temporarily locked", res_send.json()["detail"])
+        self.assertEqual(res_send.status_code, 429)
+        self.assertIn("Too many requests", res_send.json()["detail"])
 
     def test_otp_requests_rate_limit(self):
         # 3 OTP requests / 10 minutes limit
@@ -326,8 +346,8 @@ class TestOTPAuthSystem(unittest.TestCase):
         
         # 4th request should fail due to rate limit and trigger 15-minute lock
         res4 = self.client.post("/api/auth/send-otp", json={"phone_number": phone})
-        self.assertEqual(res4.status_code, 400)
-        self.assertIn("locked for 15 minutes", res4.json()["detail"])
+        self.assertEqual(res4.status_code, 429)
+        self.assertIn("Too many verification-code requests", res4.json()["detail"])
 
     def test_otp_resend_limit(self):
         # 30 second resend limit check
@@ -335,9 +355,9 @@ class TestOTPAuthSystem(unittest.TestCase):
         res1 = self.client.post("/api/auth/send-otp", json={"phone_number": phone})
         self.assertEqual(res1.status_code, 200)
         
-        # Immediate 2nd request within 30 seconds should trigger 400 Bad Request with cost optimization message
+        # Immediate resend returns a standard throttling response with retry guidance.
         res2 = self.client.post("/api/auth/send-otp", json={"phone_number": phone})
-        self.assertEqual(res2.status_code, 400)
+        self.assertEqual(res2.status_code, 429)
         self.assertIn("Resend available in", res2.json()["detail"])
 
     def test_multi_device_sessions_limit(self):

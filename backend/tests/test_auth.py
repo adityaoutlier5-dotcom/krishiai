@@ -102,7 +102,7 @@ class TestAuthSystem(unittest.TestCase):
         self.assertEqual(response.status_code, 200)
         data = response.json()
         self.assertTrue(data["ok"])
-        self.assertIn("token", data)
+        self.assertNotIn("token", data)
         self.assertEqual(data["user"]["email"], "user@example.com")
         
         # Verify cookie is set

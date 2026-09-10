@@ -9,7 +9,7 @@ export default function ForgotPasswordPage() {
   const { t } = useLanguage();
   const lt = {
     forgotPassword: t("forgot_password.forgotPassword"),
-    enterEmailText: t("forgot_password.enterEmailText"),
+    enterEmailText: "Enter your email address. If password reset email delivery is available, we’ll send instructions.",
     emailLabel: t("forgot_password.emailLabel"),
     sendLinkBtn: t("forgot_password.sendLinkBtn"),
     sending: t("forgot_password.sending"),
@@ -50,6 +50,8 @@ export default function ForgotPasswordPage() {
       const data = await response.json();
       if (!response.ok) {
         setError(data.detail || "Failed to request reset link.");
+      } else if (data.delivery_available === false) {
+        setError("Password reset email is not configured yet. Please contact support for help accessing your account.");
       } else {
         setSuccess(true);
       }

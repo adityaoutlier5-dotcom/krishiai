@@ -15,7 +15,8 @@ class Settings(BaseSettings):
     DEBUG: bool = False
 
     # --- Authentication & Session Security ---
-    JWT_SECRET: str = "krishiai_production_grade_secret_key_change_me_later"
+    # Required outside local development. Never ship a predictable signing key.
+    JWT_SECRET: str = ""
     JWT_ALGORITHM: str = "HS256"
     JWT_ACCESS_TOKEN_EXPIRE_MINUTES: int = 1440  # 24 hours
 
@@ -51,8 +52,9 @@ class Settings(BaseSettings):
     ]
     # Regex pattern for allowed origins — covers Vercel preview deploys
     # like https://krishiai-git-feature-branch-username.vercel.app
-    # Default permits any *.vercel.app subdomain. Set to "" to disable.
-    ALLOWED_ORIGIN_REGEX: str = r"https://.*\.vercel\.app"
+    # Preview deployments must be explicitly opted into. Credentialed CORS must
+    # never trust every Vercel project by default.
+    ALLOWED_ORIGIN_REGEX: Optional[str] = None
 
     # --- HTTP / perf ---
     API_TIMEOUT: float = 5.0  # per-provider request timeout
@@ -86,6 +88,9 @@ class Settings(BaseSettings):
     ENABLE_MULTI_DEVICE: bool = True
     ENABLE_SECURITY_LOCKS: bool = True
 
+    # Google ID token validation. Required only when Google sign-in is enabled.
+    GOOGLE_CLIENT_ID: Optional[str] = None
+
     model_config = SettingsConfigDict(
         env_file=_ENV_FILE,
         env_file_encoding="utf-8",
@@ -94,3 +99,16 @@ class Settings(BaseSettings):
 
 
 settings = Settings()
+
+
+def validate_production_settings() -> None:
+    """Fail fast instead of signing production sessions with a known secret."""
+    insecure_values = {
+        "",
+        "change_me_to_a_random_secret",
+        "krishiai_production_grade_secret_key_change_me_later",
+    }
+    if not settings.DEBUG and settings.JWT_SECRET.strip() in insecure_values:
+        raise RuntimeError(
+            "JWT_SECRET must be set to a cryptographically random value when DEBUG is false."
+        )

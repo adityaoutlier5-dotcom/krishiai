@@ -3,8 +3,9 @@
 import { useLanguage } from "@/lib/language";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { Loader2, Sparkles, Phone, ShieldCheck, AlertCircle, ArrowRight, Check, RefreshCw } from "lucide-react";
+import { Loader2, Sparkles, Phone, AlertCircle, ArrowRight, Check, RefreshCw } from "lucide-react";
 import { useAuth, sendOtp, verifyOtp, completeOtpRegistration } from "@/lib/auth";
+import { OtpInput } from "@/components/auth/OtpInput";
 
 export default function LoginPage() {
   const { t } = useLanguage();
@@ -22,7 +23,6 @@ export default function LoginPage() {
     nameLabel: t("login.nameLabel"),
     namePlaceholder: t("login.namePlaceholder"),
     completeRegistration: t("login.completeRegistration"),
-    devModeNotice: t("login.devModeNotice"),
     phoneError: t("login.phoneError"),
     otpError: t("login.otpError"),
     nameError: t("login.nameError"),
@@ -37,6 +37,7 @@ export default function LoginPage() {
   const [step, setStep] = useState<"phone" | "otp" | "register">("phone");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [notice, setNotice] = useState<string | null>(null);
   const [resendCooldown, setResendCooldown] = useState(0);
   const [registrationToken, setRegistrationToken] = useState("");
 
@@ -75,12 +76,14 @@ export default function LoginPage() {
 
     setLoading(true);
     setError(null);
+    setNotice(null);
 
     const res = await sendOtp(cleanPhone);
     setLoading(false);
     if (res.ok) {
       setStep("otp");
-      setResendCooldown(30);
+      setResendCooldown(res.resendAfter || 30);
+      setNotice("Code sent successfully.");
     } else {
       setError(res.error || "Failed to send OTP. Please try again.");
     }
@@ -90,10 +93,12 @@ export default function LoginPage() {
     if (resendCooldown > 0) return;
     setLoading(true);
     setError(null);
+    setNotice(null);
     const res = await sendOtp(phone);
     setLoading(false);
     if (res.ok) {
-      setResendCooldown(30);
+      setResendCooldown(res.resendAfter || 30);
+      setNotice("A new code has been sent.");
     } else {
       setError(res.error || "Failed to resend OTP.");
     }
@@ -109,6 +114,7 @@ export default function LoginPage() {
 
     setLoading(true);
     setError(null);
+    setNotice(null);
 
     const res = await verifyOtp(phone, cleanOtp);
     setLoading(false);
@@ -134,6 +140,7 @@ export default function LoginPage() {
 
     setLoading(true);
     setError(null);
+    setNotice(null);
 
     const res = await completeOtpRegistration(registrationToken, cleanName);
     setLoading(false);
@@ -179,11 +186,9 @@ export default function LoginPage() {
             </div>
           )}
 
-          {/* Dev Mode Notice */}
-          {step === "otp" && !error && (
-            <div className="mb-6 flex items-center gap-2 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 p-3 text-xs text-emerald-400 font-bold justify-center">
-              <ShieldCheck className="h-4 w-4 shrink-0" />
-              <span>{lt.devModeNotice}</span>
+          {notice && (
+            <div className="mb-6 rounded-2xl border border-emerald-500/20 bg-emerald-500/10 p-3 text-center text-xs font-medium text-emerald-300" role="status">
+              {notice}
             </div>
           )}
 
@@ -239,16 +244,7 @@ export default function LoginPage() {
                 <label className="text-xs font-bold text-muted-foreground uppercase tracking-wider pl-1">
                   {lt.otpPlaceholder}
                 </label>
-                <input
-                  type="text"
-                  required
-                  value={otp}
-                  maxLength={6}
-                  onChange={(e) => setOtp(e.target.value.replace(/[^0-9]/g, ""))}
-                  placeholder="------"
-                  disabled={loading}
-                  className="w-full h-11 bg-white/[0.03] hover:bg-white/[0.05] focus:bg-white/[0.05] border border-white/10 focus:border-emerald-500/50 rounded-xl px-4 text-center text-lg text-white placeholder-muted-foreground/30 transition-all focus:outline-none focus:ring-1 focus:ring-emerald-500/20 font-black tracking-[0.7em] font-mono"
-                />
+                <OtpInput value={otp} onChange={setOtp} disabled={loading} />
               </div>
 
               <div className="flex justify-between items-center px-1 text-xs">

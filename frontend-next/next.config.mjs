@@ -79,6 +79,24 @@ const nextConfig = {
       {
         source: '/api/sensor/:path*',
         destination: `${backendUrl}/api/sensor/:path*`
+      },
+      // Farmer Profile & Fields
+      {
+        source: '/api/farmer/:path*/',
+        destination: `${backendUrl}/api/farmer/:path*/`
+      },
+      {
+        source: '/api/farmer/:path*',
+        destination: `${backendUrl}/api/farmer/:path*`
+      },
+      // Disease
+      {
+        source: '/api/disease/:path*/',
+        destination: `${backendUrl}/api/disease/:path*/`
+      },
+      {
+        source: '/api/disease/:path*',
+        destination: `${backendUrl}/api/disease/:path*`
       }
     ]
   }

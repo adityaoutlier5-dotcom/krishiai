@@ -61,6 +61,9 @@ if Column is not None:
         crop_id = Column(Integer, ForeignKey("crops.id"))
         sowing_date = Column(Date)
         soil_type = Column(String(50))
+        acreage = Column(Float, nullable=True)
+        current_crop = Column(String(100), nullable=True)
+        irrigation_type = Column(String(100), nullable=True)
 
         user = relationship("User", back_populates="fields")
         crop = relationship("Crop")
@@ -73,6 +76,7 @@ if Column is not None:
         field_id = Column(Integer, ForeignKey("farmer_fields.id"))
         image_url = Column(Text, nullable=False)
         detected_disease = Column(String(255))
+        crop_name = Column(String(100), nullable=True)
         confidence = Column(Float)
         remedy_suggested = Column(Text)
         detected_at = Column(DateTime, default=datetime.utcnow)
@@ -178,6 +182,17 @@ if Column is not None:
         expires_at = Column(DateTime, nullable=False)
         attempts = Column(Integer, default=0)
         is_verified = Column(Boolean, default=False)
+
+
+    class OtpRegistrationGrant(Base):  # type: ignore[misc]
+        """Single-use handoff between OTP verification and profile completion."""
+        __tablename__ = "otp_registration_grants"
+        id = Column(Integer, primary_key=True, index=True)
+        phone_number = Column(String(50), unique=True, nullable=False, index=True)
+        token_hash = Column(String(64), nullable=False)
+        expires_at = Column(DateTime, nullable=False)
+        used_at = Column(DateTime, nullable=True)
+        created_at = Column(DateTime, default=datetime.utcnow)
 
 
     class UserSession(Base):  # type: ignore[misc]

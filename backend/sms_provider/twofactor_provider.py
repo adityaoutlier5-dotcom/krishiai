@@ -9,7 +9,12 @@ class TwoFactorProvider(SMSProvider):
     def send_otp(self, phone_number: str, otp: str) -> bool:
         api_key = settings.TWOFACTOR_API_KEY
         if not api_key:
-            log.warning("2Factor API Key not configured. Falling back to console printing.")
+            if not settings.DEBUG:
+                raise RuntimeError(
+                    "TWOFACTOR_API_KEY is not configured. "
+                    "Set the key in .env or switch OTP_PROVIDER to 'console' for local development."
+                )
+            log.warning("2Factor API Key not configured. Falling back to console (DEBUG mode).")
             print(f"\n[2Factor Fallback OTP]: {otp} (Sent to +91{phone_number})\n", flush=True)
             return True
             

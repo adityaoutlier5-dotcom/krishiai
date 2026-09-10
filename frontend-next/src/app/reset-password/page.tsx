@@ -46,6 +46,10 @@ function ResetPasswordForm() {
       setError(lt.passwordsDoNotMatch);
       return;
     }
+    if (password.length < 8) {
+      setError("Use at least 8 characters for your new password.");
+      return;
+    }
 
     setLoading(true);
     setError(null);
@@ -124,6 +128,7 @@ function ResetPasswordForm() {
                 <Lock className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground/60" />
                 <input
                   type="password"
+                  minLength={8}
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="••••••••"
@@ -141,6 +146,7 @@ function ResetPasswordForm() {
                 <Lock className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground/60" />
                 <input
                   type="password"
+                  minLength={8}
                   value={confirmPassword}
                   onChange={(e) => setConfirmPassword(e.target.value)}
                   placeholder="••••••••"
