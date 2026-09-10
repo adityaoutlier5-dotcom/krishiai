@@ -3,16 +3,15 @@
 import React, { useState, useEffect, useMemo, useRef } from 'react'
 import { useRouter } from 'next/navigation'
 import { useLanguage } from '@/lib/language'
-import { BLOG_POSTS } from '@/lib/blog-data'
 import ALL_SCHEMES_DATA from '@/lib/schemes-data.json'
-import { Search, X, BookOpen, Landmark, Cpu, HelpCircle, ArrowRight } from 'lucide-react'
+import { Search, X, Landmark, Cpu, HelpCircle, ArrowRight } from 'lucide-react'
 
 interface SearchResultItem {
   id: string
   title: string
   desc: string
   link: string
-  category: 'tool' | 'scheme' | 'blog' | 'faq'
+  category: 'tool' | 'scheme' | 'faq'
   answer?: string // For FAQs
 }
 
@@ -119,23 +118,7 @@ export default function SearchModal({ isOpen, onClose }: SearchModalProps) {
       }
     })
 
-    // 3. Index Blogs
-    BLOG_POSTS.forEach(post => {
-      const title = post.title[activeLang].toLowerCase()
-      const desc = post.description[activeLang].toLowerCase()
-      const tags = post.tags[activeLang].join(' ').toLowerCase()
-      if (title.includes(q) || desc.includes(q) || tags.includes(q)) {
-        tempResults.push({
-          id: `blog-${post.slug}`,
-          title: post.title[activeLang],
-          desc: post.description[activeLang],
-          link: `/blog/${post.slug}`,
-          category: 'blog'
-        })
-      }
-    })
-
-    // 4. Index FAQs
+    // 3. Index FAQs
     const activeFaqs = FAQ_INDEX[activeLang] || FAQ_INDEX.hi
     activeFaqs.forEach((faq, index) => {
       const question = faq.q.toLowerCase()
@@ -177,7 +160,7 @@ export default function SearchModal({ isOpen, onClose }: SearchModalProps) {
             type="text"
             value={query}
             onChange={(e) => setQuery(e.target.value)}
-            placeholder={activeLang === 'en' ? "Search blogs, schemes, FAQs, and tools..." : "ब्लॉग, योजनाएं, प्रश्न और उपकरण खोजें..."}
+            placeholder={activeLang === 'en' ? "Search tools, schemes, and help..." : "उपकरण, योजनाएं और सहायता खोजें..."}
             className="flex-1 bg-transparent border-0 outline-none text-white text-sm px-3 placeholder-muted-foreground"
           />
           <button 
@@ -210,7 +193,6 @@ export default function SearchModal({ isOpen, onClose }: SearchModalProps) {
                   <span className="p-2 rounded-lg bg-slate-950/40 border border-white/[0.05] shrink-0 text-emerald-400 group-hover:scale-105 transition-transform">
                     {item.category === 'tool' && <Cpu className="h-4 w-4" />}
                     {item.category === 'scheme' && <Landmark className="h-4 w-4" />}
-                    {item.category === 'blog' && <BookOpen className="h-4 w-4" />}
                     {item.category === 'faq' && <HelpCircle className="h-4 w-4" />}
                   </span>
 

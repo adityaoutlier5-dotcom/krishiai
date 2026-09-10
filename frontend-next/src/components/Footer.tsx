@@ -91,9 +91,6 @@ export function Footer() {
               <Link href="/contact" className="hover:text-foreground transition-colors">
                 {t("contactUs")}
               </Link>
-              <Link href="/blog" className="hover:text-foreground transition-colors">
-                Farm Knowledge Blog
-              </Link>
             </div>
           </div>
 

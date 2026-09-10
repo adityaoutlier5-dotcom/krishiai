@@ -1,5 +1,4 @@
 import { MetadataRoute } from 'next'
-import { BLOG_POSTS } from '@/lib/blog-data'
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || process.env.SITE_URL || 'https://kisaanbuddy.com'
@@ -17,7 +16,6 @@ export default function sitemap(): MetadataRoute.Sitemap {
     { url: '/about', changeScore: 0.6, changefreq: 'weekly' as const },
     { url: '/founders', changeScore: 0.5, changefreq: 'monthly' as const },
     { url: '/contact', changeScore: 0.5, changefreq: 'monthly' as const },
-    { url: '/blog', changeScore: 0.8, changefreq: 'daily' as const },
     { url: '/impact', changeScore: 0.7, changefreq: 'weekly' as const },
     { url: '/privacy', changeScore: 0.3, changefreq: 'monthly' as const },
     { url: '/terms', changeScore: 0.3, changefreq: 'monthly' as const },
@@ -25,15 +23,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     { url: '/cookie-policy', changeScore: 0.3, changefreq: 'monthly' as const },
   ]
 
-  const blogPages = BLOG_POSTS.map((post) => ({
-    url: `/blog/${post.slug}`,
-    changeScore: 0.6,
-    changefreq: 'weekly' as const,
-  }))
-
-  const allPages = [...pages, ...blogPages]
-
-  return allPages.map((page) => ({
+  return pages.map((page) => ({
     url: `${baseUrl}${page.url}`,
     lastModified: new Date(),
     changeFrequency: page.changefreq,

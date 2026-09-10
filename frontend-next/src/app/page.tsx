@@ -3,7 +3,6 @@ import { Hero } from '@/components/landing/Hero';
 import { TrustPanel } from '@/components/landing/TrustPanel';
 import { Founders } from '@/components/landing/Founders';
 import { Features } from '@/components/landing/Features';
-import { Testimonials } from '@/components/landing/Testimonials';
 import { Technology } from '@/components/landing/Technology';
 import { FinalCTA } from '@/components/landing/FinalCTA';
 
@@ -37,13 +36,10 @@ export default function LandingPage() {
       {/* 4. Features Section */}
       <Features />
 
-      {/* 5. Testimonials Section - Hidden for AdSense compliance until 3-5 genuine reviews exist */}
-      {/* <Testimonials /> */}
-
-      {/* 6. Technology Flow Section */}
+      {/* 5. Technology Flow Section */}
       <Technology />
 
-      {/* 7. Final Call-to-Action Banner */}
+      {/* 6. Final Call-to-Action Banner */}
       <FinalCTA />
 
     </div>

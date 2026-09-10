@@ -6,7 +6,6 @@ export type AnalyticsEvent =
   | { type: 'disease_upload'; fileName: string; cropType?: string }
   | { type: 'crop_prediction'; inputs: Record<string, any>; result: string }
   | { type: 'language_switch'; from: string; to: string }
-  | { type: 'blog_read'; slug: string; title: string; category: string }
   | { type: 'whatsapp_share'; url: string; title: string }
   | { type: 'contact_submit'; formName: string; success: boolean }
   | { type: 'tool_interaction'; toolName: string; action: string }

@@ -16,11 +16,6 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { CircularGauge } from "@/components/dashboard/CircularGauge"
 import { ActionableAdvisory } from "@/components/dashboard/ActionableAdvisory"
 
-// Recharts components
-import {
-  ResponsiveContainer, AreaChart, Area, XAxis, YAxis,
-  CartesianGrid, Tooltip
-} from "recharts"
 
 /* ─── 10-Language Farmer Dictionary ─── */
 const localDict: Record<Lang, Record<string, string>> = {
@@ -279,14 +274,12 @@ export default function DashboardPage() {
   const [moisture, setMoisture] = useState(0) // %
   const [temp, setTemp] = useState(0) // °C
   const [humidity, setHumidity] = useState(0) // %
-  const [nitrogen, setNitrogen] = useState(72) // mg/kg
-  const [phosphorus, setPhosphorus] = useState(46) // mg/kg
-  const [potassium, setPotassium] = useState(148) // mg/kg
-  const [ph, setPh] = useState(6.6)
+  const [nitrogen, setNitrogen] = useState(0) // mg/kg
+  const [phosphorus, setPhosphorus] = useState(0) // mg/kg
+  const [potassium, setPotassium] = useState(0) // mg/kg
+  const [ph, setPh] = useState(0)
 
-  const [mounted, setMounted] = useState(false)
   const [isListening, setIsListening] = useState(false)
-  const [isSimulated, setIsSimulated] = useState(false)
 
   // Localized dictionary selector
   const lt = useMemo(() => {
@@ -295,18 +288,17 @@ export default function DashboardPage() {
 
   // Poll real-time sensor data from physical backend database every 5 seconds
   const fetchLatestSensor = async () => {
-    if (isSimulated) return
     try {
       const res = await fetch("/api/sensor/latest")
       if (res.ok) {
         const data = await res.json()
-        setMoisture(Math.round(data.soil_moisture ?? 42))
-        setTemp(Math.round(data.temperature ?? data.soil_temperature ?? 28))
-        setHumidity(Math.round(data.humidity ?? 65))
-        if (data.nitrogen) setNitrogen(data.nitrogen)
-        if (data.phosphorus) setPhosphorus(data.phosphorus)
-        if (data.potassium) setPotassium(data.potassium)
-        if (data.ph_level) setPh(data.ph_level)
+        setMoisture(Math.round(data.soil_moisture ?? 0))
+        setTemp(Math.round(data.temperature ?? data.soil_temperature ?? 0))
+        setHumidity(Math.round(data.humidity ?? 0))
+        if (typeof data.nitrogen === "number") setNitrogen(data.nitrogen)
+        if (typeof data.phosphorus === "number") setPhosphorus(data.phosphorus)
+        if (typeof data.potassium === "number") setPotassium(data.potassium)
+        if (typeof data.ph_level === "number") setPh(data.ph_level)
         setSensorOnline(true)
       } else {
         setSensorOnline(false)
@@ -317,7 +309,6 @@ export default function DashboardPage() {
   }
 
   useEffect(() => {
-    setMounted(true)
     const hrs = new Date().getHours()
     if (hrs < 12) setGreeting(t("goodMorning"))
     else if (hrs < 17) setGreeting(t("goodAfternoon"))
@@ -335,18 +326,6 @@ export default function DashboardPage() {
     }
   }, [ready, user, router])
 
-  // Chart data built dynamically from active sensor readings
-  const simulatedChartData = useMemo(() => {
-    return [
-      { day: "Mon", Moisture: 38, Temp: 26, Humidity: 60 },
-      { day: "Tue", Moisture: 41, Temp: 27, Humidity: 62 },
-      { day: "Wed", Moisture: 35, Temp: 29, Humidity: 58 },
-      { day: "Thu", Moisture: 32, Temp: 30, Humidity: 55 },
-      { day: "Fri", Moisture: 39, Temp: 28, Humidity: 63 },
-      { day: "Sat", Moisture: 45, Temp: 26, Humidity: 68 },
-      { day: "Sun (Now)", Moisture: moisture || 42, Temp: temp || 28, Humidity: humidity || 65 }
-    ]
-  }, [moisture, temp, humidity])
 
   // Text-To-Speech (Read aloud status)
   const speakStatus = () => {
@@ -512,21 +491,6 @@ export default function DashboardPage() {
             </div>
           </div>
 
-          {!sensorOnline && (
-            <button
-              type="button"
-              onClick={() => {
-                setIsSimulated(true)
-                setMoisture(42)
-                setTemp(28)
-                setHumidity(65)
-                setSensorOnline(true)
-              }}
-              className="text-[11px] font-semibold text-primary hover:underline px-2 py-1 rounded bg-primary/10 border border-primary/20"
-            >
-              Simulate Live Data
-            </button>
-          )}
         </div>
       </div>
 
@@ -572,20 +536,9 @@ export default function DashboardPage() {
           <p className="text-xs text-muted-foreground max-w-md leading-relaxed">
             आपके खेत में लगा KisaanBuddy IoT सेंसर अभी कनेक्टेड नहीं है। डिवाइस ऑन करते ही लाइव डेटा अपने आप अपडेट होगा।
           </p>
-          <button
-            type="button"
-            onClick={() => {
-              setIsSimulated(true)
-              setMoisture(42)
-              setTemp(28)
-              setHumidity(65)
-              setSensorOnline(true)
-            }}
-            className="btn-secondary text-xs h-9 gap-2 mt-2"
-          >
-            <Cpu className="h-3.5 w-3.5 text-primary" />
-            <span>सिम्युलेट करें / Preview Live Sensor Dashboard</span>
-          </button>
+          <Link href="/worker-connect" className="btn-secondary h-9 text-xs">
+            Find local farming support
+          </Link>
         </Card>
       ) : (
         <>
@@ -770,55 +723,6 @@ export default function DashboardPage() {
           })}
         </div>
       </div>
-
-      {/* ─── 6. PAST WEATHER & MOISTURE TREND CHART ─── */}
-      {sensorOnline && (
-        <Card className="p-5">
-          <CardHeader className="p-0 pb-4 border-b border-border flex flex-row items-center justify-between">
-            <CardTitle className="text-sm font-semibold flex items-center gap-2">
-              <TrendingUp className="h-4 w-4 text-primary" />
-              <span>{lt.historyTitle}</span>
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="p-0 pt-4">
-            <div className="h-60 w-full text-xs font-mono">
-              {mounted && (
-                <ResponsiveContainer width="100%" height="100%">
-                  <AreaChart
-                    data={simulatedChartData}
-                    margin={{ top: 10, right: 10, left: -20, bottom: 0 }}
-                  >
-                    <defs>
-                      <linearGradient id="moistGrad" x1="0" y1="0" x2="0" y2="1">
-                        <stop offset="5%" stopColor="#15803d" stopOpacity={0.25}/>
-                        <stop offset="95%" stopColor="#15803d" stopOpacity={0}/>
-                      </linearGradient>
-                      <linearGradient id="tempGrad" x1="0" y1="0" x2="0" y2="1">
-                        <stop offset="5%" stopColor="#f97316" stopOpacity={0.25}/>
-                        <stop offset="95%" stopColor="#f97316" stopOpacity={0}/>
-                      </linearGradient>
-                    </defs>
-                    <CartesianGrid strokeDasharray="3 3" className="stroke-border/50" />
-                    <XAxis dataKey="day" className="text-muted-foreground" tick={{ fill: 'currentColor', fontSize: 11 }} />
-                    <YAxis className="text-muted-foreground" tick={{ fill: 'currentColor', fontSize: 11 }} />
-                    <Tooltip
-                      contentStyle={{
-                        backgroundColor: "var(--card)",
-                        borderColor: "var(--border)",
-                        borderRadius: "8px",
-                        fontSize: "12px",
-                        boxShadow: "0 4px 12px rgba(0,0,0,0.1)"
-                      }}
-                    />
-                    <Area type="monotone" dataKey="Moisture" stroke="#15803d" strokeWidth={2} fillOpacity={1} fill="url(#moistGrad)" name={lt.moistureLabel} />
-                    <Area type="monotone" dataKey="Temp" stroke="#f97316" strokeWidth={2} fillOpacity={1} fill="url(#tempGrad)" name={lt.tempLabel} />
-                  </AreaChart>
-                </ResponsiveContainer>
-              )}
-            </div>
-          </CardContent>
-        </Card>
-      )}
 
     </div>
   )
