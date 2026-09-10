@@ -105,7 +105,7 @@ export default function ProfilePage() {
 
   // Filter out placeholder phone numbers
   const isPlaceholderPhone = user.phone_number?.startsWith("google_") || user.phone_number?.startsWith("email_");
-  const displayPhone = isPlaceholderPhone ? lt.notProvided : (user.phone_number || user.phone || lt.notProvided);
+  const displayPhone = isPlaceholderPhone ? lt.notProvided : (user.phone_number || lt.notProvided);
 
   const joinedDate = user.created_at
     ? new Date(user.created_at).toLocaleDateString(lang === "hi" ? "hi-IN" : lang === "kn" ? "kn-IN" : "en-US", {

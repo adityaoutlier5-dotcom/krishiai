@@ -339,7 +339,7 @@ export function Header() {
                     <span className="font-semibold text-xs text-foreground truncate">
                       {user?.name || user?.email?.split('@')[0]}
                     </span>
-                    <span className="text-[11px] text-muted-foreground truncate">{user?.phone || user?.email}</span>
+                    <span className="text-[11px] text-muted-foreground truncate">{user?.phone_number || user?.email}</span>
                   </div>
                 </Link>
 

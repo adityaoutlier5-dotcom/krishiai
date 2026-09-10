@@ -519,7 +519,7 @@ export default function SoilHealthPage() {
                 {error}
               </div>
             )}
-          </GlassCard>
+          </div>
         </motion.div>
 
         {/* Right Column — Response panel or interactive visual meters preview */}
