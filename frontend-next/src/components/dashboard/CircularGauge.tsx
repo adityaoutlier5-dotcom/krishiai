@@ -10,7 +10,7 @@ interface CircularGaugeProps {
   icon: LucideIcon;
   iconColor: string;
   strokeColor: string;
-  glowColor: string;
+  glowColor?: string;
   advice: string;
   adviceClass: string;
 }
@@ -22,47 +22,45 @@ export function CircularGauge({
   icon: Icon,
   iconColor,
   strokeColor,
-  glowColor,
   advice,
   adviceClass
 }: CircularGaugeProps) {
-  const radius = 52;
-  const strokeWidth = 10;
+  const radius = 48;
+  const strokeWidth = 8;
   const circumference = 2 * Math.PI * radius;
   // Map value (0-100) to gauge stroke dashoffset
   const percentage = Math.min(Math.max(value, 0), 100);
   const strokeDashoffset = circumference - (percentage / 100) * circumference;
 
   return (
-    <div className="rounded-3xl border border-white/[0.06] bg-slate-950/40 backdrop-blur-xl shadow-xl shadow-black/20 p-6 flex flex-col justify-between h-full relative overflow-hidden group hover:scale-[1.02] hover:-translate-y-0.5 hover:shadow-emerald-500/5 hover:border-emerald-500/20 transition-all duration-300">
-      {/* Background radial accent glow */}
-      <div className={`absolute -right-10 -top-10 w-24 h-24 rounded-full blur-[40px] opacity-[0.05] pointer-events-none transition-all duration-500 group-hover:scale-110 ${glowColor}`} />
-
+    <div className="rounded-xl border border-border bg-card p-5 flex flex-col justify-between h-full shadow-xs transition-all duration-200 hover:border-border/80">
       {/* Header */}
-      <div className="flex justify-between items-start mb-4">
-        <span className="text-xs font-bold text-muted-foreground uppercase tracking-wider">{label}</span>
-        <Icon className={`h-5 w-5 ${iconColor}`} />
+      <div className="flex justify-between items-center mb-3">
+        <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">{label}</span>
+        <div className={`p-1.5 rounded-lg bg-muted/60 ${iconColor}`}>
+          <Icon className="h-4 w-4" />
+        </div>
       </div>
 
       {/* SVG Circular Dial Gauge */}
-      <div className="flex items-center justify-center my-6 relative">
-        <div className="relative w-36 h-36 flex items-center justify-center">
+      <div className="flex items-center justify-center my-3 relative">
+        <div className="relative w-32 h-32 flex items-center justify-center">
           <svg className="w-full h-full transform -rotate-90">
             {/* Background track circle */}
             <circle
-              cx="72"
-              cy="72"
+              cx="64"
+              cy="64"
               r={radius}
-              className="stroke-white/[0.03] dark:stroke-white/[0.02]"
+              className="stroke-muted/60"
               strokeWidth={strokeWidth}
               fill="transparent"
             />
             {/* Active progress track circle */}
             <circle
-              cx="72"
-              cy="72"
+              cx="64"
+              cy="64"
               r={radius}
-              className={`transition-all duration-1000 ease-out ${strokeColor}`}
+              className={`transition-all duration-700 ease-out ${strokeColor}`}
               strokeWidth={strokeWidth}
               strokeDasharray={circumference}
               strokeDashoffset={strokeDashoffset}
@@ -70,18 +68,18 @@ export function CircularGauge({
               fill="transparent"
             />
           </svg>
-          {/* Central Overlay Text */}
-          <div className="absolute flex flex-col items-center justify-center">
-            <span className="text-3xl font-extrabold text-white font-display tracking-tight group-hover:scale-105 transition-transform duration-300">
+          {/* Central Value */}
+          <div className="absolute flex flex-col items-center justify-center text-center">
+            <span className="text-2xl font-bold font-display text-foreground tracking-tight">
               {value}
-              <span className="text-sm font-bold text-muted-foreground ml-0.5">{unit}</span>
+              <span className="text-xs font-semibold text-muted-foreground ml-0.5">{unit}</span>
             </span>
           </div>
         </div>
       </div>
 
-      {/* Bottom Advice Box */}
-      <div className={`rounded-xl border p-3.5 text-xs text-center font-bold tracking-wide mt-2 ${adviceClass}`}>
+      {/* Bottom Advice Pill */}
+      <div className={`rounded-lg border px-3 py-2 text-xs text-center font-medium leading-snug mt-1 ${adviceClass}`}>
         {advice}
       </div>
     </div>

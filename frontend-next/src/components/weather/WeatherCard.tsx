@@ -40,14 +40,14 @@ export function WeatherCard({ data, loading, error, onRetry, sunrise, sunset }: 
   const { unit } = useUnit()
 
   return (
-    <GlassCard className="h-full overflow-hidden bg-gradient-to-br from-sky-500/5 via-indigo-500/2 to-transparent border-sky-500/10">
-      <CardHeader className="pb-2">
+    <GlassCard className="h-full overflow-hidden bg-card border-border/50 shadow-sm">
+      <CardHeader className="pb-2 border-b border-border/40">
         <div className="flex items-start justify-between gap-4">
           <CardTitle className="flex items-center gap-2 text-xs md:text-sm font-display text-foreground font-bold">
             <ConditionIcon
               condition={data?.current.condition}
               isDay={data?.current.is_day ?? true}
-              className="h-5 w-5 text-sky-400 animate-float"
+              className="h-5 w-5 text-emerald-600 dark:text-emerald-400"
             />
             {t.current_weather}
           </CardTitle>

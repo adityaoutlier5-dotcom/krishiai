@@ -93,25 +93,21 @@ export default function JobsPage() {
 
   return (
     <div className="space-y-8 max-w-6xl mx-auto pb-12 relative">
-      {/* Decorative Blob */}
-      <div className="absolute top-[-10%] left-[25%] w-[350px] h-[350px] rounded-full bg-emerald-500/10 blur-[120px] pointer-events-none -z-10" />
-      <div className="absolute bottom-[10%] right-[10%] w-[300px] h-[300px] rounded-full bg-teal-500/5 blur-[100px] pointer-events-none -z-10" />
-
       {/* Header Banner */}
       <motion.div 
         initial={{ opacity: 0, y: -20 }} 
         animate={{ opacity: 1, y: 0 }} 
-        transition={{ duration: 0.6 }}
-        className="relative overflow-hidden rounded-3xl border border-white/[0.08] bg-gradient-to-r from-emerald-950/20 via-slate-950 to-teal-950/15 p-6 md:p-8 backdrop-blur-xl shadow-2xl"
+        transition={{ duration: 0.5 }}
+        className="relative overflow-hidden rounded-2xl border border-border/50 bg-card p-6 md:p-8 shadow-sm"
       >
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 relative z-10">
           <div>
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-xs font-semibold text-emerald-400 mb-3">
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-xs font-semibold text-emerald-600 dark:text-emerald-400 mb-3">
               <Users className="h-3.5 w-3.5" />
               Rural Marketplace · ग्रामीण बाजार
             </div>
-            <h1 className="text-3xl md:text-5xl font-black font-display tracking-tight text-white">
-              Worker <span className="bg-gradient-to-r from-emerald-400 to-teal-300 bg-clip-text text-transparent">{t("worker_connect.connect")}</span>
+            <h1 className="text-3xl md:text-4xl font-extrabold font-display tracking-tight text-foreground">
+              Worker <span className="text-emerald-600 dark:text-emerald-400">{t("worker_connect.connect")}</span>
             </h1>
             <p className="text-muted-foreground text-sm md:text-base mt-2 max-w-2xl leading-relaxed">
               {SUBHEADING[language]}
@@ -124,15 +120,15 @@ export default function JobsPage() {
       {/* Navigation Tabs & Security Tips */}
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
         {/* Tabs */}
-        <div className="inline-flex rounded-2xl border border-white/[0.08] bg-slate-950/40 p-1 backdrop-blur-sm">
+        <div className="inline-flex rounded-xl border border-border/50 bg-muted/40 p-1">
           {(["hire", "find"] as Mode[]).map((m) => (
             <button
               key={m}
               onClick={() => setMode(m)}
-              className={`rounded-xl px-5 py-2.5 text-xs font-bold transition-all duration-300 flex items-center gap-2 ${
+              className={`rounded-lg px-4 py-2 text-xs font-bold transition-all duration-200 flex items-center gap-2 ${
                 mode === m
-                  ? "bg-emerald-500 text-white shadow-lg shadow-emerald-500/15"
-                  : "text-muted-foreground hover:text-white"
+                  ? "bg-background text-foreground shadow-sm border border-border/50"
+                  : "text-muted-foreground hover:text-foreground"
               }`}
             >
               <span>{m === "hire" ? "👷" : "🔎"}</span>
@@ -142,9 +138,9 @@ export default function JobsPage() {
         </div>
 
         {/* Trust Banner */}
-        <div className="flex-1 md:max-w-xl rounded-2xl border border-amber-500/20 bg-amber-500/5 px-4 py-3 text-xs text-amber-400 flex items-start gap-2.5 backdrop-blur-sm">
-          <ShieldAlert className="h-4 w-4 mt-0.5 shrink-0 text-amber-400" />
-          <span className="font-semibold leading-relaxed">{SAFETY_TIP[language]}</span>
+        <div className="flex-1 md:max-w-xl rounded-xl border border-amber-500/20 bg-amber-500/5 px-4 py-2.5 text-xs text-amber-700 dark:text-amber-400 flex items-start gap-2.5">
+          <ShieldAlert className="h-4 w-4 mt-0.5 shrink-0 text-amber-600 dark:text-amber-400" />
+          <span className="font-medium leading-relaxed">{SAFETY_TIP[language]}</span>
         </div>
       </div>
 
@@ -174,19 +170,19 @@ export default function JobsPage() {
       </AnimatePresence>
 
       {/* ── Educational Guide Section ── */}
-      <section className="mt-12 border-t border-white/[0.08] pt-10 select-none">
+      <section className="mt-12 border-t border-border/50 pt-10 select-none">
         {language === "hi" ? (
           <div className="space-y-8 text-foreground">
             <div className="space-y-3">
-              <h2 className="text-2xl md:text-3xl font-display font-extrabold text-white">🌾 वर्कर कनेक्ट क्या है और यह किसानों की मदद कैसे करता है?</h2>
+              <h2 className="text-2xl md:text-3xl font-display font-extrabold text-foreground">🌾 वर्कर कनेक्ट क्या है और यह किसानों की मदद कैसे करता है?</h2>
               <p className="text-muted-foreground text-sm leading-relaxed max-w-4xl">
                 वर्कर कनेक्ट (Worker Connect) KisaanBuddy द्वारा शुरू किया गया एक ग्रामीण रोजगार मंच है। इसका मुख्य उद्देश्य किसानों और खेतिहर मजदूरों के बीच की दूरी को मिटाना है। इसके माध्यम से किसान अपनी फसल कटाई, बुवाई या निराई के लिए सीधे स्थानीय मजदूरों से संपर्क कर सकते हैं, और मजदूर अपने लिए पास के खेतों में काम ढूंढ सकते हैं।
               </p>
             </div>
 
             <div className="grid gap-6 md:grid-cols-2">
-              <div className="p-6 rounded-2xl border border-white/[0.06] bg-white/[0.01] space-y-3">
-                <h3 className="text-lg font-bold text-emerald-400 font-display">👷 किसान मजदूरों को कैसे काम पर रखें?</h3>
+              <div className="p-6 rounded-2xl border border-border/50 bg-card space-y-3">
+                <h3 className="text-lg font-bold text-emerald-600 dark:text-emerald-400 font-display">👷 किसान मजदूरों को कैसे काम पर रखें?</h3>
                 <p className="text-xs text-muted-foreground leading-relaxed">
                   <strong>1. काम की जानकारी पोस्ट करें:</strong> 'काम ढूंढें / पोस्ट करें' फॉर्म पर जाएं, काम का प्रकार (जैसे कटाई, रोपाई), आवश्यक दिनों की संख्या, प्रति दिन की मजदूरी और अपना मोबाइल नंबर दर्ज करें।<br />
                   <strong>2. सीधा संपर्क:</strong> पोस्ट होते ही यह जानकारी आस-पास के मजदूरों और ठेकेदारों को दिखाई देगी। वे आपसे सीधे फोन या व्हाट्सएप (WhatsApp) के जरिए संपर्क करेंगे।<br />
@@ -194,8 +190,8 @@ export default function JobsPage() {
                 </p>
               </div>
 
-              <div className="p-6 rounded-2xl border border-white/[0.06] bg-white/[0.01] space-y-3">
-                <h3 className="text-lg font-bold text-emerald-400 font-display">🛡️ सुरक्षा, सत्यापन और सरकारी नियम</h3>
+              <div className="p-6 rounded-2xl border border-border/50 bg-card space-y-3">
+                <h3 className="text-lg font-bold text-emerald-600 dark:text-emerald-400 font-display">🛡️ सुरक्षा, सत्यापन और सरकारी नियम</h3>
                 <p className="text-xs text-muted-foreground leading-relaxed">
                   खेती के कार्यों में सुरक्षा सर्वोपरि है। किसानों को सलाह दी जाती है कि वे किसी भी अपरिचित मजदूर को काम पर रखने से पहले उसका आधार कार्ड या सरकारी पहचान पत्र जरूर देखें। मजदूरी का भुगतान दैनिक या साप्ताहिक आधार पर तय शर्तों के अनुसार करें। किसी भी दुर्घटना से बचने के लिए खेत पर प्राथमिक उपचार किट जरूर रखें और खतरनाक कृषि उपकरणों के उपयोग के समय विशेष सावधानी बरतें।
                 </p>
@@ -203,46 +199,46 @@ export default function JobsPage() {
             </div>
 
             <div className="space-y-4">
-              <h2 className="text-2xl font-display font-extrabold text-white">❓ मजदूर भर्ती और रोजगार के बारे में FAQs</h2>
+              <h2 className="text-2xl font-display font-extrabold text-foreground">❓ मजदूर भर्ती और रोजगार के बारे में FAQs</h2>
               <div className="grid gap-4 md:grid-cols-2 text-xs text-muted-foreground">
-                <div className="p-4 rounded-xl border border-white/[0.04] bg-white/[0.005] space-y-2">
-                  <h4 className="font-bold text-white">Q1. क्या वर्कर कनेक्ट का उपयोग करने के लिए कोई फीस देनी होती है?</h4>
+                <div className="p-4 rounded-xl border border-border/50 bg-card space-y-2">
+                  <h4 className="font-bold text-foreground">Q1. क्या वर्कर कनेक्ट का उपयोग करने के लिए कोई फीस देनी होती है?</h4>
                   <p>नहीं, यह सेवा किसानों और खेतिहर मजदूरों दोनों के लिए पूरी तरह से निःशुल्क है। KisaanBuddy इस सेवा के लिए कोई शुल्क या कमिशन नहीं लेता।</p>
                 </div>
-                <div className="p-4 rounded-xl border border-white/[0.04] bg-white/[0.005] space-y-2">
-                  <h4 className="font-bold text-white">Q2. मैं मजदूरों को काम पर रखने के लिए अपनी पोस्ट कैसे हटाऊं?</h4>
+                <div className="p-4 rounded-xl border border-border/50 bg-card space-y-2">
+                  <h4 className="font-bold text-foreground">Q2. मैं मजदूरों को काम पर रखने के लिए अपनी पोस्ट कैसे हटाऊं?</h4>
                   <p>जैसे ही आपके खेत का काम पूरा हो जाए या आवश्यक मजदूर मिल जाएं, आप अपनी प्रोफाइल में जाकर पोस्ट को 'बंद' (Close) कर सकते हैं ताकि और कॉल न आएं।</p>
                 </div>
-                <div className="p-4 rounded-xl border border-white/[0.04] bg-white/[0.005] space-y-2">
-                  <h4 className="font-bold text-white">Q3. न्यूनतम कृषि मजदूरी दरें क्या हैं?</h4>
+                <div className="p-4 rounded-xl border border-border/50 bg-card space-y-2">
+                  <h4 className="font-bold text-foreground">Q3. न्यूनतम कृषि मजदूरी दरें क्या हैं?</h4>
                   <p>कृषि मजदूरी दरें अलग-अलग राज्यों (जैसे पंजाब, बिहार, कर्नाटक) और काम के प्रकार के अनुसार राज्य सरकारों द्वारा तय की जाती हैं। आम तौर पर यह ₹350 से ₹500 प्रति दिन होती है।</p>
                 </div>
-                <div className="p-4 rounded-xl border border-white/[0.04] bg-white/[0.005] space-y-2">
-                  <h4 className="font-bold text-white">Q4. मजदूरों को एडवांस (पेशगी) देने के क्या नियम हैं?</h4>
+                <div className="p-4 rounded-xl border border-border/50 bg-card space-y-2">
+                  <h4 className="font-bold text-foreground">Q4. मजदूरों को एडवांस (पेशगी) देने के क्या नियम हैं?</h4>
                   <p>सुरक्षा के लिहाज से काम शुरू करने से पहले कोई भी बड़ा एडवांस देने से बचें। यदि आवश्यक हो, तो केवल पहचान सत्यापित करने के बाद ही छोटी राशि एडवांस में दें।</p>
                 </div>
-                <div className="p-4 rounded-xl border border-white/[0.04] bg-white/[0.005] space-y-2">
-                  <h4 className="font-bold text-white">Q5. क्या इस मंच पर ट्रैक्टर ऑपरेटर और बागवानी विशेषज्ञ भी मिलते हैं?</h4>
+                <div className="p-4 rounded-xl border border-border/50 bg-card space-y-2">
+                  <h4 className="font-bold text-foreground">Q5. क्या इस मंच पर ट्रैक्टर ऑपरेटर और बागवानी विशेषज्ञ भी मिलते हैं?</h4>
                   <p>हाँ, काम पोस्ट करते समय आप विशिष्ट श्रेणियों जैसे ट्रैक्टर चालक, कीटनाशक छिड़काव विशेषज्ञ, बागवानी माली या फसल कटाई मजदूर चुन सकते हैं।</p>
                 </div>
-                <div className="p-4 rounded-xl border border-white/[0.04] bg-white/[0.005] space-y-2">
-                  <h4 className="font-bold text-white">Q6. दुर्घटना की स्थिति में किसान की क्या जिम्मेदारी होती है?</h4>
+                <div className="p-4 rounded-xl border border-border/50 bg-card space-y-2">
+                  <h4 className="font-bold text-foreground">Q6. दुर्घटना की स्थिति में किसान की क्या जिम्मेदारी होती है?</h4>
                   <p>खेत मालिक के रूप में किसान को काम के दौरान प्राथमिक चिकित्सा सुनिश्चित करनी चाहिए। सुरक्षित कार्य वातावरण प्रदान करना और रासायनिक छिड़काव के समय मास्क-ग्लव्स देना जरूरी है।</p>
                 </div>
-                <div className="p-4 rounded-xl border border-white/[0.04] bg-white/[0.005] space-y-2">
-                  <h4 className="font-bold text-white">Q7. क्या ठेकेदार (Contractors) भी मजदूरों की टोली पोस्ट कर सकते हैं?</h4>
+                <div className="p-4 rounded-xl border border-border/50 bg-card space-y-2">
+                  <h4 className="font-bold text-foreground">Q7. क्या ठेकेदार (Contractors) भी मजदूरों की टोली पोस्ट कर सकते हैं?</h4>
                   <p>हाँ, लेबर ठेकेदार (Labour Contractors) अपनी टीम की उपलब्धता और दैनिक मजदूरी दर दर्ज कर बड़े पैमाने पर काम ढूंढने के लिए पोस्ट कर सकते हैं।</p>
                 </div>
-                <div className="p-4 rounded-xl border border-white/[0.04] bg-white/[0.005] space-y-2">
-                  <h4 className="font-bold text-white">Q8. मुझे अपने जिले में कोई मजदूर नहीं मिल रहा, क्या करें?</h4>
+                <div className="p-4 rounded-xl border border-border/50 bg-card space-y-2">
+                  <h4 className="font-bold text-foreground">Q8. मुझे अपने जिले में कोई मजदूर नहीं मिल रहा, क्या करें?</h4>
                   <p>मजदूरी दर को थोड़ा बढ़ाएं, या काम की अवधि स्पष्ट करें। इसके अतिरिक्त आप पड़ोसी जिलों या राज्यों के प्रवासी मजदूरों से संपर्क के लिए 'खोज सीमा' बढ़ा सकते हैं।</p>
                 </div>
-                <div className="p-4 rounded-xl border border-white/[0.04] bg-white/[0.005] space-y-2">
-                  <h4 className="font-bold text-white">Q9. मजदूरों के भुगतान में विवाद होने पर क्या करें?</h4>
+                <div className="p-4 rounded-xl border border-border/50 bg-card space-y-2">
+                  <h4 className="font-bold text-foreground">Q9. मजदूरों के भुगतान में विवाद होने पर क्या करें?</h4>
                   <p>काम शुरू करने से पहले ही मजदूरी दर, कार्य के घंटे और भोजन की व्यवस्था के बारे में लिखित या स्पष्ट मौखिक सहमति बना लें ताकि बाद में विवाद न हो।</p>
                 </div>
-                <div className="p-4 rounded-xl border border-white/[0.04] bg-white/[0.005] space-y-2">
-                  <h4 className="font-bold text-white">Q10. क्या KisaanBuddy मजदूरों की पहचान सत्यापित करता है?</h4>
+                <div className="p-4 rounded-xl border border-border/50 bg-card space-y-2">
+                  <h4 className="font-bold text-foreground">Q10. क्या KisaanBuddy मजदूरों की पहचान सत्यापित करता है?</h4>
                   <p>KisaanBuddy केवल एक संपर्क मंच प्रदान करता है। काम पर रखने से पहले मजदूरों के दस्तावेजों (जैसे आधार कार्ड) की भौतिक जांच करना पूरी तरह से किसान की जिम्मेदारी है।</p>
                 </div>
               </div>
@@ -251,15 +247,15 @@ export default function JobsPage() {
         ) : (
           <div className="space-y-8 text-foreground">
             <div className="space-y-3">
-              <h2 className="text-2xl md:text-3xl font-display font-extrabold text-white">🌾 What is Worker Connect and How Does It Support Farmers?</h2>
+              <h2 className="text-2xl md:text-3xl font-display font-extrabold text-foreground">🌾 What is Worker Connect and How Does It Support Farmers?</h2>
               <p className="text-muted-foreground text-sm leading-relaxed max-w-4xl">
                 Worker Connect is a local rural labor exchange platform designed by KisaanBuddy. Its primary objective is to bridge the communication gap between landowners and agricultural workers. By leveraging localized directory searches, farmers can hire harvesters, planters, or weeders, while rural laborers can discover consistent wages close to home.
               </p>
             </div>
 
             <div className="grid gap-6 md:grid-cols-2">
-              <div className="p-6 rounded-2xl border border-white/[0.06] bg-white/[0.01] space-y-3">
-                <h3 className="text-lg font-bold text-emerald-400 font-display">👷 How Can Farmers Recruit Local Farmhands?</h3>
+              <div className="p-6 rounded-2xl border border-border/50 bg-card space-y-3">
+                <h3 className="text-lg font-bold text-emerald-600 dark:text-emerald-400 font-display">👷 How Can Farmers Recruit Local Farmhands?</h3>
                 <p className="text-xs text-muted-foreground leading-relaxed">
                   <strong>1. Create a Job Posting:</strong> Head to the 'Hire' tab, specify the work category (e.g. harvesting, manual weeding), required crew size, days of employment, daily wages, and your phone number.<br />
                   <strong>2. Direct Contact:</strong> Once posted, nearby laborers and labor contractors can view the listing and contact you directly via phone call or WhatsApp.<br />
@@ -267,8 +263,8 @@ export default function JobsPage() {
                 </p>
               </div>
 
-              <div className="p-6 rounded-2xl border border-white/[0.06] bg-white/[0.01] space-y-3">
-                <h3 className="text-lg font-bold text-emerald-400 font-display">🛡️ Safety, ID Verification, and Best Practices</h3>
+              <div className="p-6 rounded-2xl border border-border/50 bg-card space-y-3">
+                <h3 className="text-lg font-bold text-emerald-600 dark:text-emerald-400 font-display">🛡️ Safety, ID Verification, and Best Practices</h3>
                 <p className="text-xs text-muted-foreground leading-relaxed">
                   Safety in agricultural operations is paramount. Farmers are advised to physically inspect Aadhaar cards or other state IDs before hiring new laborers. Ensure wages are settled daily or weekly according to pre-agreed rates. Keep a basic first-aid kit in the field and supply protective gloves and masks during chemical sprays or mechanical harvesting.
                 </p>
@@ -276,46 +272,46 @@ export default function JobsPage() {
             </div>
 
             <div className="space-y-4">
-              <h2 className="text-2xl font-display font-extrabold text-white">❓ Farm Labor and Hiring FAQs</h2>
+              <h2 className="text-2xl font-display font-extrabold text-foreground">❓ Farm Labor and Hiring FAQs</h2>
               <div className="grid gap-4 md:grid-cols-2 text-xs text-muted-foreground">
-                <div className="p-4 rounded-xl border border-white/[0.04] bg-white/[0.005] space-y-2">
-                  <h4 className="font-bold text-white">Q1. Is there a fee to use the Worker Connect platform?</h4>
+                <div className="p-4 rounded-xl border border-border/50 bg-card space-y-2">
+                  <h4 className="font-bold text-foreground">Q1. Is there a fee to use the Worker Connect platform?</h4>
                   <p>No, the service is 100% free for both farmers and laborers. KisaanBuddy does not extract any transaction commission or booking fees.</p>
                 </div>
-                <div className="p-4 rounded-xl border border-white/[0.04] bg-white/[0.005] space-y-2">
-                  <h4 className="font-bold text-white">Q2. How do I delete my job posting once I find workers?</h4>
+                <div className="p-4 rounded-xl border border-border/50 bg-card space-y-2">
+                  <h4 className="font-bold text-foreground">Q2. How do I delete my job posting once I find workers?</h4>
                   <p>Once you have recruited the required number of workers, mark the job status as 'Closed' in your profile to stop receiving phone inquiries.</p>
                 </div>
-                <div className="p-4 rounded-xl border border-white/[0.04] bg-white/[0.005] space-y-2">
-                  <h4 className="font-bold text-white">Q3. What are the average daily wages for farm work?</h4>
+                <div className="p-4 rounded-xl border border-border/50 bg-card space-y-2">
+                  <h4 className="font-bold text-foreground">Q3. What are the average daily wages for farm work?</h4>
                   <p>Agricultural minimum wages vary by state (e.g. Punjab, Bihar, Karnataka) and skill level, generally ranging from ₹350 to ₹500 per day.</p>
                 </div>
-                <div className="p-4 rounded-xl border border-white/[0.04] bg-white/[0.005] space-y-2">
-                  <h4 className="font-bold text-white">Q4. Should I pay advances to farm workers?</h4>
+                <div className="p-4 rounded-xl border border-border/50 bg-card space-y-2">
+                  <h4 className="font-bold text-foreground">Q4. Should I pay advances to farm workers?</h4>
                   <p>Avoid paying large advance sums to unverified workers. Settling wages at the end of each working day is the safest industry standard.</p>
                 </div>
-                <div className="p-4 rounded-xl border border-white/[0.04] bg-white/[0.005] space-y-2">
-                  <h4 className="font-bold text-white">Q5. Can I hire tractor drivers and sprayers through this tab?</h4>
+                <div className="p-4 rounded-xl border border-border/50 bg-card space-y-2">
+                  <h4 className="font-bold text-foreground">Q5. Can I hire tractor drivers and sprayers through this tab?</h4>
                   <p>Yes, you can select specialized job categories including tractor operations, pesticide sprayers, horticultural specialists, and general farm labor.</p>
                 </div>
-                <div className="p-4 rounded-xl border border-white/[0.04] bg-white/[0.005] space-y-2">
-                  <h4 className="font-bold text-white">Q6. What are the farmer's safety liabilities during field work?</h4>
+                <div className="p-4 rounded-xl border border-border/50 bg-card space-y-2">
+                  <h4 className="font-bold text-foreground">Q6. What are the farmer's safety liabilities during field work?</h4>
                   <p>Landowners must provide a safe working environment, clean drinking water, and first-aid access. Provide personal protective equipment (PPE) for chemical spraying.</p>
                 </div>
-                <div className="p-4 rounded-xl border border-white/[0.04] bg-white/[0.005] space-y-2">
-                  <h4 className="font-bold text-white">Q7. Can labor groups or gang leaders post team availability?</h4>
+                <div className="p-4 rounded-xl border border-border/50 bg-card space-y-2">
+                  <h4 className="font-bold text-foreground">Q7. Can labor groups or gang leaders post team availability?</h4>
                   <p>Yes, labor contractors and gang leaders can post their team size, location, and daily rates to secure bulk farm contracts.</p>
                 </div>
-                <div className="p-4 rounded-xl border border-white/[0.04] bg-white/[0.005] space-y-2">
-                  <h4 className="font-bold text-white">Q8. What should I do if no workers respond in my district?</h4>
+                <div className="p-4 rounded-xl border border-border/50 bg-card space-y-2">
+                  <h4 className="font-bold text-foreground">Q8. What should I do if no workers respond in my district?</h4>
                   <p>Try adjusting your daily wage offer to match market trends, clarify the work hours, and double-check that your phone number is correct.</p>
                 </div>
-                <div className="p-4 rounded-xl border border-white/[0.04] bg-white/[0.005] space-y-2">
-                  <h4 className="font-bold text-white">Q9. How do we resolve payment disputes?</h4>
+                <div className="p-4 rounded-xl border border-border/50 bg-card space-y-2">
+                  <h4 className="font-bold text-foreground">Q9. How do we resolve payment disputes?</h4>
                   <p>Establish clear verbal or written agreements regarding daily wages, task completion expectations, and meal arrangements before starting the work.</p>
                 </div>
-                <div className="p-4 rounded-xl border border-white/[0.04] bg-white/[0.005] space-y-2">
-                  <h4 className="font-bold text-white">Q10. Does KisaanBuddy verify worker backgrounds?</h4>
+                <div className="p-4 rounded-xl border border-border/50 bg-card space-y-2">
+                  <h4 className="font-bold text-foreground">Q10. Does KisaanBuddy verify worker backgrounds?</h4>
                   <p>KisaanBuddy acts as a directory network. Verifying identity documents (such as Aadhaar cards) remains the sole responsibility of the farmer.</p>
                 </div>
               </div>

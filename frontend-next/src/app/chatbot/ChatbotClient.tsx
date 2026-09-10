@@ -527,22 +527,18 @@ function ChatbotInner() {
 
   return (
     <div className="flex flex-col h-[calc(100vh-120px)] max-w-4xl mx-auto relative pb-2 px-3 md:px-0">
-      {/* Decorative Blurs */}
-      <div className="absolute top-0 left-[-20%] w-[350px] h-[350px] rounded-full bg-emerald-500/5 blur-[120px] pointer-events-none -z-10" />
-      <div className="absolute bottom-[10%] right-[-20%] w-[350px] h-[350px] rounded-full bg-teal-500/5 blur-[120px] pointer-events-none -z-10" />
-
       {/* Language Switcher bar */}
-      <div className="flex overflow-x-auto gap-1.5 py-3 custom-scrollbar scrollbar-none shrink-0 border-b border-white/[0.06] mb-3">
+      <div className="flex overflow-x-auto gap-1.5 py-3 custom-scrollbar scrollbar-none shrink-0 border-b border-border/50 mb-3">
         {(Object.keys(LANG_CONFIG) as Lang[]).map((code) => {
           const isSelected = activeLang === code
           return (
             <button
               key={code}
               onClick={() => handleLangSelect(code)}
-              className={`px-3 py-2 rounded-2xl text-xs font-bold transition-all duration-300 whitespace-nowrap border ${
+              className={`px-3 py-1.5 rounded-xl text-xs font-semibold transition-all duration-200 whitespace-nowrap border ${
                 isSelected
-                  ? "bg-emerald-500 border-emerald-400 text-white shadow-lg shadow-emerald-500/15 scale-105"
-                  : "bg-white/[0.02] border-white/[0.04] text-muted-foreground hover:text-white"
+                  ? "bg-emerald-600 border-emerald-600 text-white shadow-sm"
+                  : "bg-card border-border/50 text-muted-foreground hover:text-foreground"
               }`}
             >
               {LANG_CONFIG[code].label}
@@ -555,10 +551,10 @@ function ChatbotInner() {
       <div className="flex-1 flex flex-col justify-between overflow-hidden gap-4">
         
         {/* UPPER PORTION: Voice control panel */}
-        <div className="flex flex-col items-center justify-center py-6 relative select-none">
+        <div className="flex flex-col items-center justify-center py-4 relative select-none">
           
           {/* Audio ripples */}
-          <div className="relative h-44 w-44 flex items-center justify-center">
+          <div className="relative h-40 w-40 flex items-center justify-center">
             <AnimatePresence>
               {isListening && (
                 <>
@@ -567,14 +563,14 @@ function ChatbotInner() {
                     animate={{ scale: 2.2, opacity: 0 }}
                     exit={{ opacity: 0 }}
                     transition={{ repeat: Infinity, duration: 1.6, ease: "easeOut" }}
-                    className="absolute inset-0 rounded-full bg-emerald-500/15 border border-emerald-500/30"
+                    className="absolute inset-0 rounded-full bg-rose-500/15 border border-rose-500/30"
                   />
                   <motion.div
                     initial={{ scale: 1, opacity: 0.6 }}
                     animate={{ scale: 1.7, opacity: 0 }}
                     exit={{ opacity: 0 }}
                     transition={{ repeat: Infinity, duration: 1.6, ease: "easeOut", delay: 0.5 }}
-                    className="absolute inset-0 rounded-full bg-emerald-500/10 border border-emerald-500/20"
+                    className="absolute inset-0 rounded-full bg-rose-500/10 border border-rose-500/20"
                   />
                 </>
               )}
@@ -582,22 +578,22 @@ function ChatbotInner() {
 
             {/* Microphone primary button */}
             <motion.button
-              whileTap={{ scale: 0.93 }}
+              whileTap={{ scale: 0.95 }}
               onClick={toggleListen}
-              className={`h-32 w-32 rounded-full border flex flex-col items-center justify-center relative z-10 transition-all duration-300 shadow-2xl ${
+              className={`h-28 w-28 rounded-full border flex flex-col items-center justify-center relative z-10 transition-all duration-200 shadow-md ${
                 isListening
-                  ? "bg-gradient-to-tr from-rose-500 to-red-400 border-rose-400 text-white ring-4 ring-rose-500/25"
+                  ? "bg-rose-600 border-rose-500 text-white ring-4 ring-rose-500/20"
                   : isSpeaking
-                  ? "bg-gradient-to-tr from-sky-500 to-indigo-500 border-sky-400 text-white animate-pulse"
+                  ? "bg-sky-600 border-sky-500 text-white animate-pulse"
                   : attachedImage
-                  ? "bg-gradient-to-tr from-emerald-500 to-teal-400 border-emerald-400 text-white ring-4 ring-emerald-500/10"
-                  : "bg-slate-900 border-white/[0.08] hover:border-emerald-500/30 text-emerald-400 hover:text-emerald-300"
+                  ? "bg-emerald-600 border-emerald-500 text-white ring-4 ring-emerald-500/20"
+                  : "bg-card border-border/60 hover:border-emerald-500/40 text-emerald-600 dark:text-emerald-400 hover:bg-muted/50"
               }`}
             >
               {isListening ? (
-                <MicOff className="h-10 w-10 animate-bounce" />
+                <MicOff className="h-9 w-9" />
               ) : (
-                <Mic className="h-10 w-10" />
+                <Mic className="h-9 w-9" />
               )}
             </motion.button>
 
@@ -611,66 +607,66 @@ function ChatbotInner() {
             />
             <Button
               onClick={triggerCamera}
-              className={`absolute bottom-0 right-0 h-11 w-11 rounded-full p-0 flex items-center justify-center z-20 border transition-all duration-300 hover:scale-110 ${
+              className={`absolute bottom-0 right-1 h-10 w-10 rounded-full p-0 flex items-center justify-center z-20 border transition-all duration-200 shadow-sm ${
                 attachedImage 
-                  ? "bg-emerald-500 text-white border-emerald-400 shadow-lg" 
-                  : "bg-slate-800 border-white/[0.08] hover:bg-slate-700 text-muted-foreground hover:text-white"
+                  ? "bg-emerald-600 text-white border-emerald-500" 
+                  : "bg-card border-border/60 hover:bg-muted text-muted-foreground hover:text-foreground"
               }`}
             >
-              <Camera className="h-4.5 w-4.5" />
+              <Camera className="h-4 w-4" />
             </Button>
           </div>
 
           {/* Attached Image Thumbnail */}
           {attachedImage && (
-            <div className="mt-4 flex items-center gap-2 bg-slate-900 border border-white/[0.06] rounded-xl p-1.5 pr-3 animate-fade-in shadow-lg">
-              <img src={attachedImage} className="h-10 w-10 object-cover rounded-lg border border-white/[0.08]" alt="Attached leaf" />
-              <div className="text-[10px] text-white/90 font-semibold flex flex-col">
+            <div className="mt-3 flex items-center gap-2 bg-card border border-border/50 rounded-xl p-1.5 pr-3 animate-fade-in shadow-sm">
+              <img src={attachedImage} className="h-10 w-10 object-cover rounded-lg border border-border/50" alt="Attached leaf" />
+              <div className="text-[10px] text-foreground font-semibold flex flex-col">
                 <span>Photo attached</span>
                 <span className="text-muted-foreground">Tap mic to speak question</span>
               </div>
-              <button onClick={removeAttachedImage} className="p-1 rounded-full hover:bg-white/[0.08] text-muted-foreground hover:text-white ml-2">
+              <button onClick={removeAttachedImage} className="p-1 rounded-full hover:bg-muted text-muted-foreground hover:text-foreground ml-2">
                 <X className="h-3.5 w-3.5" />
               </button>
             </div>
           )}
 
           {/* Subtitle instructions / transcripts */}
-          <div className="text-center mt-6 min-h-12 max-w-md px-4">
+          <div className="text-center mt-4 min-h-10 max-w-md px-4">
             {isListening ? (
-              <span className="text-rose-400 font-bold text-sm animate-pulse flex items-center gap-1.5 justify-center">
+              <span className="text-rose-600 dark:text-rose-400 font-semibold text-sm flex items-center gap-1.5 justify-center">
                 <span className="h-2 w-2 rounded-full bg-rose-500 animate-ping" />
                 {interimText || LANG_CONFIG[activeLang].placeholder}
               </span>
             ) : isThinking ? (
-              <span className="text-emerald-400 font-bold text-sm animate-pulse">
+              <span className="text-emerald-600 dark:text-emerald-400 font-semibold text-sm animate-pulse">
                 {t("voice_assistant.status_thinking")}
               </span>
             ) : isSpeaking ? (
-              <span className="text-sky-400 font-bold text-sm flex items-center gap-2 justify-center">
+              <span className="text-sky-600 dark:text-sky-400 font-semibold text-sm flex items-center gap-2 justify-center">
                 <Volume2 className="h-4.5 w-4.5 animate-bounce" />
                 {t("voice_assistant.status_speaking")}
               </span>
             ) : (
-              <p className="text-muted-foreground text-xs font-semibold leading-relaxed">
+              <p className="text-muted-foreground text-xs font-normal leading-relaxed">
                 {LANG_CONFIG[activeLang].placeholder}
               </p>
             )}
           </div>
         </div>
 
-        {/* LOWER PORTION: WhatsApp style Conversation bubbles */}
-        <GlassCard className="flex-1 overflow-hidden flex flex-col border border-white/[0.08] backdrop-blur-md shadow-2xl bg-slate-950/20 rounded-3xl relative">
+        {/* LOWER PORTION: Conversation bubbles */}
+        <div className="flex-1 overflow-hidden flex flex-col border border-border/50 shadow-sm bg-card rounded-2xl relative">
           
-          <div className="px-5 py-3 border-b border-white/[0.04] bg-slate-950/40 backdrop-blur-md flex items-center justify-between shrink-0">
-            <span className="text-[10px] uppercase tracking-wider text-muted-foreground font-black flex items-center gap-1.5">
-              <History className="w-3.5 h-3.5 text-emerald-400" />
+          <div className="px-5 py-3 border-b border-border/50 bg-muted/20 flex items-center justify-between shrink-0">
+            <span className="text-[10px] uppercase tracking-wider text-muted-foreground font-bold flex items-center gap-1.5">
+              <History className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" />
               {t("voice_assistant.history")}
             </span>
             {messages.length > 1 && (
               <button 
                 onClick={() => setMessages([{ id: "welcome", text: LANG_CONFIG[activeLang].welcome, sender: "bot", language: activeLang }])}
-                className="text-[10px] text-muted-foreground hover:text-white font-bold flex items-center gap-1 bg-white/[0.02] border border-white/[0.04] px-2.5 py-1 rounded-xl transition-all"
+                className="text-[10px] text-muted-foreground hover:text-foreground font-semibold flex items-center gap-1 border border-border/50 px-2.5 py-1 rounded-lg transition-all"
               >
                 Clear
               </button>
@@ -689,19 +685,19 @@ function ChatbotInner() {
                     key={msg.id}
                     initial={{ opacity: 0, y: 15, scale: 0.98 }}
                     animate={{ opacity: 1, y: 0, scale: 1 }}
-                    transition={{ duration: 0.3 }}
+                    transition={{ duration: 0.2 }}
                     className={`flex items-start gap-2 max-w-[85%] ${isBot ? "mr-auto" : "ml-auto flex-row-reverse"}`}
                   >
                     {/* Message Bubble wrapper */}
-                    <div className={`rounded-2xl p-3 text-xs md:text-sm leading-relaxed relative flex flex-col gap-2 transition-all duration-300 shadow-md ${
+                    <div className={`rounded-2xl p-3 text-xs md:text-sm leading-relaxed relative flex flex-col gap-2 transition-all duration-200 shadow-sm ${
                       isBot
-                        ? "bg-slate-900/60 border border-white/[0.04] text-white/90 rounded-tl-sm"
-                        : "bg-gradient-to-tr from-emerald-600 to-teal-500 text-white rounded-tr-sm font-semibold"
+                        ? "bg-muted/50 border border-border/50 text-foreground rounded-tl-sm"
+                        : "bg-emerald-600 text-white rounded-tr-sm font-normal"
                     }`}>
                       
                       {/* Optional attached query image */}
                       {msg.imageUrl && (
-                        <div className="rounded-lg overflow-hidden border border-white/10 max-h-40 overflow-hidden mb-1">
+                        <div className="rounded-lg overflow-hidden border border-border/50 max-h-40 overflow-hidden mb-1">
                           <img src={msg.imageUrl} className="w-full object-cover max-h-40" alt="Query reference crop" />
                         </div>
                       )}
@@ -711,13 +707,13 @@ function ChatbotInner() {
 
                       {/* Audio voice note button */}
                       {showPlay && (
-                        <div className="flex items-center gap-2 pt-1.5 border-t border-white/[0.05] mt-1 shrink-0">
+                        <div className="flex items-center gap-2 pt-1.5 border-t border-border/50 mt-1 shrink-0">
                           <button
                             onClick={() => msg.isPlaying ? stopCurrentAudio() : playAudio(msg.text, msg.language, msg.id)}
                             className={`h-7 w-7 rounded-full flex items-center justify-center transition-all ${
                               msg.isPlaying 
-                                ? "bg-rose-500/20 text-rose-400 border border-rose-500/30" 
-                                : "bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 hover:bg-emerald-500/30"
+                                ? "bg-rose-500/20 text-rose-600 dark:text-rose-400 border border-rose-500/30" 
+                                : "bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 border border-emerald-500/30 hover:bg-emerald-500/25"
                             }`}
                           >
                             {msg.isPlaying ? <Pause className="h-3 w-3 fill-current" /> : <Play className="h-3 w-3 fill-current ml-0.5" />}
@@ -726,13 +722,13 @@ function ChatbotInner() {
                           {/* Animated voice sound waves visualization */}
                           {msg.isPlaying ? (
                             <div className="flex items-center gap-0.5 h-3 px-1">
-                              <span className="w-0.5 h-2 bg-emerald-400 rounded animate-[pulse_0.4s_infinite_alternate]" />
-                              <span className="w-0.5 h-3 bg-emerald-400 rounded animate-[pulse_0.3s_infinite_alternate_0.1s]" />
-                              <span className="w-0.5 h-1.5 bg-emerald-400 rounded animate-[pulse_0.5s_infinite_alternate_0.2s]" />
-                              <span className="w-0.5 h-2 bg-emerald-400 rounded animate-[pulse_0.4s_infinite_alternate]" />
+                              <span className="w-0.5 h-2 bg-emerald-500 rounded animate-[pulse_0.4s_infinite_alternate]" />
+                              <span className="w-0.5 h-3 bg-emerald-500 rounded animate-[pulse_0.3s_infinite_alternate_0.1s]" />
+                              <span className="w-0.5 h-1.5 bg-emerald-500 rounded animate-[pulse_0.5s_infinite_alternate_0.2s]" />
+                              <span className="w-0.5 h-2 bg-emerald-500 rounded animate-[pulse_0.4s_infinite_alternate]" />
                             </div>
                           ) : (
-                            <span className="text-[9px] text-muted-foreground font-semibold">
+                            <span className="text-[10px] text-muted-foreground font-medium">
                               Tap to hear response
                             </span>
                           )}
@@ -750,23 +746,23 @@ function ChatbotInner() {
                 animate={{ opacity: 1, y: 0 }} 
                 className="flex items-start gap-2 max-w-[85%] mr-auto"
               >
-                <div className="bg-slate-900/60 border border-white/[0.04] p-3 rounded-2xl rounded-tl-sm flex items-center gap-1.5 h-9">
-                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-bounce" style={{ animationDelay: "0ms" }} />
-                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-bounce" style={{ animationDelay: "150ms" }} />
-                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-bounce" style={{ animationDelay: "300ms" }} />
+                <div className="bg-muted/50 border border-border/50 p-3 rounded-2xl rounded-tl-sm flex items-center gap-1.5 h-9">
+                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-bounce" style={{ animationDelay: "0ms" }} />
+                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-bounce" style={{ animationDelay: "150ms" }} />
+                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-bounce" style={{ animationDelay: "300ms" }} />
                 </div>
               </motion.div>
             )}
 
             {/* Empty state onboarding helper dashboard & FAQs */}
             {messages.length <= 1 && (
-              <div className="mt-8 border-t border-white/[0.06] pt-8 space-y-8 animate-fade-in text-left">
+              <div className="mt-8 border-t border-border/50 pt-8 space-y-8 animate-fade-in text-left">
                 {/* Onboarding suggestions */}
                 <div>
-                  <h4 className="text-xs font-black uppercase tracking-wider text-emerald-400 mb-3">
+                  <h4 className="text-xs font-bold uppercase tracking-wider text-emerald-600 dark:text-emerald-400 mb-3">
                     {activeLang === 'en' ? ONBOARDING_HELPERS.en.title : ONBOARDING_HELPERS.hi.title}
                   </h4>
-                  <p className="text-xs text-muted-foreground mb-4 font-semibold">
+                  <p className="text-xs text-muted-foreground mb-4 font-normal">
                     {activeLang === 'en' ? ONBOARDING_HELPERS.en.desc : ONBOARDING_HELPERS.hi.desc}
                   </p>
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
@@ -774,12 +770,12 @@ function ChatbotInner() {
                       <button
                         key={i}
                         onClick={() => sendQuery(sug.text, null)}
-                        className="text-left p-3.5 rounded-2xl bg-white/[0.02] border border-white/[0.05] hover:border-emerald-500/30 hover:bg-emerald-500/[0.02] transition-all group flex flex-col gap-1 cursor-pointer animate-fade-in"
+                        className="text-left p-3.5 rounded-xl bg-card border border-border/50 hover:border-emerald-500/30 hover:bg-muted/30 transition-all group flex flex-col gap-1 cursor-pointer animate-fade-in"
                       >
-                        <span className="text-xs font-black text-emerald-400/90 group-hover:text-emerald-400 transition-colors">
+                        <span className="text-xs font-bold text-emerald-600 dark:text-emerald-400 group-hover:text-emerald-500 transition-colors">
                           {sug.label}
                         </span>
-                        <span className="text-xs text-muted-foreground leading-relaxed font-medium">
+                        <span className="text-xs text-muted-foreground leading-relaxed font-normal">
                           "{sug.text}"
                         </span>
                       </button>
@@ -788,14 +784,14 @@ function ChatbotInner() {
                 </div>
 
                 {/* Simple guide steps */}
-                <div className="bg-white/[0.01] border border-white/[0.04] p-4.5 rounded-2xl">
-                  <h4 className="text-xs font-black text-white mb-3">
+                <div className="bg-muted/20 border border-border/50 p-4 rounded-xl">
+                  <h4 className="text-xs font-bold text-foreground mb-3">
                     {activeLang === 'en' ? ONBOARDING_HELPERS.en.guideTitle : ONBOARDING_HELPERS.hi.guideTitle}
                   </h4>
                   <ul className="space-y-2.5">
                     {(activeLang === 'en' ? ONBOARDING_HELPERS.en.guideSteps : ONBOARDING_HELPERS.hi.guideSteps).map((step, i) => (
-                      <li key={i} className="text-xs text-muted-foreground flex gap-2.5 leading-relaxed font-semibold">
-                        <span className="text-emerald-400 font-bold shrink-0">{i + 1}.</span>
+                      <li key={i} className="text-xs text-muted-foreground flex gap-2.5 leading-relaxed font-normal">
+                        <span className="text-emerald-600 dark:text-emerald-400 font-bold shrink-0">{i + 1}.</span>
                         <span>{step}</span>
                       </li>
                     ))}
@@ -804,7 +800,7 @@ function ChatbotInner() {
 
                 {/* FAQ section */}
                 <div className="space-y-3">
-                  <h4 className="text-xs font-black uppercase tracking-wider text-emerald-400 mb-3">
+                  <h4 className="text-xs font-bold uppercase tracking-wider text-emerald-600 dark:text-emerald-400 mb-3">
                     {activeLang === 'en' ? ONBOARDING_HELPERS.en.faqTitle : ONBOARDING_HELPERS.hi.faqTitle}
                   </h4>
                   <div className="space-y-2">
@@ -813,12 +809,12 @@ function ChatbotInner() {
                       return (
                         <div 
                           key={i} 
-                          className="rounded-xl border border-white/[0.04] bg-white/[0.01] overflow-hidden transition-all duration-300"
+                          className="rounded-xl border border-border/50 bg-card overflow-hidden transition-all duration-200"
                         >
                           <button
                             type="button"
                             onClick={() => setFaqOpenIndex(isOpen ? null : i)}
-                            className="w-full text-left p-3.5 flex justify-between items-center text-xs font-black text-white hover:bg-white/[0.02] transition-colors cursor-pointer"
+                            className="w-full text-left p-3.5 flex justify-between items-center text-xs font-bold text-foreground hover:bg-muted/30 transition-colors cursor-pointer"
                           >
                             <span>{faq.q}</span>
                             <span className="text-muted-foreground text-sm font-light leading-none shrink-0 ml-2">
@@ -826,7 +822,7 @@ function ChatbotInner() {
                             </span>
                           </button>
                           {isOpen && (
-                            <div className="p-3.5 pt-0 border-t border-white/[0.03] text-xs text-muted-foreground leading-relaxed bg-white/[0.005] font-medium animate-fade-in">
+                            <div className="p-3.5 pt-0 border-t border-border/50 text-xs text-muted-foreground leading-relaxed bg-muted/10 font-normal animate-fade-in">
                               {faq.a}
                             </div>
                           )}
@@ -842,12 +838,12 @@ function ChatbotInner() {
           </div>
 
           {/* Footer warning */}
-          <div className="p-3 border-t border-white/[0.04] bg-slate-950/40 text-center flex items-center justify-center gap-1.5 text-[9px] text-muted-foreground/60 shrink-0">
-            <ShieldAlert className="h-3 w-3 shrink-0" />
+          <div className="p-3 border-t border-border/50 bg-muted/20 text-center flex items-center justify-center gap-1.5 text-[10px] text-muted-foreground shrink-0">
+            <ShieldAlert className="h-3.5 w-3.5 shrink-0 text-muted-foreground" />
             <span>AI advisor recommendations. Always cross-verify with local agronomists.</span>
           </div>
 
-        </GlassCard>
+        </div>
 
       </div>
     </div>

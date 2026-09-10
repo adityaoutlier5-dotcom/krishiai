@@ -12,212 +12,203 @@ export function Hero() {
   const { t } = useLanguage();
 
   return (
-    <section className="relative min-h-[90vh] flex items-center overflow-hidden bg-[#030712] py-16 md:py-24 border-b border-white/[0.08]">
+    <section className="relative min-h-[85vh] flex items-center overflow-hidden bg-background py-16 md:py-24 border-b border-border/50">
       
-      {/* ── BACKGROUND: Farmland Texture + Emerald Glows ── */}
+      {/* ── BACKGROUND: Subtle Texture + Emerald Accents ── */}
       <div className="absolute inset-0 z-0">
         {/* Real Indian farmland subtle overlay */}
         <div 
-          className="absolute inset-0 bg-[url('/hero_farmer.png')] bg-cover bg-center opacity-[0.07] mix-blend-luminosity pointer-events-none"
-          style={{ filter: 'contrast(1.2) brightness(0.8)' }}
+          className="absolute inset-0 bg-[url('/hero_farmer.png')] bg-cover bg-center opacity-[0.03] dark:opacity-[0.06] mix-blend-luminosity pointer-events-none"
+          style={{ filter: 'contrast(1.2) brightness(0.9)' }}
         />
-        {/* Soft sunlight filter overlay */}
-        <div className="absolute inset-0 bg-gradient-to-tr from-[#030712] via-[#051c12]/40 to-[#030712] opacity-90 pointer-events-none" />
-        
-        {/* Emerald Glow Gradients */}
-        <div className="absolute top-[-10%] left-[-10%] w-[550px] h-[550px] bg-emerald-500/10 rounded-full blur-[140px] pointer-events-none" />
-        <div className="absolute bottom-[5%] right-[-5%] w-[450px] h-[450px] bg-teal-500/8 rounded-full blur-[130px] pointer-events-none" />
+        <div className="absolute inset-0 bg-gradient-to-b from-background/50 via-background to-background pointer-events-none" />
       </div>
 
       <div className="relative z-10 mx-auto max-w-7xl w-full px-4 md:px-8 grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-8 items-center">
         
         {/* ── LEFT SIDE: SaaS Value Proposition ── */}
         <motion.div 
-          initial={{ opacity: 0, y: 30 }}
+          initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+          transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
           className="lg:col-span-6 flex flex-col gap-6 text-center lg:text-left items-center lg:items-start"
         >
           {/* Badge */}
-          <div className="inline-flex items-center gap-2 rounded-full border border-emerald-500/30 bg-emerald-500/10 px-4 py-1.5 text-xs font-bold text-emerald-400 select-none shadow-lg shadow-emerald-500/5 backdrop-blur-sm">
-            <Sparkles className="h-3.5 w-3.5 text-emerald-400 animate-pulse" />
+          <div className="inline-flex items-center gap-2 rounded-full border border-emerald-500/20 bg-emerald-500/10 px-3.5 py-1 text-xs font-semibold text-emerald-700 dark:text-emerald-400 select-none">
+            <Sparkles className="h-3.5 w-3.5 text-emerald-600 dark:text-emerald-400" />
             <span>KisaanBuddy AI Platform</span>
           </div>
 
           {/* Headline */}
-          <h1 className="text-4xl sm:text-5xl md:text-6xl font-display font-extrabold leading-[1.08] tracking-tight text-white">
+          <h1 className="text-4xl sm:text-5xl md:text-6xl font-display font-extrabold leading-[1.08] tracking-tight text-foreground">
             {t('hero.title_line1')}<br />
-            <span className="bg-gradient-to-r from-emerald-400 via-emerald-500 to-teal-400 bg-clip-text text-transparent">
+            <span className="text-emerald-600 dark:text-emerald-400">
               {t('hero.title_line2')} 🌾
             </span>
           </h1>
 
           {/* Subheadline */}
-          <p className="text-sm md:text-base text-gray-300 max-w-xl leading-relaxed font-medium">
+          <p className="text-sm md:text-base text-muted-foreground max-w-xl leading-relaxed font-normal">
             {t('hero.subtitle')}
           </p>
 
           {/* Buttons */}
-          <div className="flex flex-wrap items-center justify-center lg:justify-start gap-4 pt-2 w-full sm:w-auto">
+          <div className="flex flex-wrap items-center justify-center lg:justify-start gap-3.5 pt-1 w-full sm:w-auto">
             <Link href="/signup" className="w-full sm:w-auto">
-              <button className="w-full sm:w-auto bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-400 hover:to-teal-400 text-white flex items-center justify-center gap-2 group text-sm font-extrabold h-12 px-8 rounded-xl shadow-lg shadow-emerald-500/20 transition-all duration-300 hover:scale-[1.02] active:scale-[0.98]">
+              <button className="w-full sm:w-auto bg-emerald-600 hover:bg-emerald-700 text-white flex items-center justify-center gap-2 group text-sm font-bold h-11 px-7 rounded-xl shadow-sm transition-all duration-200">
                 {t('hero.start_free')}
-                <ArrowRight className="h-4.5 w-4.5 transition-transform duration-300 group-hover:translate-x-1" />
+                <ArrowRight className="h-4 w-4 transition-transform duration-200 group-hover:translate-x-1" />
               </button>
             </Link>
             <Link href="#demo" className="w-full sm:w-auto">
-              <button className="w-full sm:w-auto flex items-center justify-center gap-2 rounded-xl border border-white/10 bg-white/5 hover:bg-white/10 px-8 py-3 text-sm font-extrabold text-white backdrop-blur-md transition-all duration-200 hover:scale-[1.02] active:scale-[0.98] h-12">
-                <Play className="h-4 w-4 fill-white text-white shrink-0" />
+              <button className="w-full sm:w-auto flex items-center justify-center gap-2 rounded-xl border border-border/60 bg-card hover:bg-muted/50 px-7 py-2.5 text-sm font-semibold text-foreground transition-all duration-200 h-11">
+                <Play className="h-3.5 w-3.5 fill-current shrink-0" />
                 {t('hero.watch_demo')}
               </button>
             </Link>
           </div>
 
           {/* Trust Indicators */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-6 text-xs font-semibold text-gray-400 max-w-md w-full border-t border-white/5">
-            <div className="flex items-center gap-2.5 justify-center lg:justify-start">
-              <CheckCircle2 className="h-4.5 w-4.5 text-emerald-400 shrink-0" />
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5 pt-6 text-xs font-medium text-muted-foreground max-w-md w-full border-t border-border/50">
+            <div className="flex items-center gap-2 justify-center lg:justify-start">
+              <CheckCircle2 className="h-4 w-4 text-emerald-600 dark:text-emerald-400 shrink-0" />
               <span>{t('hero.trust_languages')}</span>
             </div>
-            <div className="flex items-center gap-2.5 justify-center lg:justify-start">
-              <CheckCircle2 className="h-4.5 w-4.5 text-emerald-400 shrink-0" />
+            <div className="flex items-center gap-2 justify-center lg:justify-start">
+              <CheckCircle2 className="h-4 w-4 text-emerald-600 dark:text-emerald-400 shrink-0" />
               <span>{t('hero.trust_predictions')}</span>
             </div>
-            <div className="flex items-center gap-2.5 justify-center lg:justify-start">
-              <CheckCircle2 className="h-4.5 w-4.5 text-emerald-400 shrink-0" />
+            <div className="flex items-center gap-2 justify-center lg:justify-start">
+              <CheckCircle2 className="h-4 w-4 text-emerald-600 dark:text-emerald-400 shrink-0" />
               <span>{t('hero.trust_farmers')}</span>
             </div>
-            <div className="flex items-center gap-2.5 justify-center lg:justify-start">
-              <CheckCircle2 className="h-4.5 w-4.5 text-emerald-400 shrink-0" />
+            <div className="flex items-center gap-2 justify-center lg:justify-start">
+              <CheckCircle2 className="h-4 w-4 text-emerald-600 dark:text-emerald-400 shrink-0" />
               <span>{t('hero.trust_accuracy')}</span>
             </div>
           </div>
         </motion.div>
 
-        {/* ── RIGHT SIDE: Premium Dashboard Mockup ── */}
+        {/* ── RIGHT SIDE: Clean Product Dashboard Preview ── */}
         <motion.div 
-          initial={{ opacity: 0, scale: 0.95, y: 20 }}
+          initial={{ opacity: 0, scale: 0.98, y: 15 }}
           animate={{ opacity: 1, scale: 1, y: 0 }}
-          transition={{ duration: 0.9, ease: [0.16, 1, 0.3, 1], delay: 0.15 }}
+          transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1], delay: 0.1 }}
           className="lg:col-span-6 w-full relative"
         >
-          {/* Glassmorphism Outer Dashboard Frame */}
-          <div className="relative rounded-3xl p-5 md:p-6 bg-white/[0.02] border border-white/[0.08] backdrop-blur-xl shadow-2xl overflow-hidden grid grid-cols-1 md:grid-cols-2 gap-4">
-            
-            {/* Ambient inner card glows */}
-            <div className="absolute -top-12 -right-12 w-48 h-48 bg-emerald-500/10 rounded-full blur-2xl pointer-events-none" />
-            <div className="absolute -bottom-12 -left-12 w-48 h-48 bg-teal-500/10 rounded-full blur-2xl pointer-events-none" />
+          {/* Dashboard Frame */}
+          <div className="relative rounded-2xl p-4 md:p-5 bg-card border border-border/60 shadow-sm overflow-hidden grid grid-cols-1 md:grid-cols-2 gap-3.5">
 
             {/* 1. Crop Recommendation Card */}
-            <div className="rounded-2xl border border-white/[0.06] bg-white/[0.03] p-4 flex flex-col justify-between hover:border-emerald-500/30 transition-all duration-300">
-              <div className="flex items-center justify-between pb-2 border-b border-white/[0.04]">
-                <span className="font-bold text-white text-xs flex items-center gap-1.5 animate-pulse-glow">
-                  <Sprout className="h-4 w-4 text-emerald-400" />
+            <div className="rounded-xl border border-border/50 bg-background p-3.5 flex flex-col justify-between hover:border-emerald-500/30 transition-all duration-200">
+              <div className="flex items-center justify-between pb-2 border-b border-border/50">
+                <span className="font-bold text-foreground text-xs flex items-center gap-1.5">
+                  <Sprout className="h-3.5 w-3.5 text-emerald-600 dark:text-emerald-400" />
                   {t('dashboard_mockup.crop_recommendation')}
                 </span>
-                <span className="bg-emerald-500/10 text-emerald-400 text-[9px] font-black px-2 py-0.5 rounded-full">
+                <span className="bg-emerald-500/10 text-emerald-700 dark:text-emerald-300 text-[10px] font-semibold px-2 py-0.5 rounded-full">
                   {t('dashboard_mockup.optimal')}
                 </span>
               </div>
-              <div className="py-3">
-                <div className="text-[10px] text-gray-400 font-semibold">{t('dashboard_mockup.recommended_crop')}:</div>
-                <div className="text-sm font-extrabold text-emerald-400 mt-1">{t('dashboard_mockup.basmati_rice')}</div>
+              <div className="py-2.5">
+                <div className="text-[10px] text-muted-foreground font-medium">{t('dashboard_mockup.recommended_crop')}:</div>
+                <div className="text-sm font-bold text-emerald-600 dark:text-emerald-400 mt-0.5">{t('dashboard_mockup.basmati_rice')}</div>
               </div>
-              <div className="text-[9px] text-gray-500 font-medium">{t('dashboard_mockup.yield_increase')}</div>
+              <div className="text-[10px] text-muted-foreground font-normal">{t('dashboard_mockup.yield_increase')}</div>
             </div>
 
             {/* 2. Disease Detection Result */}
-            <div className="rounded-2xl border border-white/[0.06] bg-white/[0.03] p-4 flex flex-col justify-between hover:border-emerald-500/30 transition-all duration-300">
-              <div className="flex items-center justify-between pb-2 border-b border-white/[0.04]">
-                <span className="font-bold text-white text-xs flex items-center gap-1.5">
-                  <Bug className="h-4 w-4 text-rose-400" />
+            <div className="rounded-xl border border-border/50 bg-background p-3.5 flex flex-col justify-between hover:border-emerald-500/30 transition-all duration-200">
+              <div className="flex items-center justify-between pb-2 border-b border-border/50">
+                <span className="font-bold text-foreground text-xs flex items-center gap-1.5">
+                  <Bug className="h-3.5 w-3.5 text-rose-600 dark:text-rose-400" />
                   {t('dashboard_mockup.disease_scanner')}
                 </span>
-                <span className="bg-rose-500/10 text-rose-400 text-[9px] font-black px-2 py-0.5 rounded-full">
+                <span className="bg-rose-500/10 text-rose-700 dark:text-rose-300 text-[10px] font-semibold px-2 py-0.5 rounded-full">
                   {t('dashboard_mockup.alert')}
                 </span>
               </div>
-              <div className="py-2.5 flex items-center gap-3">
-                <div className="h-10 w-10 rounded-lg bg-cover bg-center border border-white/10 shrink-0" style={{ backgroundImage: "url('/hero_farmer.png')" }} />
+              <div className="py-2 flex items-center gap-2.5">
+                <div className="h-9 w-9 rounded-lg bg-cover bg-center border border-border/50 shrink-0" style={{ backgroundImage: "url('/hero_farmer.png')" }} />
                 <div>
-                  <div className="text-[10px] text-white font-extrabold">{t('dashboard_mockup.early_blight_detected')}</div>
-                  <div className="text-[8px] text-gray-400 font-semibold">{t('dashboard_mockup.confidence_potato')}</div>
+                  <div className="text-[11px] text-foreground font-bold">{t('dashboard_mockup.early_blight_detected')}</div>
+                  <div className="text-[9px] text-muted-foreground">{t('dashboard_mockup.confidence_potato')}</div>
                 </div>
               </div>
-              <div className="text-[9px] text-emerald-400 font-extrabold">{t('dashboard_mockup.remedy_copper')}</div>
+              <div className="text-[10px] text-emerald-600 dark:text-emerald-400 font-semibold">{t('dashboard_mockup.remedy_copper')}</div>
             </div>
 
             {/* 3. Soil Analysis Report */}
-            <div className="rounded-2xl border border-white/[0.06] bg-white/[0.03] p-4 flex flex-col justify-between hover:border-emerald-500/30 transition-all duration-300 md:col-span-2">
-              <div className="flex items-center justify-between pb-2 border-b border-white/[0.04]">
-                <span className="font-bold text-white text-xs flex items-center gap-1.5">
-                  <FlaskConical className="h-4 w-4 text-teal-400" />
+            <div className="rounded-xl border border-border/50 bg-background p-3.5 flex flex-col justify-between hover:border-emerald-500/30 transition-all duration-200 md:col-span-2">
+              <div className="flex items-center justify-between pb-2 border-b border-border/50">
+                <span className="font-bold text-foreground text-xs flex items-center gap-1.5">
+                  <FlaskConical className="h-3.5 w-3.5 text-teal-600 dark:text-teal-400" />
                   {t('dashboard_mockup.soil_health_analysis')}
                 </span>
-                <span className="text-[9px] text-teal-400 font-extrabold font-mono text-glow">ID: KB-NODE-042</span>
+                <span className="text-[10px] text-muted-foreground font-mono">ID: KB-NODE-042</span>
               </div>
-              <div className="grid grid-cols-3 gap-2.5 py-3">
-                <div className="bg-white/[0.02] border border-white/[0.05] p-2 rounded-xl text-center">
-                  <span className="block text-[8px] text-gray-400">{t('dashboard_mockup.nitrogen')}</span>
-                  <span className="text-xs font-mono font-extrabold text-white">92 mg/kg</span>
+              <div className="grid grid-cols-3 gap-2 py-2.5">
+                <div className="bg-muted/40 border border-border/40 p-2 rounded-lg text-center">
+                  <span className="block text-[9px] text-muted-foreground">{t('dashboard_mockup.nitrogen')}</span>
+                  <span className="text-xs font-mono font-bold text-foreground">92 mg/kg</span>
                 </div>
-                <div className="bg-white/[0.02] border border-white/[0.05] p-2 rounded-xl text-center">
-                  <span className="block text-[8px] text-gray-400">{t('dashboard_mockup.phosphorus')}</span>
-                  <span className="text-xs font-mono font-extrabold text-white">48 mg/kg</span>
+                <div className="bg-muted/40 border border-border/40 p-2 rounded-lg text-center">
+                  <span className="block text-[9px] text-muted-foreground">{t('dashboard_mockup.phosphorus')}</span>
+                  <span className="text-xs font-mono font-bold text-foreground">48 mg/kg</span>
                 </div>
-                <div className="bg-white/[0.02] border border-white/[0.05] p-2 rounded-xl text-center">
-                  <span className="block text-[8px] text-gray-400">{t('dashboard_mockup.potassium')}</span>
-                  <span className="text-xs font-mono font-extrabold text-white">205 mg/kg</span>
+                <div className="bg-muted/40 border border-border/40 p-2 rounded-lg text-center">
+                  <span className="block text-[9px] text-muted-foreground">{t('dashboard_mockup.potassium')}</span>
+                  <span className="text-xs font-mono font-bold text-foreground">205 mg/kg</span>
                 </div>
               </div>
-              <div className="flex justify-between items-center text-[9px] text-gray-400 font-semibold">
+              <div className="flex justify-between items-center text-[10px] text-muted-foreground font-medium">
                 <span>{t('dashboard_mockup.moisture_optimal')}</span>
                 <span>{t('dashboard_mockup.ph_neutral')}</span>
               </div>
             </div>
 
             {/* 4. Weather Advisory */}
-            <div className="rounded-2xl border border-white/[0.06] bg-white/[0.03] p-4 flex flex-col justify-between hover:border-emerald-500/30 transition-all duration-300">
-              <div className="flex items-center justify-between pb-2 border-b border-white/[0.04]">
-                <span className="font-bold text-white text-xs flex items-center gap-1.5">
-                  <CloudSun className="h-4 w-4 text-sky-400" />
+            <div className="rounded-xl border border-border/50 bg-background p-3.5 flex flex-col justify-between hover:border-emerald-500/30 transition-all duration-200">
+              <div className="flex items-center justify-between pb-2 border-b border-border/50">
+                <span className="font-bold text-foreground text-xs flex items-center gap-1.5">
+                  <CloudSun className="h-3.5 w-3.5 text-sky-600 dark:text-sky-400" />
                   {t('dashboard_mockup.weather_advisory')}
                 </span>
-                <AlertTriangle className="h-3.5 w-3.5 text-amber-500 animate-pulse" />
+                <AlertTriangle className="h-3.5 w-3.5 text-amber-600 dark:text-amber-400" />
               </div>
-              <div className="py-2.5">
-                <span className="text-[9px] font-bold text-amber-400 uppercase">{t('dashboard_mockup.rain_predicted')}</span>
-                <p className="text-[8px] text-gray-400 mt-1 leading-normal font-semibold">
+              <div className="py-2">
+                <span className="text-[10px] font-semibold text-amber-700 dark:text-amber-400 uppercase">{t('dashboard_mockup.rain_predicted')}</span>
+                <p className="text-[9px] text-muted-foreground mt-0.5 leading-normal">
                   {t('dashboard_mockup.urea_warning')}
                 </p>
               </div>
-              <div className="text-[8px] text-gray-500 font-semibold">Updated 2m ago</div>
+              <div className="text-[9px] text-muted-foreground">Updated 2m ago</div>
             </div>
 
             {/* 5. Live Mandi Prices */}
-            <div className="rounded-2xl border border-white/[0.06] bg-white/[0.03] p-4 flex flex-col justify-between hover:border-emerald-500/30 transition-all duration-300">
-              <div className="flex items-center justify-between pb-2 border-b border-white/[0.04]">
-                <span className="font-bold text-white text-xs flex items-center gap-1.5">
-                  <TrendingUp className="h-4 w-4 text-emerald-400" />
+            <div className="rounded-xl border border-border/50 bg-background p-3.5 flex flex-col justify-between hover:border-emerald-500/30 transition-all duration-200">
+              <div className="flex items-center justify-between pb-2 border-b border-border/50">
+                <span className="font-bold text-foreground text-xs flex items-center gap-1.5">
+                  <TrendingUp className="h-3.5 w-3.5 text-emerald-600 dark:text-emerald-400" />
                   {t('dashboard_mockup.mandi_live')}
                 </span>
-                <span className="bg-emerald-500/10 text-emerald-400 text-[8px] font-black px-1.5 py-0.5 rounded-full">
+                <span className="bg-emerald-500/10 text-emerald-700 dark:text-emerald-300 text-[9px] font-semibold px-1.5 py-0.5 rounded-full">
                   {t('dashboard_mockup.unam_live')}
                 </span>
               </div>
-              <div className="py-2.5 space-y-1.5">
+              <div className="py-2 space-y-1">
                 <div className="flex justify-between items-center">
-                  <span className="text-[9px] text-gray-300 font-bold">{t('dashboard_mockup.agra_potato')}</span>
-                  <span className="text-[9px] text-white font-mono font-extrabold">₹1,850/Q</span>
+                  <span className="text-[10px] text-muted-foreground font-medium">{t('dashboard_mockup.agra_potato')}</span>
+                  <span className="text-[10px] text-foreground font-mono font-bold">₹1,850/Q</span>
                 </div>
                 <div className="flex justify-between items-center">
-                  <span className="text-[9px] text-gray-300 font-bold">{t('dashboard_mockup.delhi_wheat')}</span>
-                  <span className="text-[9px] text-white font-mono font-extrabold">₹2,350/Q</span>
+                  <span className="text-[10px] text-muted-foreground font-medium">{t('dashboard_mockup.delhi_wheat')}</span>
+                  <span className="text-[10px] text-foreground font-mono font-bold">₹2,350/Q</span>
                 </div>
               </div>
-              <div className="flex justify-between items-center text-[8px] text-gray-500">
+              <div className="flex justify-between items-center text-[9px] text-muted-foreground">
                 <span>Updated 5m ago</span>
-                <span className="text-emerald-400 font-bold">+₹50 today</span>
+                <span className="text-emerald-600 dark:text-emerald-400 font-semibold">+₹50 today</span>
               </div>
             </div>
 

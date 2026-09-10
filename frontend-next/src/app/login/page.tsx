@@ -83,7 +83,7 @@ export default function LoginPage() {
     if (res.ok) {
       setStep("otp");
       setResendCooldown(res.resendAfter || 30);
-      setNotice("Code sent successfully.");
+      setNotice("Code sent successfully via SMS.");
     } else {
       setError(res.error || "Failed to send OTP. Please try again.");
     }
@@ -154,185 +154,184 @@ export default function LoginPage() {
   const isLocked = error?.toLowerCase().includes("lock") || error?.toLowerCase().includes("too many");
 
   return (
-    <div className="flex min-h-[80vh] items-center justify-center px-4 -mt-4 py-8">
-      <div className="w-full max-w-md rounded-3xl p-1 bg-gradient-to-br from-emerald-500/20 to-teal-500/5 shadow-2xl relative">
-        <div className="absolute -inset-0.5 bg-gradient-to-r from-emerald-500 to-teal-500 rounded-3xl blur opacity-[0.08] pointer-events-none" />
-
-        <div className="relative rounded-[22px] bg-[#040814]/90 backdrop-blur-xl border border-white/5 p-6 md:p-8">
-          {/* Header */}
-          <div className="flex flex-col items-center text-center mb-8">
-            <div className="h-12 w-12 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-400 mb-4 shadow-inner">
-              <Sparkles className="h-6 w-6" />
-            </div>
-            <h1 className="text-2xl font-bold font-display text-white tracking-tight">
-              {lt.welcomeBack}
-            </h1>
-            <p className="text-xs text-muted-foreground/80 mt-1.5 max-w-[280px]">
-              {step === "phone" && lt.signInToAccess}
-              {step === "otp" && `${lt.otpLabel} (Sent to +91 ${phone.substring(0, 2)}******${phone.substring(8, 10)})`}
-              {step === "register" && lt.namePlaceholder}
-            </p>
+    <div className="flex min-h-[75vh] items-center justify-center px-4 py-8">
+      <div className="w-full max-w-md rounded-2xl border border-border bg-card p-6 sm:p-8 shadow-sm">
+        {/* Header */}
+        <div className="flex flex-col items-center text-center mb-6">
+          <div className="h-11 w-11 rounded-xl bg-primary/10 border border-primary/20 flex items-center justify-center text-primary mb-3">
+            <Sparkles className="h-5 w-5" />
           </div>
+          <h1 className="text-2xl font-bold font-display text-foreground tracking-tight">
+            {lt.welcomeBack}
+          </h1>
+          <p className="text-xs md:text-sm text-muted-foreground mt-1.5 max-w-xs leading-relaxed">
+            {step === "phone" && lt.signInToAccess}
+            {step === "otp" && `${lt.otpLabel} sent to +91 ${phone.substring(0, 2)}******${phone.substring(8, 10)}`}
+            {step === "register" && lt.namePlaceholder}
+          </p>
+        </div>
 
-          {/* Error Message */}
-          {error && (
-            <div className={`mb-6 flex items-start gap-2.5 rounded-2xl p-3.5 text-xs ${
-              isLocked 
-                ? "bg-amber-500/10 border border-amber-500/20 text-amber-400" 
-                : "bg-red-500/10 border border-red-500/20 text-red-400"
-            }`}>
-              <AlertCircle className="h-4.5 w-4.5 shrink-0 mt-0.5" />
-              <span className="font-medium">{error}</span>
-            </div>
-          )}
+        {/* Status Messages */}
+        {error && (
+          <div className={`mb-5 flex items-start gap-2.5 rounded-xl p-3 text-xs ${
+            isLocked 
+              ? "bg-amber-500/10 border border-amber-500/30 text-amber-700 dark:text-amber-400" 
+              : "bg-destructive/10 border border-destructive/30 text-destructive"
+          }`}>
+            <AlertCircle className="h-4 w-4 shrink-0 mt-0.5" />
+            <span className="font-medium leading-relaxed">{error}</span>
+          </div>
+        )}
 
-          {notice && (
-            <div className="mb-6 rounded-2xl border border-emerald-500/20 bg-emerald-500/10 p-3 text-center text-xs font-medium text-emerald-300" role="status">
-              {notice}
-            </div>
-          )}
+        {notice && (
+          <div className="mb-5 rounded-xl border border-primary/30 bg-primary/10 p-2.5 text-center text-xs font-medium text-primary" role="status">
+            {notice}
+          </div>
+        )}
 
-          {/* Phone Form */}
-          {step === "phone" && (
-            <form onSubmit={handleSendOtp} className="space-y-5">
-              <div className="space-y-2">
-                <label className="text-xs font-bold text-muted-foreground uppercase tracking-wider pl-1">
-                  {lt.phoneLabel}
-                </label>
-                <div className="relative">
-                  <Phone className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground/50" />
-                  <span className="absolute left-10 top-1/2 -translate-y-1/2 text-sm text-foreground/80 font-bold border-r border-white/10 pr-2">
+        {/* Step 1: Phone Form */}
+        {step === "phone" && (
+          <form onSubmit={handleSendOtp} className="space-y-4">
+            <div className="space-y-1.5">
+              <label className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+                {lt.phoneLabel}
+              </label>
+              <div className="relative flex items-center">
+                <div className="absolute left-3 flex items-center gap-1.5 text-muted-foreground">
+                  <Phone className="h-4 w-4 text-muted-foreground/70" />
+                  <span className="text-xs font-semibold text-foreground border-r border-border pr-2">
                     +91
                   </span>
-                  <input
-                    type="tel"
-                    required
-                    value={phone}
-                    maxLength={10}
-                    onChange={(e) => setPhone(e.target.value.replace(/[^0-9]/g, ""))}
-                    placeholder={lt.phonePlaceholder}
-                    disabled={loading}
-                    className="w-full h-11 bg-white/[0.03] hover:bg-white/[0.05] focus:bg-white/[0.05] border border-white/10 focus:border-emerald-500/50 rounded-xl pl-[4.5rem] pr-4 text-sm text-white placeholder-muted-foreground/45 transition-all focus:outline-none focus:ring-1 focus:ring-emerald-500/20 font-bold font-mono"
-                  />
                 </div>
-              </div>
-
-              <button
-                type="submit"
-                disabled={loading}
-                className="w-full h-11 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-500 text-sm font-semibold text-white shadow-lg shadow-emerald-500/20 hover:shadow-glow-primary hover:brightness-105 active:scale-[0.98] transition-all flex items-center justify-center gap-2 disabled:opacity-50 disabled:pointer-events-none"
-              >
-                {loading ? (
-                  <>
-                    <Loader2 className="h-4 w-4 animate-spin" />
-                    <span>{lt.sendingOtp}</span>
-                  </>
-                ) : (
-                  <>
-                    <span>{lt.sendOtp}</span>
-                    <ArrowRight className="h-4 w-4" />
-                  </>
-                )}
-              </button>
-            </form>
-          )}
-
-          {/* OTP Form */}
-          {step === "otp" && (
-            <form onSubmit={handleVerifyOtp} className="space-y-5">
-              <div className="space-y-2">
-                <label className="text-xs font-bold text-muted-foreground uppercase tracking-wider pl-1">
-                  {lt.otpPlaceholder}
-                </label>
-                <OtpInput value={otp} onChange={setOtp} disabled={loading} />
-              </div>
-
-              <div className="flex justify-between items-center px-1 text-xs">
-                <button
-                  type="button"
-                  disabled={loading}
-                  onClick={() => { setStep("phone"); setError(null); }}
-                  className="text-muted-foreground hover:text-white transition-colors disabled:opacity-50"
-                >
-                  ← Change Number
-                </button>
-
-                {resendCooldown > 0 ? (
-                  <span className="text-muted-foreground flex items-center gap-1">
-                    <RefreshCw className="h-3 w-3 animate-spin text-emerald-400" />
-                    Resend in {resendCooldown}s
-                  </span>
-                ) : (
-                  <button
-                    type="button"
-                    onClick={handleResendOtp}
-                    disabled={loading}
-                    className="text-emerald-400 hover:text-emerald-300 font-semibold transition-colors disabled:opacity-50 flex items-center gap-1"
-                  >
-                    Resend OTP
-                  </button>
-                )}
-              </div>
-
-              <button
-                type="submit"
-                disabled={loading}
-                className="w-full h-11 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-500 text-sm font-semibold text-white shadow-lg shadow-emerald-500/20 hover:shadow-glow-primary hover:brightness-105 active:scale-[0.98] transition-all flex items-center justify-center gap-2 disabled:opacity-50 disabled:pointer-events-none"
-              >
-                {loading ? (
-                  <>
-                    <Loader2 className="h-4 w-4 animate-spin" />
-                    <span>{lt.verifyingOtp}</span>
-                  </>
-                ) : (
-                  <>
-                    <span>{lt.verifyOtp}</span>
-                    <Check className="h-4 w-4" />
-                  </>
-                )}
-              </button>
-            </form>
-          )}
-
-          {/* Registration Form */}
-          {step === "register" && (
-            <form onSubmit={handleRegister} className="space-y-5">
-              <div className="space-y-2">
-                <label className="text-xs font-bold text-muted-foreground uppercase tracking-wider pl-1">
-                  {lt.nameLabel}
-                </label>
                 <input
-                  type="text"
+                  type="tel"
                   required
-                  value={name}
-                  onChange={(e) => setName(e.target.value)}
-                  placeholder={lt.namePlaceholder}
+                  value={phone}
+                  maxLength={10}
+                  onChange={(e) => setPhone(e.target.value.replace(/[^0-9]/g, ""))}
+                  placeholder={lt.phonePlaceholder}
                   disabled={loading}
-                  className="w-full h-11 bg-white/[0.03] hover:bg-white/[0.05] focus:bg-white/[0.05] border border-white/10 focus:border-emerald-500/50 rounded-xl px-4 text-sm text-white placeholder-muted-foreground/45 transition-all focus:outline-none focus:ring-1 focus:ring-emerald-500/20 font-bold"
+                  className="w-full h-11 rounded-lg border border-border bg-background pl-18 pr-4 text-sm font-medium font-mono text-foreground placeholder:text-muted-foreground/60 transition-colors focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20 disabled:opacity-50"
+                  autoFocus
                 />
               </div>
+            </div>
 
+            <button
+              type="submit"
+              disabled={loading}
+              className="btn-primary w-full h-11 gap-2 text-sm font-semibold"
+            >
+              {loading ? (
+                <>
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                  <span>{lt.sendingOtp}</span>
+                </>
+              ) : (
+                <>
+                  <span>{lt.sendOtp}</span>
+                  <ArrowRight className="h-4 w-4" />
+                </>
+              )}
+            </button>
+          </form>
+        )}
+
+        {/* Step 2: OTP Verification Form */}
+        {step === "otp" && (
+          <form onSubmit={handleVerifyOtp} className="space-y-5">
+            <div className="space-y-2">
+              <label className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+                {lt.otpPlaceholder}
+              </label>
+              <OtpInput value={otp} onChange={setOtp} disabled={loading} />
+            </div>
+
+            <div className="flex justify-between items-center text-xs pt-1">
               <button
-                type="submit"
+                type="button"
                 disabled={loading}
-                className="w-full h-11 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-500 text-sm font-semibold text-white shadow-lg shadow-emerald-500/20 hover:shadow-glow-primary hover:brightness-105 active:scale-[0.98] transition-all flex items-center justify-center gap-2 disabled:opacity-50 disabled:pointer-events-none"
+                onClick={() => { setStep("phone"); setError(null); }}
+                className="text-muted-foreground hover:text-foreground transition-colors disabled:opacity-50 font-medium"
               >
-                {loading ? (
-                  <>
-                    <Loader2 className="h-4 w-4 animate-spin" />
-                    <span>{lt.verifyingOtp}</span>
-                  </>
-                ) : (
-                  <>
-                    <span>{lt.completeRegistration}</span>
-                    <ArrowRight className="h-4 w-4" />
-                  </>
-                )}
+                ← Change Phone
               </button>
-            </form>
-          )}
 
-        </div>
+              {resendCooldown > 0 ? (
+                <span className="text-muted-foreground flex items-center gap-1.5 font-medium">
+                  <RefreshCw className="h-3 w-3 animate-spin text-primary" />
+                  Resend in {resendCooldown}s
+                </span>
+              ) : (
+                <button
+                  type="button"
+                  onClick={handleResendOtp}
+                  disabled={loading}
+                  className="text-primary hover:underline font-semibold transition-colors disabled:opacity-50"
+                >
+                  Resend OTP
+                </button>
+              )}
+            </div>
+
+            <button
+              type="submit"
+              disabled={loading}
+              className="btn-primary w-full h-11 gap-2 text-sm font-semibold"
+            >
+              {loading ? (
+                <>
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                  <span>{lt.verifyingOtp}</span>
+                </>
+              ) : (
+                <>
+                  <span>{lt.verifyOtp}</span>
+                  <Check className="h-4 w-4" />
+                </>
+              )}
+            </button>
+          </form>
+        )}
+
+        {/* Step 3: Registration Form (For first-time phone numbers) */}
+        {step === "register" && (
+          <form onSubmit={handleRegister} className="space-y-4">
+            <div className="space-y-1.5">
+              <label className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+                {lt.nameLabel}
+              </label>
+              <input
+                type="text"
+                required
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                placeholder={lt.namePlaceholder}
+                disabled={loading}
+                className="input-base h-11"
+                autoFocus
+              />
+            </div>
+
+            <button
+              type="submit"
+              disabled={loading}
+              className="btn-primary w-full h-11 gap-2 text-sm font-semibold"
+            >
+              {loading ? (
+                <>
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                  <span>{lt.verifyingOtp}</span>
+                </>
+              ) : (
+                <>
+                  <span>{lt.completeRegistration}</span>
+                  <ArrowRight className="h-4 w-4" />
+                </>
+              )}
+            </button>
+          </form>
+        )}
       </div>
     </div>
   );
