@@ -144,19 +144,19 @@ export function Header() {
           ) : (
             <nav className="hidden lg:flex items-center gap-1 text-xs font-semibold">
               <Link href="/#features" className="px-3 py-1.5 rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted/60 transition-colors">
-                {t("featuresBadge") || "All In One Place"}
+                {lang === 'hi' ? "एक ही जगह सब कुछ" : "All In One Place"}
               </Link>
               <Link href="/mandi" className="px-3 py-1.5 rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted/60 transition-colors">
-                {t("mandi")}
+                {lang === 'hi' ? "मंडी भाव" : "Mandi"}
               </Link>
               <Link href="/weather" className="px-3 py-1.5 rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted/60 transition-colors">
-                {t("weather")}
+                {lang === 'hi' ? "मौसम" : "Weather"}
               </Link>
               <Link href="/#technology" className="px-3 py-1.5 rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted/60 transition-colors">
-                {t("technology.badge") || "Architecture"}
+                {lang === 'hi' ? "कृषि तकनीक आर्किटेक्चर" : "Agritech Architecture"}
               </Link>
               <Link href="/#founders" className="px-3 py-1.5 rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted/60 transition-colors">
-                {t("founders")}
+                {lang === 'hi' ? "संस्थापक" : "Founders"}
               </Link>
             </nav>
           )}
@@ -230,9 +230,9 @@ export function Header() {
                 </Link>
                 <Link
                   href="/signup"
-                  className="inline-flex h-8 items-center justify-center rounded-lg bg-primary px-3.5 text-xs font-semibold text-primary-foreground transition-colors hover:bg-primary/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                  className="inline-flex h-8 items-center justify-center rounded-lg bg-emerald-700 hover:bg-emerald-800 px-3.5 text-xs font-semibold text-white transition-colors"
                 >
-                  {t("hero.start_free")}
+                  {lang === 'hi' ? "मुफ़्त शुरू करें" : "Start Free"}
                 </Link>
               </div>
             )}
